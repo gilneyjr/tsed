@@ -1,0 +1,38 @@
+#ifndef TREE_H
+#define TREE_H
+
+#include <vector>
+#include <string>
+
+class TreeNode {
+public:
+  TreeNode( TreeNode* parent, std::string node_name );
+  TreeNode( TreeNode* parent, std::string node_name, int born_index );
+  ~TreeNode();
+
+  std::string& data();
+  void add_child( TreeNode* tree_node );
+
+  int children_amount();
+
+  bool is_root();
+  bool is_leaf();
+
+  bool is_rightmost_sibling();
+  bool is_leftmost_sibling();
+
+  std::string build_tree();
+  std::string build_pretty_tree(int level);
+
+  int _born_index;
+
+  TreeNode* parent();
+  std::vector< TreeNode* > children();
+
+private:
+  std::string _data;
+  TreeNode* _parent;
+  std::vector< TreeNode* > _children;
+};
+
+#endif // TREE_H

@@ -1,0 +1,25 @@
+#ifndef PTB_INTERPRETER_H
+#define PTB_INTERPRETER_H
+
+#include "tree.h"
+
+#include <vector>
+#include <string>
+
+class PTBInterpreter {
+public:
+  PTBInterpreter( std::string input );
+  TreeNode* parse();
+
+private:
+  char state, head, name_consumed;
+  int position, level, input_size;
+  std::vector<bool> named_level;
+  std::string _input, errors, buffer;
+  TreeNode *root, *tree_node;
+
+  void traverse_flow();
+  void naming_flow();
+};
+
+#endif // PTB_INTERPRETER_H
