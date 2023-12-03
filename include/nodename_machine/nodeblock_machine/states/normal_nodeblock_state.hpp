@@ -6,14 +6,13 @@
 
 namespace Nodename::Nodeblock
 {
-    class NormalNodeblockState: public NodeblockState
-    {
-    public:
-        NormalNodeblockState(NodeblockMachine*);
-        ~NormalNodeblockState();
-        virtual NodeblockState* run();
-    };
+  class NormalNodeblockState: public NodeblockState
+  {
+  public:
+    NormalNodeblockState(NodeblockMachine*);
+    ~NormalNodeblockState();
+    virtual NodeblockState* run();
+  };
 }
-
 
 #endif

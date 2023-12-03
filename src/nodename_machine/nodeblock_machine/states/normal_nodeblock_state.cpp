@@ -1,6 +1,10 @@
+#include <cctype>
 #include "end_nodeblock_state.hpp"
-#include "normal_escape_nodeblock_state.hpp"
+#include "double_quoted_nodeblock_state.hpp"
 #include "normal_nodeblock_state.hpp"
+#include "normal_escape_nodeblock_state.hpp"
+#include "regex_nodeblock_state.hpp"
+#include "single_quoted_nodeblock_state.hpp"
 
 Nodename::Nodeblock::NormalNodeblockState::NormalNodeblockState(
   Nodename::Nodeblock::NodeblockMachine* machine):
@@ -9,43 +13,38 @@ Nodename::Nodeblock::NormalNodeblockState::NormalNodeblockState(
 Nodename::Nodeblock::NormalNodeblockState::~NormalNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::run() {
-  std::istream& in = *(this->machine->getInputStream());
-  std::ostream& out = *(this->machine->getOutputStream());
-
-  if (in.eof()) 
+  if (this->input.eof()) 
   {
-    out << ")";
+    this->output << ')';
     return new EndNodeblockState(this->machine);
   }
 
   char x;
-  in >> x;
+  this->input >> x;
 
-  if (true /*TODO: x in <alnum> U {-}*/)
-    out << x;
-  else if (x == '*')
-    out << ".*";
+  if (x == '*')
+    this->output << ".*";
   else if (x == '?')
-    out << ".";
-  else if (x == '"') 
+    this-> output << ".";
+  else if (std::isalnum(x) || x == '-' || x == '_')
+    this->output << x;
+  else if (x == '\'')
   {
-    out << "(";
-    return new DoubleQuotedNodeblockState(this->machine);
-  }
-  else if (x == '\'') 
-  {
-    out << "(";
+    this->output << '(';
     return new SingleQuotedNodeblockState(this->machine);
   }
-  else if (x == '/')
+  else if (x == '"')
   {
-    out << "(";
-    return new RegexNodeblockState(this->machine);
+    this->output << '(';
+    return new DoubleQuotedNodeblockState(this->machine);
   }
   else if (x == '\\')
-    return new NormalEscapeNodeblockState(this->machine); 
-  else
-    /* TODO: throw new Exception("Entrada inválida");*/;
+    return new NormalEscapeNodeblockState(this->machine);
+  else if (x == '/')
+  {
+    this->output << '(';
+    return new RegexNodeblockState(this->machine);
+  }
 
   return this;
 }
