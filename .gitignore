@@ -34,3 +34,6 @@
 # Folders
 bin
 build
+
+# VS Code
+.vscode
