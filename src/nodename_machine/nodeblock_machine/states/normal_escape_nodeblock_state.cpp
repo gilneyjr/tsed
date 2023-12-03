@@ -2,28 +2,23 @@
 #include "normal_nodeblock_state.hpp"
 
 Nodename::Nodeblock::NormalEscapeNodeblockState::NormalEscapeNodeblockState(
-    Nodename::Nodeblock::NodeblockMachine* machine):
-    Nodename::Nodeblock::NodeblockState(machine) {}
+  Nodename::Nodeblock::NodeblockMachine* machine):
+  Nodename::Nodeblock::NodeblockState(machine) {}
 
 Nodename::Nodeblock::NormalEscapeNodeblockState::~NormalEscapeNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalEscapeNodeblockState::run()
 {
-    std::istream& in = *(this->machine->getInputStream());
-    std::ostream& out = *(this->machine->getOutputStream());
+  if (this->input.eof())
+    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
 
-    if (in.eof())
-        /* TODO: throw new Exception("fim de stream inesperado."); */;
+  char x;
+  this->input >> x;
 
-    char x;
-    in >> x;
+  if (machine->isEscapableChar(x))
+    this->output << '\\' << x;
+  else
+    this->output << x;
 
-    if (x != '\\')
-    {
-        out << x;
-        return new NormalNodeblockState(this->machine);
-    }
-    // TODO: ver o que acontece nos casos em que x == '\\'
-
-    return this;
+  return new NormalNodeblockState(this->machine);
 }

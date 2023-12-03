@@ -20,6 +20,7 @@ namespace Nodename::Nodeblock
     void run();
     std::istream* getInputStream();
     std::ostream* getOutputStream();
+    static bool isEscapableChar(char);
   };
 }
 

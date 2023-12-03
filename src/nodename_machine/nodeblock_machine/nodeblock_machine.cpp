@@ -39,3 +39,10 @@ std::ostream* Nodename::Nodeblock::NodeblockMachine::getOutputStream()
 {
   return this->output;
 }
+
+// TODO: implementar quais caracteres são especiais
+// TODO: pensar se vou deixar esse método aqui ou vou passar para uma classe de utils
+bool Nodename::Nodeblock::NodeblockMachine::isEscapableChar(char c)
+{
+  return c == '\\';
+}
