@@ -2,25 +2,23 @@
 #include "double_quoted_nodeblock_state.hpp"
 
 Nodename::Nodeblock::DoubleQuotedEscapeNodeblockState::DoubleQuotedEscapeNodeblockState(
-    Nodename::Nodeblock::NodeblockMachine* machine):
-    Nodename::Nodeblock::NodeblockState(machine) {}
+  Nodename::Nodeblock::NodeblockMachine* machine):
+  Nodename::Nodeblock::NodeblockState(machine) {}
 
 Nodename::Nodeblock::DoubleQuotedEscapeNodeblockState::~DoubleQuotedEscapeNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedEscapeNodeblockState::run()
 {
-    std::istream& in = *(this->machine->getInputStream());
-    std::ostream& out = *(this->machine->getOutputStream());
+  if (this->input.eof())
+    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
+  
+  char x;
+  this->input >> x;
 
-    if (in.eof())
-        /* TODO: throw new Exception("fim de stream inválido.") */;
-    
-    char x;
-    in >> x;
+  if (machine->isEscapableChar(x))
+    this->output << '\\' << x;
+  else
+    this->output << x;
 
-    if (true /* x in <special> */)
-        out << "\\" << x;
-    else
-        out << x;
-    return new DoubleQuotedNodeblockState(this->machine);
+  return new DoubleQuotedNodeblockState(this->machine);
 }
