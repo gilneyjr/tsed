@@ -9,14 +9,16 @@ Nodename::Nodeblock::RegexEscapeNodeblockState::~RegexEscapeNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexEscapeNodeblockState::run()
 {
-  std::istream& in = *(this->machine->getInputStream());
-  std::ostream& out = *(this->machine->getOutputStream());
-  
-  if (in.eof())
-    /* TODO: throw new Exception("fim de stream inesperado.") */;
+  if (this->input.eof())
+    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
   
   char x;
-  in >> x;
-  out << x;
+  this->input >> x;
+
+  if (machine->isEscapableChar(x))
+    this->output << '\\' << x;
+  else
+    this->output << x;
+
   return new RegexNodeblockState(this->machine);
 }
