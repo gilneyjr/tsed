@@ -1,8 +1,8 @@
 #include <cctype>
 #include "end_nodeblock_state.hpp"
 #include "double_quoted_nodeblock_state.hpp"
-#include "normal_nodeblock_state.hpp"
 #include "normal_escape_nodeblock_state.hpp"
+#include "normal_nodeblock_state.hpp"
 #include "regex_nodeblock_state.hpp"
 #include "single_quoted_nodeblock_state.hpp"
 
