@@ -14,7 +14,7 @@ namespace Nodename::Nodeblock
     std::istream* input;
     std::ostream* output;
   public:
-    NodeblockMachine();
+    NodeblockMachine(std::istream*, std::ostream*);
     ~NodeblockMachine();
     void finish();
     void run();

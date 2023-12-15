@@ -1,10 +1,12 @@
 #include "nodeblock_machine.hpp"
 #include "begin_nodeblock_state.hpp"
 
-Nodename::Nodeblock::NodeblockMachine::NodeblockMachine()
+Nodename::Nodeblock::NodeblockMachine::NodeblockMachine(std::istream* input, std::ostream* output)
 {
   this->state = new Nodename::Nodeblock::BeginNodeblockState(this);
   this->finished = false;
+  this->input = input;
+  this->output = output;
 }
 
 Nodename::Nodeblock::NodeblockMachine::~NodeblockMachine()
