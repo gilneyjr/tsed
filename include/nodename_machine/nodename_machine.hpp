@@ -6,6 +6,7 @@
 #include "nodename_state.hpp"
 
 namespace Nodename {
+  class NodenameState;
   class NodenameMachine {
   private:
     bool finished;

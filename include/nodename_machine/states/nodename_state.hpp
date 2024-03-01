@@ -5,13 +5,15 @@
 
 namespace Nodename
 {
+  class NodenameMachine;
+
   class NodenameState
   {
   protected:
     const NodenameMachine* machine;
   public:
     NodenameState(NodenameMachine*);
-    ~NodenameState();
+    virtual ~NodenameState();
     virtual void run() = 0;
   };
 }

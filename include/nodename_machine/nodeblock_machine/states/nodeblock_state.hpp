@@ -6,6 +6,7 @@
 
 namespace Nodename::Nodeblock
 {
+  class NodeblockMachine;
   class NodeblockState
   {
   protected:
@@ -14,7 +15,7 @@ namespace Nodename::Nodeblock
     std::ostream& output;
   public:
     NodeblockState(NodeblockMachine*);
-    ~NodeblockState();
+    virtual ~NodeblockState();
     virtual NodeblockState* run() = 0;
   };
 }

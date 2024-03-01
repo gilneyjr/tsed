@@ -44,7 +44,7 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
   {
     this->output << '(';
     return new RegexNodeblockState(this->machine);
-  }
+  } else; // TODO: implementar exceção informando caractere inválido
 
   return this;
 }
