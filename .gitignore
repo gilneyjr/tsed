@@ -33,7 +33,7 @@
 
 # Folders
 bin
-build
+obj
 
 # VS Code
 .vscode

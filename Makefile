@@ -18,21 +18,21 @@ endef
 
 # Directories
 BIN_PATH = ./bin
-INC_PATH = ./include
+INC_PATH = ./inc
 INC_SUBPATHS = $(INC_PATH)/ $(call find_subdirs,$(INC_PATH))
 OBJ_PATH = ./obj
 SRC_PATH = ./src
-
-# Compiler and flags
-CXX = g++
-CXX_FLAGS = -std=c++17 -Wall
-INC_FLAGS := $(addprefix -I, $(INC_SUBPATHS))
 
 # Files
 MAIN_FILE := $(SRC_PATH)/main.cpp
 TARGET_FILE := $(BIN_PATH)/tsed
 SRC_FILES := $(call find_files_in_subdirs,$(SRC_PATH),cpp,$(MAIN_FILE))
 OBJ_FILES := $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(SRC_FILES))
+
+# Compiler and flags
+CXX = g++
+CXX_FLAGS = -std=c++17 -Wall
+INC_FLAGS := $(addprefix -I, $(INC_SUBPATHS))
 
 $(TARGET_FILE): $(OBJ_FILES) $(MAIN_FILE)
 	@mkdir -p $(dir $@)
