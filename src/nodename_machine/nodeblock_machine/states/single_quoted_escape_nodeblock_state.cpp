@@ -9,11 +9,11 @@ Nodename::Nodeblock::SingleQuotedEscapeNodeblockState::~SingleQuotedEscapeNodebl
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::SingleQuotedEscapeNodeblockState::run()
 {
-  if (this->input.eof())
-    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
-  
   char x;
   this->input >> x;
+  
+  if (this->input.eof())
+    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
 
   if (machine->isEscapableChar(x))
     this->output << '\\' << x;

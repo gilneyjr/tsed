@@ -10,11 +10,11 @@ Nodename::Nodeblock::DoubleQuotedNodeblockState::~DoubleQuotedNodeblockState() {
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedNodeblockState::run()
 {
-  if (this->input.eof())
-    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
-  
   char x;
   this->input >> x;
+  
+  if (this->input.eof())
+    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
 
   if (x == '"')
   {

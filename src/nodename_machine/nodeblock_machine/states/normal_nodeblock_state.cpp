@@ -13,14 +13,14 @@ Nodename::Nodeblock::NormalNodeblockState::NormalNodeblockState(
 Nodename::Nodeblock::NormalNodeblockState::~NormalNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::run() {
+  char x;
+  this->input >> x;
+  
   if (this->input.eof()) 
   {
     this->output << ')';
     return new EndNodeblockState(this->machine);
   }
-
-  char x;
-  this->input >> x;
 
   if (x == '*')
     this->output << ".*";

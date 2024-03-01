@@ -1,12 +1,11 @@
 #include "nodeblock_machine.hpp"
 #include "begin_nodeblock_state.hpp"
 
-Nodename::Nodeblock::NodeblockMachine::NodeblockMachine(std::istream* input, std::ostream* output)
+Nodename::Nodeblock::NodeblockMachine::NodeblockMachine(std::istream& input, std::ostream& output)
+  : input(input), output(output)
 {
   this->state = new Nodename::Nodeblock::BeginNodeblockState(this);
   this->finished = false;
-  this->input = input;
-  this->output = output;
 }
 
 Nodename::Nodeblock::NodeblockMachine::~NodeblockMachine()
@@ -32,12 +31,12 @@ void Nodename::Nodeblock::NodeblockMachine::run()
   }
 }
 
-std::istream* Nodename::Nodeblock::NodeblockMachine::getInputStream() 
+std::istream& Nodename::Nodeblock::NodeblockMachine::getInputStream() 
 {
   return this->input;
 }
 
-std::ostream* Nodename::Nodeblock::NodeblockMachine::getOutputStream()
+std::ostream& Nodename::Nodeblock::NodeblockMachine::getOutputStream()
 {
   return this->output;
 }

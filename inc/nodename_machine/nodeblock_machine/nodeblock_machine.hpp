@@ -11,15 +11,15 @@ namespace Nodename::Nodeblock
   private:
     bool finished;
     NodeblockState* state;
-    std::istream* input;
-    std::ostream* output;
+    std::istream& input;
+    std::ostream& output;
   public:
-    NodeblockMachine(std::istream*, std::ostream*);
+    NodeblockMachine(std::istream&, std::ostream&);
     ~NodeblockMachine();
     void finish();
     void run();
-    std::istream* getInputStream();
-    std::ostream* getOutputStream();
+    std::istream& getInputStream();
+    std::ostream& getOutputStream();
     static bool isEscapableChar(char);
   };
 }
