@@ -15,10 +15,11 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::SingleQuotedEscapeNode
   if (this->input.eof())
     throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
 
-  if (machine->isEscapableChar(x))
+  if (!std::isalnum(x)) 
+  {
     this->output << '\\' << x;
+    return new SingleQuotedNodeblockState(this->machine);
+  }
   else
-    this->output << x;
-
-  return new SingleQuotedNodeblockState(this->machine);
+    throw "Alfanumeric characters are not escapable inside strings."; // TODO: Criar uma excessão para isso
 }

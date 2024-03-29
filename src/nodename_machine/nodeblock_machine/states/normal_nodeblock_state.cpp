@@ -22,12 +22,20 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
     return new EndNodeblockState(this->machine);
   }
 
-  if (x == '*')
+  if (x == '*') {
     this->output << ".*";
-  else if (x == '?')
+    return this;
+  }
+  else if (x == '?') 
+  {
     this-> output << ".";
-  else if (std::isalnum(x) || x == '-' || x == '_')
+    return this;
+  }
+  else if (std::isalnum(x) || x == '-' || x == '_') 
+  {
     this->output << x;
+    return this;
+  }
   else if (x == '\'')
   {
     this->output << '(';
@@ -44,7 +52,7 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
   {
     this->output << '(';
     return new RegexNodeblockState(this->machine);
-  } else; // TODO: implementar exceção informando caractere inválido
-
-  return this;
+  }
+  else
+    throw "Invalid character: '" + x + (std::string)"'."; // TODO: implementar exceção
 }

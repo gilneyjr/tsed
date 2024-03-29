@@ -23,9 +23,14 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedNodeblockS
   }
   else if (x == '\\')
     return new DoubleQuotedEscapeNodeblockState(this->machine);
-  else
+  else if (std::isalnum(x))
   {
     this->output << x;
+    return this;
+  }
+  else 
+  {
+    this->output << '\\' << x;
     return this;
   }
 }

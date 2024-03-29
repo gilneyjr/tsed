@@ -15,10 +15,10 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexEscapeNodeblockSt
   if (this->input.eof())
     throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
 
-  if (machine->isEscapableChar(x))
-    this->output << '\\' << x;
-  else
+  if (x == '/')
     this->output << x;
+  else
+    this->output << '\\' << x;
 
   return new RegexNodeblockState(this->machine);
 }

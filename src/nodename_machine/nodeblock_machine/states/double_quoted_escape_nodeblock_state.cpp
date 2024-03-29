@@ -11,14 +11,15 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedEscapeNode
 {
   char x;
   this->input >> x;
-
+  
   if (this->input.eof())
     throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
-  
-  if (machine->isEscapableChar(x))
-    this->output << '\\' << x;
-  else
-    this->output << x;
 
-  return new DoubleQuotedNodeblockState(this->machine);
+  if (!std::isalnum(x)) 
+  {
+    this->output << '\\' << x;
+    return new DoubleQuotedNodeblockState(this->machine);
+  }
+  else
+    throw "Alfanumeric characters are not escapable inside strings."; // TODO: Criar uma excessão para isso
 }
