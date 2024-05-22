@@ -1,6 +1,7 @@
 #include "double_quoted_escape_nodeblock_state.hpp"
 #include "double_quoted_nodeblock_state.hpp"
 #include "normal_nodeblock_state.hpp"
+#include "unexpected_end_of_input_exception.hpp"
 
 Nodename::Nodeblock::DoubleQuotedNodeblockState::DoubleQuotedNodeblockState(
   Nodename::Nodeblock::NodeblockMachine* machine):
@@ -14,7 +15,7 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedNodeblockS
   this->input >> x;
   
   if (this->input.eof())
-    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
+    throw Exceptions::UnexpectedEndOfInputException();
 
   if (x == '"')
   {

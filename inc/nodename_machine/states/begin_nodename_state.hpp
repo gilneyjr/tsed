@@ -11,7 +11,7 @@ namespace Nodename
   public:
     BeginNodenameState(NodenameMachine*);
     ~BeginNodenameState();
-    virtual void run();
+    virtual NodenameState* run();
   };
 }
 

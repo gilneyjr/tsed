@@ -11,12 +11,15 @@ namespace Nodename {
   private:
     bool finished;
     NodenameState* state;
+    std::istream& input;
+    std::ostream& output;
   public:
-    NodenameMachine();
+    NodenameMachine(std::istream&, std::ostream&);
     ~NodenameMachine();
-    void changeState(NodenameState*);
     void finish();
     void run();
+    std::istream& getInputStream();
+    std::ostream& getOutputStream();
   };
 }
 

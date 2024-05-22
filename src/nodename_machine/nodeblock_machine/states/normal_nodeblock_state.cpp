@@ -12,10 +12,11 @@ Nodename::Nodeblock::NormalNodeblockState::NormalNodeblockState(
 
 Nodename::Nodeblock::NormalNodeblockState::~NormalNodeblockState() {}
 
-Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::run() {
+Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::run()
+{
   char x;
   this->input >> x;
-  
+
   if (this->input.eof()) 
   {
     this->output << ')';
@@ -53,6 +54,8 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
     this->output << '(';
     return new RegexNodeblockState(this->machine);
   }
-  else
-    throw "Invalid character: '" + x + (std::string)"'."; // TODO: implementar exceção
+
+  this->input.unget();
+  this->output << ')';
+  return new EndNodeblockState(this->machine);
 }

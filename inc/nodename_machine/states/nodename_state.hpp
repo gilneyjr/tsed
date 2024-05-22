@@ -2,6 +2,7 @@
 #define NODENAME_STATE_HPP
 
 #include "nodename_machine.hpp"
+#include <iostream>
 
 namespace Nodename
 {
@@ -10,12 +11,14 @@ namespace Nodename
   class NodenameState
   {
   protected:
-    const NodenameMachine* machine;
+    NodenameMachine* machine;
+    std::istream& input;
+    std::ostream& output;
   public:
     NodenameState(NodenameMachine*);
     virtual ~NodenameState();
-    virtual void run() = 0;
+    virtual NodenameState* run() = 0;
   };
 }
 
-#endif 
+#endif

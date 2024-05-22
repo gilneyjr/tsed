@@ -1,5 +1,6 @@
 #include "regex_escape_nodeblock_state.hpp"
 #include "regex_nodeblock_state.hpp"
+#include "unexpected_end_of_input_exception.hpp"
 
 Nodename::Nodeblock::RegexEscapeNodeblockState::RegexEscapeNodeblockState(
   Nodename::Nodeblock::NodeblockMachine* machine): 
@@ -13,7 +14,7 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexEscapeNodeblockSt
   this->input >> x;
 
   if (this->input.eof())
-    throw "Unexpected end of input."; // TODO: Criar uma excessão para isso
+    throw Exceptions::UnexpectedEndOfInputException();
 
   if (x == '/')
     this->output << x;

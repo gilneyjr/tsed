@@ -23,6 +23,7 @@ void Nodename::Nodeblock::NodeblockMachine::run()
   while (!this->finished && this->state != nullptr) 
   {
     NodeblockState* nextState = this->state->run();
+
     if (this->state != nullptr && this->state != nextState) 
     {
       delete this->state;
@@ -39,11 +40,4 @@ std::istream& Nodename::Nodeblock::NodeblockMachine::getInputStream()
 std::ostream& Nodename::Nodeblock::NodeblockMachine::getOutputStream()
 {
   return this->output;
-}
-
-// TODO: implementar quais caracteres são especiais
-// TODO: pensar se vou deixar esse método aqui ou vou passar para uma classe de utils
-bool Nodename::Nodeblock::NodeblockMachine::isEscapableChar(char c)
-{
-  return c == '\\';
 }

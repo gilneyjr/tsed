@@ -10,6 +10,6 @@ Nodename::Nodeblock::EndNodeblockState::EndNodeblockState(
 Nodename::Nodeblock::EndNodeblockState::~EndNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::EndNodeblockState::run() 
-{ 
+{
   return this;
 }
