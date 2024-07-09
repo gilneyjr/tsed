@@ -19,14 +19,11 @@ Nodename::NodenameState* Nodename::CutNumberNodenameState::run()
 
   if (std::isdigit(x))
   {
-    // this->machine->num = this->machine->num * 10 + (x-'0'); // TODO: fazer isso depois
+    this->machine->appendPlaceholderNumber(x-'0');
     return this;
   }
   else if (x == ':')
-  {
-    // this->num = 0; // TODO: fazer isso depois
     return new MiddleCutNodeblockNodenameState(this->machine);
-  }
 
   throw Exceptions::InvalidCharacterException(x);
 }

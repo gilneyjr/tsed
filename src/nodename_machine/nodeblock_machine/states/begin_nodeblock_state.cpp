@@ -9,6 +9,6 @@ Nodename::Nodeblock::BeginNodeblockState::~BeginNodeblockState() {}
 
 Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::BeginNodeblockState::run()
 {
-  this->output << "(";
+  this->machine->appendToOutput('(');
   return new NormalNodeblockState(this->machine);
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "nodeblock_state.hpp"
+#include "nodeblock_result.hpp"
 
 namespace Nodename::Nodeblock
 {
@@ -13,14 +14,17 @@ namespace Nodename::Nodeblock
     bool finished;
     NodeblockState* state;
     std::istream& input;
-    std::ostream& output;
+    bool undetermined;
+    std::string regex;
   public:
-    NodeblockMachine(std::istream&, std::ostream&);
+    NodeblockMachine(std::istream&);
     ~NodeblockMachine();
     void finish();
-    void run();
+    NodeblockResult run();
     std::istream& getInputStream();
-    std::ostream& getOutputStream();
+    void setUndetermined(bool);
+    void appendToOutput(std::string);
+    void appendToOutput(char);
   };
 }
 

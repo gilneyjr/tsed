@@ -12,7 +12,7 @@ Nodename::MiddleCutNodeblockNodenameState::~MiddleCutNodeblockNodenameState() {}
 
 Nodename::NodenameState* Nodename::MiddleCutNodeblockNodenameState::run()
 {
-  auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input, this->output);
+  auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input);
   nodeblockMachine->run();
   delete nodeblockMachine;
 

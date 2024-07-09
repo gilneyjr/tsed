@@ -18,7 +18,7 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalEscapeNodeblockS
 
   if (!std::isalnum(x))
   {
-    this->output << '\\' << x;
+    this->machine->appendToOutput("\\" + x);
     return new NormalNodeblockState(this->machine);
   }
   else

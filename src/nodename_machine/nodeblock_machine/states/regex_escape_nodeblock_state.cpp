@@ -17,9 +17,9 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexEscapeNodeblockSt
     throw Exceptions::UnexpectedEndOfInputException();
 
   if (x == '/')
-    this->output << x;
+    this->machine->appendToOutput(x);
   else
-    this->output << '\\' << x;
+    this->machine->appendToOutput("\\" + x);
 
   return new RegexNodeblockState(this->machine);
 }

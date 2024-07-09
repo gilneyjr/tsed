@@ -10,7 +10,7 @@ void testNodeblock()
 {
   std::istream* input = new std::stringstream("NP-*");
   
-  NodeblockMachine* machine = new NodeblockMachine(*input, std::cout);
+  NodeblockMachine* machine = new NodeblockMachine(*input);
   machine->run();
 
   delete machine;
@@ -31,7 +31,7 @@ void testRegex()
     std::istringstream* input = new std::istringstream(nodeblockPattern);
     std::ostringstream* output = new std::ostringstream();
 
-    NodeblockMachine* machine = new NodeblockMachine(*input, *output);
+    NodeblockMachine* machine = new NodeblockMachine(*input);
     machine->run();
 
     delete machine;

@@ -12,7 +12,7 @@ Nodename::MiddleCopyNodeblockNodenameState::~MiddleCopyNodeblockNodenameState() 
 
 Nodename::NodenameState* Nodename::MiddleCopyNodeblockNodenameState::run()
 {
-  auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input, this->output);
+  auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input);
   nodeblockMachine->run();
   delete nodeblockMachine;
 

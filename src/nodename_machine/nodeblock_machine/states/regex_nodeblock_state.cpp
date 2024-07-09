@@ -19,14 +19,14 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexNodeblockState::r
 
   if (x == '/')
   {
-    this->output << ')';
+    this->machine->appendToOutput(')');
     return new NormalNodeblockState(this->machine);
   }
   else if (x == '\\')
     return  new RegexEscapeNodeblockState(this->machine);
   else
   {
-    this->output << x;
+    this->machine->appendToOutput(x);
     return this;
   }
 }

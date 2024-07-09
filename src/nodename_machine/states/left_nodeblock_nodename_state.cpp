@@ -13,9 +13,12 @@ Nodename::LeftNodeblockNodenameState::~LeftNodeblockNodenameState() {}
 
 Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
 {
-  auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input, this->output);
+  auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input);
   nodeblockMachine->run();
   delete nodeblockMachine;
+
+  if (this->output.tellp() > 0) // TODO: deixar isso mais claro
+    this->machine->setFreeOfContext(false);
 
   char x;
   this->input >> x;
@@ -25,12 +28,14 @@ Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
 
   if (x == '[')
   {
-    // TODO: colocar placeholder para CUT
+    this->machine->setResultType(Nodename::NodenameResult::NodenameResultType::NODE_PLACEHOLDER);
+    this->machine->setPlaceholder(Nodename::NodenameResult::Placeholder::CUT);
     return new MiddleCutNodenameState(this->machine);
   }
   else if (x == '{')
   {
-    // TODO: colocar placeholder para COPY
+    this->machine->setResultType(Nodename::NodenameResult::NodenameResultType::NODE_PLACEHOLDER);
+    this->machine->setPlaceholder(Nodename::NodenameResult::Placeholder::COPY);
     return new MiddleCopyNodenameState(this->machine);
   }
 

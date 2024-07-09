@@ -19,19 +19,19 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::SingleQuotedNodeblockS
 
   if (x == '\'')
   {
-    this->output << ')';
+    this->machine->appendToOutput(')');
     return new NormalNodeblockState(this->machine);
   }
   else if (x == '\\')
     return new SingleQuotedEscapeNodeblockState(this->machine);
   else if (std::isalnum(x))
   {
-    this->output << x;
+    this->machine->appendToOutput(x);
     return this;
   }
   else 
   {
-    this->output << '\\' << x;
+    this->machine->appendToOutput("\\" + x);
     return this;
   }
 }

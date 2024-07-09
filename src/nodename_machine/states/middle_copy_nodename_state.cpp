@@ -19,7 +19,7 @@ Nodename::NodenameState* Nodename::MiddleCopyNodenameState::run()
 
   if (std::isdigit(x))
   {
-    // this->num = x-'0'; // TODO: fazer isso depois
+    this->machine->setPlaceholderNumber(x-'0');
     return new CopyNumberNodenameState(this->machine);
   }
   

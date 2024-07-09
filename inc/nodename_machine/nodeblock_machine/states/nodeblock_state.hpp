@@ -12,7 +12,6 @@ namespace Nodename::Nodeblock
   protected:
     NodeblockMachine* machine;
     std::istream& input;
-    std::ostream& output;
   public:
     NodeblockState(NodeblockMachine*);
     virtual ~NodeblockState();
