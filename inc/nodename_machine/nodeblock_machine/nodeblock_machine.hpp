@@ -14,8 +14,8 @@ namespace Nodename::Nodeblock
     bool finished;
     NodeblockState* state;
     std::istream& input;
-    bool undetermined;
-    std::string regex;
+
+    NodeblockResult result;
   public:
     NodeblockMachine(std::istream&);
     ~NodeblockMachine();

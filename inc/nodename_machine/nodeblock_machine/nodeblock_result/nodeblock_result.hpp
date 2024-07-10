@@ -12,10 +12,10 @@ namespace Nodename::Nodeblock
     bool undetermined;
     std::string regex;
 
-    NodeblockResult(bool undetermined, string regex)
+    NodeblockResult() // TODO: mover construtor para arquivo .cpp
     {
-      this->undetermined = undetermined;
-      this->regex = regex;
+      this->undetermined = false;
+      this->regex = "";
     }
   };
 }

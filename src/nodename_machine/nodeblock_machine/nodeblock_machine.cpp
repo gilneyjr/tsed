@@ -6,8 +6,6 @@ Nodename::Nodeblock::NodeblockMachine::NodeblockMachine(std::istream& input)
 {
   this->state = new Nodename::Nodeblock::BeginNodeblockState(this);
   this->finished = false;
-  this->undetermined = false;
-  this->regex = "";
 }
 
 Nodename::Nodeblock::NodeblockMachine::~NodeblockMachine()
@@ -22,6 +20,8 @@ void Nodename::Nodeblock::NodeblockMachine::finish()
 
 Nodename::Nodeblock::NodeblockResult Nodename::Nodeblock::NodeblockMachine::run() 
 {
+  this->result = NodeblockResult();
+
   while (!this->finished && this->state != nullptr) 
   {
     NodeblockState* nextState = this->state->run();
@@ -33,7 +33,7 @@ Nodename::Nodeblock::NodeblockResult Nodename::Nodeblock::NodeblockMachine::run(
     }
   }
 
-  return NodeblockResult(this->undetermined, this->regex);
+  return this->result;
 }
 
 std::istream& Nodename::Nodeblock::NodeblockMachine::getInputStream() 
@@ -43,15 +43,15 @@ std::istream& Nodename::Nodeblock::NodeblockMachine::getInputStream()
 
 void Nodename::Nodeblock::NodeblockMachine::setUndetermined(bool undetermined)
 {
-  this->undetermined = undetermined;
+  this->result.undetermined = undetermined;
 }
 
 void Nodename::Nodeblock::NodeblockMachine::appendToOutput(std::string input)
 {
-  this->regex += input;
+  this->result.regex += input;
 }
 
 void Nodename::Nodeblock::NodeblockMachine::appendToOutput(char input)
 {
-  this->regex += input;
+  this->result.regex += input;
 }
