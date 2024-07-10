@@ -13,7 +13,6 @@ namespace Nodename
   protected:
     NodenameMachine* machine;
     std::istream& input;
-    std::ostream& output;
   public:
     NodenameState(NodenameMachine*);
     virtual ~NodenameState();

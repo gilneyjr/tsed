@@ -15,38 +15,29 @@ namespace Nodename::NodenameResult
 
   struct NodenameResult
   {
-    // TODO: Revisar maneira com que esses valores foram obtidos
-    NodenameResultType type; //                                                         [OK]
-    Placeholder placeholder; //                                                         [OK]
-    int placeholderNumber; //                                                           [OK]
-    bool undetermined; // true quando não possui ANY, WILDCARD ou REGEX                 [  ]
-    bool freeOfContext; // true quando não tiver left/right context especificados       [OK]
-    DefOrRef defOrRef; // O placeholder é uma definição ou uma referência               [  ]
-    bool validAsRNodename; // !undetermined && freeOfContext && defOrRef != DEFINITION  [  ]
-    bool validAsLNodename; // Depende do contexto                                       [  ]
-    std::string regex; //                                                               [  ]
+    NodenameResultType type;
+    Placeholder placeholder;
+    int placeholderNumber;
+    bool undetermined; // true, when nodename has ANY, WILDCARD or REGEX inside it; false, otherwise.
+    bool freeOfContext; // true, when nodename doesn't have specified left or right contexts; false, otherwise.
+    DefOrRef defOrRef; // The placeholder is a definition, a reference or neither of them.
+    std::string regex;
+    
+    // TODO: Verificar se os atributos abaixo precisam estar no resultado
+    bool validAsLNodename; // Depends on context 
+    bool validAsRNodename; // !undetermined && freeOfContext && defOrRef != DEFINITION
 
-    NodenameResult(
-      NodenameResultType type,
-      Placeholder placeholder,
-      int placeholderNumber,
-      bool undetermined,
-      bool freeOfContext,
-      DefOrRef defOrRef,
-      bool validAsRNodename,
-      bool validAsLNodename,
-      std::string regex
-    ) 
+    NodenameResult() // TODO: mover isso para um .cpp depois ?
     {
-      this->type = type;
-      this->placeholder = placeholder;
-      this->placeholderNumber = placeholderNumber;
-      this->undetermined = undetermined;
-      this->freeOfContext = freeOfContext;
-      this->defOrRef = defOrRef;
-      this->validAsRNodename = validAsRNodename;
-      this->validAsLNodename = validAsLNodename;
-      this->regex = regex;
+      this->type = NodenameResultType::SIMPLE_NODE;
+      this->placeholder = Placeholder::NONE;
+      this->placeholderNumber = 0;
+      this->undetermined = false,
+      this->freeOfContext = true;
+      this->defOrRef = DefOrRef::NONE;
+      this->validAsLNodename = true;
+      this->validAsRNodename = true;
+      std::string regex = nullptr;
     }
   };
 }

@@ -20,12 +20,11 @@ Nodename::NodenameState* Nodename::MiddleCutNodenameState::run()
 
   if (std::isdigit(x))
   {
-    this->machine->setPlaceholderNumber(x-'0');
+    this->machine->appendToPlaceholderNumber(x-'0');
     return new CutNumberNodenameState(this->machine);
   }
   else
   {
-    this->machine->setPlaceholderNumber(0);
     this->input.unget();
     return new MiddleCutNodeblockNodenameState(this->machine);
   }

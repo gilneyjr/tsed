@@ -19,7 +19,7 @@ Nodename::NodenameState* Nodename::CutNumberNodenameState::run()
 
   if (std::isdigit(x))
   {
-    this->machine->appendPlaceholderNumber(x-'0');
+    this->machine->appendToPlaceholderNumber(x-'0');
     return this;
   }
   else if (x == ':')

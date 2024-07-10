@@ -29,16 +29,15 @@ void testRegex()
       break;
 
     std::istringstream* input = new std::istringstream(nodeblockPattern);
-    std::ostringstream* output = new std::ostringstream();
 
     NodeblockMachine* machine = new NodeblockMachine(*input);
-    machine->run();
+    auto output = machine->run();
 
     delete machine;
     delete input;
 
-    std::cout << "Nodeblock Generated Pattern: " << output->str() << std::endl;
-    std::regex pattern("^" + output->str() + "$");
+    std::cout << "Nodeblock Generated Pattern: " << output.regex << std::endl;
+    std::regex pattern("^" + output.regex + "$");
     while (true)
     {
       std::cout << "Enter the Nodeblock to be recognized: ";
@@ -77,12 +76,13 @@ void testNodename()
       break;
 
     std::istringstream* input = new std::istringstream(nodenamePattern);
-    std::ostringstream* output = new std::ostringstream();
 
-    auto machine = new NodenameMachine(*input, *output);
+    auto machine = new NodenameMachine(*input);
+    string output = "";
     try 
     {
-      machine->run();
+      auto result = machine->run();
+      output = result.regex;
     }
     catch (const std::exception& e)
     {
@@ -97,8 +97,8 @@ void testNodename()
     delete machine;
     delete input;
 
-    std::cout << "Nodename Generated Pattern: " << output->str() << std::endl;
-    std::regex pattern("^" + output->str() + "$");
+    std::cout << "Nodename Generated Pattern: " << output << std::endl;
+    std::regex pattern("^" + output + "$");
     while (true)
     {
       std::cout << "Enter the Nodename to be recognized: ";

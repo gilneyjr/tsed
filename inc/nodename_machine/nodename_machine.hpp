@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "nodename_state.hpp"
+#include "nodeblock_result.hpp"
 #include "nodename_result.hpp"
 
 namespace Nodename {
@@ -14,26 +15,21 @@ namespace Nodename {
     bool finished;
     NodenameState* state;
     std::istream& input;
-    std::ostream& output;
-
-    Nodename::NodenameResult::NodenameResult* result;
-    void resetResult();
+    NodenameResult::NodenameResult result;
   public:
-    NodenameMachine(std::istream&, std::ostream&);
+    NodenameMachine(std::istream&);
     ~NodenameMachine();
     void finish();
-    Nodename::NodenameResult::NodenameResult* run();
+    NodenameResult::NodenameResult run();
     std::istream& getInputStream();
-    std::ostream& getOutputStream();
 
-    void setResultType(Nodename::NodenameResult::NodenameResultType);
-    void setPlaceholder(Nodename::NodenameResult::Placeholder);
-    void setPlaceholderNumber(int);
-    void appendPlaceholderNumber(int);
-    void setUndetermined(bool);
+    void setResultType(NodenameResult::NodenameResultType);
+    void setPlaceholder(NodenameResult::Placeholder);
+    void appendToPlaceholderNumber(int);
     void setFreeOfContext(bool);
-    void setDefOrRef(Nodename::NodenameResult::DefOrRef);
-    void setRegex(std::string);
+    void setDefOrRef(NodenameResult::DefOrRef);
+    void appendToRegex(std::string);
+    void incorporateFrom(Nodeblock::NodeblockResult result);
   };
 }
 

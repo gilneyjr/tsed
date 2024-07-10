@@ -14,11 +14,12 @@ Nodename::LeftNodeblockNodenameState::~LeftNodeblockNodenameState() {}
 Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
 {
   auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input);
-  nodeblockMachine->run();
+  auto nodeblockResult = nodeblockMachine->run();
   delete nodeblockMachine;
 
-  if (this->output.tellp() > 0) // TODO: deixar isso mais claro
+  if (nodeblockResult.regex.length() > 0)
     this->machine->setFreeOfContext(false);
+  this->machine->incorporateFrom(nodeblockResult);
 
   char x;
   this->input >> x;
@@ -28,14 +29,14 @@ Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
 
   if (x == '[')
   {
-    this->machine->setResultType(Nodename::NodenameResult::NodenameResultType::NODE_PLACEHOLDER);
-    this->machine->setPlaceholder(Nodename::NodenameResult::Placeholder::CUT);
+    this->machine->setResultType(NodenameResult::NodenameResultType::NODE_PLACEHOLDER);
+    this->machine->setPlaceholder(NodenameResult::Placeholder::CUT);
     return new MiddleCutNodenameState(this->machine);
   }
   else if (x == '{')
   {
-    this->machine->setResultType(Nodename::NodenameResult::NodenameResultType::NODE_PLACEHOLDER);
-    this->machine->setPlaceholder(Nodename::NodenameResult::Placeholder::COPY);
+    this->machine->setResultType(NodenameResult::NodenameResultType::NODE_PLACEHOLDER);
+    this->machine->setPlaceholder(NodenameResult::Placeholder::COPY);
     return new MiddleCopyNodenameState(this->machine);
   }
 

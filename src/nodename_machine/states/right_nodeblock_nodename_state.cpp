@@ -12,11 +12,12 @@ Nodename::RightNodeblockNodenameState::~RightNodeblockNodenameState() {}
 Nodename::NodenameState* Nodename::RightNodeblockNodenameState::run()
 {
   auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input);
-  nodeblockMachine->run();
+  auto nodeblockResult = nodeblockMachine->run();
   delete nodeblockMachine;
 
-  if (this->output.tellp() > 0) // TODO: deixar isso mais claro
+  if (nodeblockResult.regex.length() > 0)
     this->machine->setFreeOfContext(false);
+  this->machine->incorporateFrom(nodeblockResult);
 
   char x;
   this->input >> x;

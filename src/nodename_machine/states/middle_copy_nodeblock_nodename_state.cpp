@@ -13,8 +13,14 @@ Nodename::MiddleCopyNodeblockNodenameState::~MiddleCopyNodeblockNodenameState() 
 Nodename::NodenameState* Nodename::MiddleCopyNodeblockNodenameState::run()
 {
   auto nodeblockMachine = new Nodename::Nodeblock::NodeblockMachine(this->input);
-  nodeblockMachine->run();
+  auto nodeblockResult = nodeblockMachine->run();
   delete nodeblockMachine;
+
+  if (nodeblockResult.regex.length() > 0)
+    this->machine->setDefOrRef(NodenameResult::DefOrRef::DEFINITION);
+  else
+    this->machine->setDefOrRef(NodenameResult::DefOrRef::REFERENCE);
+  this->machine->incorporateFrom(nodeblockResult);
 
   char x;
   this->input >> x;

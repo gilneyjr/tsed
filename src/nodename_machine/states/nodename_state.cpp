@@ -3,7 +3,6 @@
 Nodename::NodenameState::NodenameState(
   Nodename::NodenameMachine *machine): 
     machine(machine), 
-    input(machine->getInputStream()),
-    output(machine->getOutputStream()) {}
+    input(machine->getInputStream()) {}
 
 Nodename::NodenameState::~NodenameState() {}

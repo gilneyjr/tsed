@@ -14,7 +14,6 @@ namespace Nodename::Nodeblock
     bool finished;
     NodeblockState* state;
     std::istream& input;
-
     NodeblockResult result;
   public:
     NodeblockMachine(std::istream&);
