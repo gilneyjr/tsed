@@ -22,5 +22,5 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalEscapeNodeblockS
     return new NormalNodeblockState(this->machine);
   }
   else
-    throw "Alfanumeric characters are not escapable in normal mode."; // TODO: Criar uma excessão para isso
+    throw "Alfanumeric characters are not escapable in normal mode."; // TODO: create an exception for this later
 }

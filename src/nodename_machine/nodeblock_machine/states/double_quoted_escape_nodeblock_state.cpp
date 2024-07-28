@@ -22,5 +22,5 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedEscapeNode
     return new DoubleQuotedNodeblockState(this->machine);
   }
   else
-    throw "Alfanumeric characters are not escapable inside strings."; // TODO: Criar uma excessão para isso
+    throw "Alfanumeric characters are not escapable inside strings."; // TODO: create an exception for this later
 }

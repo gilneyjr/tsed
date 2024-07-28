@@ -23,11 +23,11 @@ namespace Nodename::NodenameResult
     DefOrRef defOrRef; // The placeholder is a definition, a reference or neither of them.
     std::string regex;
     
-    // TODO: Verificar se os atributos abaixo precisam estar no resultado
+    // TODO: Verify if the following attributes need to be in this class
     bool validAsLNodename; // Depends on context 
     bool validAsRNodename; // !undetermined && freeOfContext && defOrRef != DEFINITION
 
-    NodenameResult() // TODO: mover isso para um .cpp depois ?
+    NodenameResult() // TODO: move this to a .cpp file later ?
     {
       this->type = NodenameResultType::SIMPLE_NODE;
       this->placeholder = Placeholder::NONE;
