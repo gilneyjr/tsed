@@ -1,51 +1,52 @@
-# NOTE: toFor this makefile to work correctly, all .cpp files present 
-#       in $(SRC_PATH) and its subfolders must have their corresponding 
-#       files in the $(INC_PATH) folder.
-
-# Function to find all subdirectories of a given directory.
-# $1 is the target directory.
-define find_subdirs
-$(wildcard $1/*/) $(foreach dir,$(wildcard $1/*),$(call find_subdirs,$(dir)))
-endef
-
-# Function to find all files in subdirectories of a given directory.
-# $1 is the target directory.
-# $2 is the extension that the found files should have.
-# $3 is the file name to be excluded from the results.
-define find_files_in_subdirs
-$(filter-out $3, $(wildcard $1/*.$2)) $(foreach dir,$(wildcard $1/*),$(call find_files_in_subdirs,$(dir),$2,$3))
-endef
-
 # Directories
-BIN_PATH = ./bin
+BUILD_PATH = ./build
+OBJ_PATH = $(BUILD_PATH)/obj
 INC_PATH = ./inc
-INC_SUBPATHS = $(INC_PATH)/ $(call find_subdirs,$(INC_PATH))
-OBJ_PATH = ./obj
 SRC_PATH = ./src
 
-# Files
-MAIN_FILE := $(SRC_PATH)/main.cpp
-TARGET_FILE := $(BIN_PATH)/tsed
-SRC_FILES := $(call find_files_in_subdirs,$(SRC_PATH),cpp,$(MAIN_FILE))
-OBJ_FILES := $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$(SRC_FILES))
-
-# Compiler and flags
+# Name of the compiler
 CXX = g++
-CXX_FLAGS = -std=c++17 -Wall
-INC_FLAGS := $(addprefix -I, $(INC_SUBPATHS))
 
-$(TARGET_FILE): $(OBJ_FILES) $(MAIN_FILE)
+# Compiler flags
+CXXFLAGS = -Wall -Wextra -std=c++17
+
+# Bison and Flex tools
+BISON = bison
+FLEX = flex
+
+# Source file names
+BISON_SRC = $(SRC_PATH)/parser.y
+FLEX_SRC = $(SRC_PATH)/lexer.l
+
+# Generated files
+LEX_YACC_OUTPUT = $(BUILD_PATH)/lex-yacc-generated
+BISON_OUTPUT_C = $(LEX_YACC_OUTPUT)/parser.tab.c
+BISON_OUTPUT_H = $(LEX_YACC_OUTPUT)/parser.tab.h
+FLEX_OUTPUT = $(LEX_YACC_OUTPUT)/lex.yy.c
+
+# Name of the executable
+TARGET = $(BUILD_PATH)/tsed
+
+# Default rule: builds everything
+all: $(TARGET)
+
+# Rule to build the executable
+$(TARGET): $(BISON_OUTPUT_C) $(FLEX_OUTPUT)
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXX_FLAGS) $(INC_FLAGS) $(MAIN_FILE) $(OBJ_FILES) -o $(TARGET_FILE)
+	$(CXX) $(CXXFLAGS) -o $@ $(BISON_OUTPUT_C) $(FLEX_OUTPUT)
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp $(INC_PATH)/%.hpp
+# Rule to generate parser.tab.c and parser.tab.h from the Bison file
+$(BISON_OUTPUT_C) $(BISON_OUTPUT_H): $(BISON_SRC)
+	@mkdir -p $(dir $(BISON_OUTPUT_C))
+	$(BISON) -d -o $(BISON_OUTPUT_C) $(BISON_SRC)
+
+# Rule to generate lex.yy.c from the Flex file
+$(FLEX_OUTPUT): $(FLEX_SRC)
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXX_FLAGS) $(INC_FLAGS) -c $< -o $@
+	$(FLEX) -o $@ $(FLEX_SRC)
 
-run: $(TARGET_FILE)
-	@$(TARGET_FILE)
-
+# Cleans up generated files
 clean:
-	rm -rf $(BIN_PATH) $(OBJ_PATH)
+	rm -rf $(BUILD_PATH)
 
-.PHONY: run clean
+.PHONY: all clean

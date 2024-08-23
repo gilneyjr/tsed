@@ -32,8 +32,7 @@
 *.app
 
 # Folders
-bin
-obj
+build
 
 # VS Code
 .vscode
