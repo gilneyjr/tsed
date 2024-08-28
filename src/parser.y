@@ -241,38 +241,31 @@ search_primary:
 node_specifier:
   nodename
     {
-      // istringstream input = istringstream(*$1);
-      // cout << input.str() << endl;
-
-      // NodenameMachine *machine = new NodenameMachine(input);
-      // cout << "Cheguei2\n";
-      // cout << "Cheguei3\n";
-      // auto nodename_result = machine->run();
-
-      string mystr(*$1);
-      istringstream input(mystr);
-      
-      try 
-      {
-        NodenameMachine machine(input);
-        // auto result = machine.run();
-        // cout << "Result: " << result.regex << endl;
-      }
-      catch (const std::exception& e)
-      {
-        // std::cout << e.what() << std::endl;
-        yyerror(e.what());
-      }
-      catch (const char* error)
-      {
-        // std::cout << error << std::endl;
-        yyerror(error);
-      }
+      istringstream input(*$1);
+      NodenameMachine machine(input);
+      auto result = machine.run();
+      // try 
+      // {
+      //   NodenameMachine machine(input);
+      //   // auto result = machine.run();
+      //   // cout << "Result: " << result.regex << endl;
+      // }
+      // catch (const std::exception& e)
+      // {
+      //   // std::cout << e.what() << std::endl;
+      //   yyerror(e.what());
+      // }
+      // catch (const char* error)
+      // {
+      //   // std::cout << error << std::endl;
+      //   yyerror(error);
+      // }
       
 
       stringstream ss;
       ss << "{";
-      // ss << "nodename:\"" << nodename_result.regex << "\"";
+      ss << "nodename:\"" << result.regex << "\"";
+      // ss << "nodename:\"" << *$1 << "\"";
       ss << "}";
 
       // delete $1;

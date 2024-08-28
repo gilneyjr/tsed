@@ -37,7 +37,7 @@ namespace Nodename::NodenameResult
       this->defOrRef = DefOrRef::NONE;
       this->validAsLNodename = true;
       this->validAsRNodename = true;
-      std::string regex = nullptr;
+      std::string regex = "";
     }
   };
 }
