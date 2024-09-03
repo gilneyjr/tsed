@@ -28,9 +28,10 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
     this->machine->setUndetermined(true);
     return this;
   }
-  else if (x == '?') 
+  else if (x == '?')
   {
     this->machine->appendToOutput('.');
+    this->machine->setUndetermined(true);
     return this;
   }
   else if (std::isalnum(x) || x == '-' || x == '_') 
@@ -53,6 +54,7 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
   else if (x == '/')
   {
     this->machine->appendToOutput('(');
+    this->machine->setUndetermined(true);
     return new RegexNodeblockState(this->machine);
   }
 
