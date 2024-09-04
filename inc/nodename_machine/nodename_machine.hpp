@@ -15,19 +15,19 @@ namespace Nodename {
     bool finished;
     NodenameState* state;
     std::istream& input;
-    NodenameResult::NodenameResult result;
+    NodenameResult result;
   public:
     NodenameMachine(std::istream&);
     ~NodenameMachine();
     void finish();
-    NodenameResult::NodenameResult run();
+    NodenameResult run();
     std::istream& getInputStream();
 
-    void setResultType(NodenameResult::NodenameResultType);
-    void setPlaceholder(NodenameResult::Placeholder);
+    void setResultType(NodenameResultType);
+    void setPlaceholder(Placeholder);
     void appendToPlaceholderNumber(int);
     void setFreeOfContext(bool);
-    void setDefOrRef(NodenameResult::DefOrRef);
+    void setDefOrRef(DefOrRef);
     void appendToRegex(std::string);
     void incorporateFrom(Nodeblock::NodeblockResult result);
   };

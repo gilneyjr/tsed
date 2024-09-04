@@ -17,9 +17,9 @@ Nodename::NodenameState* Nodename::MiddleCopyNodeblockNodenameState::run()
   delete nodeblockMachine;
 
   if (nodeblockResult.regex.length() > 0)
-    this->machine->setDefOrRef(NodenameResult::DefOrRef::DEFINITION);
+    this->machine->setDefOrRef(DefOrRef::DEFINITION);
   else
-    this->machine->setDefOrRef(NodenameResult::DefOrRef::REFERENCE);
+    this->machine->setDefOrRef(DefOrRef::REFERENCE);
   this->machine->incorporateFrom(nodeblockResult);
 
   char x;

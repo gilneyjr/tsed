@@ -1,7 +1,7 @@
 #ifndef NODENAME_RESULT_TYPE
 #define NODENAME_RESULT_TYPE
 
-namespace Nodename::NodenameResult
+namespace Nodename
 {
   enum class DefOrRef {
     NONE = 0,

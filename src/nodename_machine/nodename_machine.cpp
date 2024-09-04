@@ -18,9 +18,9 @@ void Nodename::NodenameMachine::finish()
   this->finished = true;
 }
 
-Nodename::NodenameResult::NodenameResult Nodename::NodenameMachine::run() 
+Nodename::NodenameResult Nodename::NodenameMachine::run() 
 {
-  this->result = NodenameResult::NodenameResult();
+  this->result = NodenameResult();
 
   while (!this->finished && this->state != nullptr) 
   {
@@ -40,12 +40,12 @@ std::istream& Nodename::NodenameMachine::getInputStream() // Trocar isso para si
   return this->input;
 }
 
-void Nodename::NodenameMachine::setResultType(Nodename::NodenameResult::NodenameResultType type)
+void Nodename::NodenameMachine::setResultType(Nodename::NodenameResultType type)
 {
   this->result.type = type;
 }
 
-void Nodename::NodenameMachine::setPlaceholder(Nodename::NodenameResult::Placeholder placeholder)
+void Nodename::NodenameMachine::setPlaceholder(Nodename::Placeholder placeholder)
 {
   this->result.placeholder = placeholder;
 }
@@ -65,7 +65,7 @@ void Nodename::NodenameMachine::setFreeOfContext(bool freeOfContext)
   this->result.freeOfContext = freeOfContext;
 }
 
-void Nodename::NodenameMachine::setDefOrRef(Nodename::NodenameResult::DefOrRef defOrRef)
+void Nodename::NodenameMachine::setDefOrRef(Nodename::DefOrRef defOrRef)
 {
   this->result.defOrRef = defOrRef;
 }

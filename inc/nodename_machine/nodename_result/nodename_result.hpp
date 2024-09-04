@@ -7,7 +7,7 @@
 #include "nodename_result_type.hpp"
 #include "placeholder.hpp"
 
-namespace Nodename::NodenameResult
+namespace Nodename
 {
   enum class NodenameResultType;
   enum class Placeholder;

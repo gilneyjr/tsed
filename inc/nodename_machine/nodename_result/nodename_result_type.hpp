@@ -1,7 +1,7 @@
 #ifndef NODENAME_RESULT_TYPE_HPP
 #define NODENAME_RESULT_TYPE_HPP
 
-namespace Nodename::NodenameResult
+namespace Nodename
 {
   enum class NodenameResultType 
   {

@@ -1,7 +1,7 @@
 #ifndef PLACEHOLDER_TYPE_HPP
 #define PLACEHOLDER_TYPE_HPP
 
-namespace Nodename::NodenameResult
+namespace Nodename
 {
   enum class Placeholder 
   {

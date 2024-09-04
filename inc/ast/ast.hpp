@@ -2,36 +2,22 @@
 #define AST_HPP
 
 #include <vector>
+#include "ast-info.hpp"
 
 using namespace std;
 
 namespace AST
 {
-  class Node {
+  class AstNode {
   public:
-    Node* parent;
-    Node* left;
-    Node* right;
-    vector<unsigned int>* defs;
+    AstNode* parent;
+    AstNode* left;
+    AstNode* right;
+    AstInfo info;
 
-    Node(Node* parent, Node* left, Node* right, vector<unsigned int>* defs);
-    ~Node();
+    AstNode(AstNode* parent, AstNode* left, AstNode* right, AstInfo info);
+    ~AstNode();
   };  
-}
-
-AST::Node::Node(Node* parent, Node* left, Node* right, vector<unsigned int>* defs)
-{
-  this->parent = parent;
-  this->left = left;
-  this->right = right;
-  this-> defs = defs;
-}
-
-AST::Node::~Node()
-{
-  delete left;
-  delete right;
-  delete defs;
 }
 
 #endif
