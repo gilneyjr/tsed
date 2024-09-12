@@ -15,15 +15,15 @@ namespace Nodename {
     bool finished;
     NodenameState* state;
     std::istream& input;
-    NodenameResult result;
+    NodenameInfo result;
   public:
     NodenameMachine(std::istream&);
     ~NodenameMachine();
     void finish();
-    NodenameResult run();
+    NodenameInfo run();
     std::istream& getInputStream();
 
-    void setResultType(NodenameResultType);
+    void setResultType(NodenameInfoType);
     void setPlaceholder(Placeholder);
     void appendToPlaceholderNumber(int);
     void setFreeOfContext(bool);

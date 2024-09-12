@@ -9,36 +9,45 @@
 
 namespace Nodename
 {
-  enum class NodenameResultType;
+  enum class NodenameInfoType;
   enum class Placeholder;
   enum class DefOrRef;
 
-  struct NodenameResult
+  struct NodenameInfo
   {
-    NodenameResultType type;
-    Placeholder placeholder;
-    int placeholderNumber;
-    bool undetermined; // true, when nodename has ANY, WILDCARD or REGEX inside it; false, otherwise.
-    bool freeOfContext; // true, when nodename doesn't have specified left or right contexts; false, otherwise.
-    DefOrRef defOrRef; // The placeholder is a definition, a reference or neither of them.
-    std::string regex;
-    
-    // TODO: Verify if the following attributes need to be in this class
-    bool validAsLNodename; // Depends on context 
-    bool validAsRNodename; // !undetermined && freeOfContext && defOrRef != DEFINITION
+    NodenameInfoType type = NodenameInfoType::SIMPLE_NODE;
+    Placeholder placeholder = Placeholder::NONE;
+    int placeholderNumber = 0;
+    bool undetermined = false; // true, when nodename has ANY, WILDCARD or REGEX inside it; false, otherwise.
+    bool freeOfContext = true; // true, when nodename doesn't have specified left or right contexts; false, otherwise.
+    DefOrRef defOrRef = DefOrRef::NONE; // The placeholder is a definition, a reference or neither of them.
+    std::string regex = "";
 
-    NodenameResult() // TODO: move this to a .cpp file later ?
-    {
-      this->type = NodenameResultType::SIMPLE_NODE;
-      this->placeholder = Placeholder::NONE;
-      this->placeholderNumber = 0;
-      this->undetermined = false,
-      this->freeOfContext = true;
-      this->defOrRef = DefOrRef::NONE;
-      this->validAsLNodename = true;
-      this->validAsRNodename = true;
-      std::string regex = "";
-    }
+    // TODO: Verify if the following attributes need to be in this class
+    bool validAsLNodename = true; // Depends on context 
+    bool validAsRNodename = true; // !undetermined && freeOfContext && defOrRef != DEFINITION
+
+    NodenameInfo()
+      : type(NodenameInfoType::SIMPLE_NODE),
+        placeholder(Placeholder::NONE),
+        placeholderNumber(0),
+        undetermined(false),
+        freeOfContext(true),
+        defOrRef(DefOrRef::NONE),
+        regex(""),
+        validAsLNodename(true),
+        validAsRNodename(true) {}
+
+    NodenameInfo(const NodenameInfo& other)
+      : type(other.type),
+        placeholder(other.placeholder),
+        placeholderNumber(other.placeholderNumber),
+        undetermined(other.undetermined),
+        freeOfContext(other.freeOfContext),
+        defOrRef(other.defOrRef),
+        regex(other.regex),
+        validAsLNodename(other.validAsLNodename),
+        validAsRNodename(other.validAsRNodename) {}
   };
 }
 

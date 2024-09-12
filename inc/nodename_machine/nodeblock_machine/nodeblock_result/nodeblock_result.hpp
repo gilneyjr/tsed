@@ -9,14 +9,8 @@ namespace Nodename::Nodeblock
 {
   struct NodeblockResult
   {
-    bool undetermined;
-    std::string regex;
-
-    NodeblockResult() // TODO: mover construtor para arquivo .cpp
-    {
-      this->undetermined = false;
-      this->regex = "";
-    }
+    bool undetermined = false;
+    std::string regex = "";
   };
 }
 

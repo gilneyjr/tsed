@@ -3,7 +3,7 @@
 
 namespace Nodename
 {
-  enum class NodenameResultType 
+  enum class NodenameInfoType 
   {
     SIMPLE_NODE = 0,
     NODE_PLACEHOLDER = 1,

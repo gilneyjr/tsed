@@ -29,13 +29,13 @@ Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
 
   if (x == '[')
   {
-    this->machine->setResultType(NodenameResultType::NODE_PLACEHOLDER);
+    this->machine->setResultType(NodenameInfoType::NODE_PLACEHOLDER);
     this->machine->setPlaceholder(Placeholder::CUT);
     return new MiddleCutNodenameState(this->machine);
   }
   else if (x == '{')
   {
-    this->machine->setResultType(NodenameResultType::NODE_PLACEHOLDER);
+    this->machine->setResultType(NodenameInfoType::NODE_PLACEHOLDER);
     this->machine->setPlaceholder(Placeholder::COPY);
     return new MiddleCopyNodenameState(this->machine);
   }

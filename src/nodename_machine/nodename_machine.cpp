@@ -18,9 +18,9 @@ void Nodename::NodenameMachine::finish()
   this->finished = true;
 }
 
-Nodename::NodenameResult Nodename::NodenameMachine::run() 
+Nodename::NodenameInfo Nodename::NodenameMachine::run() 
 {
-  this->result = NodenameResult();
+  this->result = NodenameInfo();
 
   while (!this->finished && this->state != nullptr) 
   {
@@ -40,7 +40,7 @@ std::istream& Nodename::NodenameMachine::getInputStream() // Trocar isso para si
   return this->input;
 }
 
-void Nodename::NodenameMachine::setResultType(Nodename::NodenameResultType type)
+void Nodename::NodenameMachine::setResultType(Nodename::NodenameInfoType type)
 {
   this->result.type = type;
 }
