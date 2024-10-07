@@ -46,13 +46,12 @@
 }
 
 /* Definition of union used to define terminal and non-terminal types */
-/* TODO: Verify if num is really necessary */
 %union {
   std::string *lexem;
   Ast::AstNode *node;
 };
 
-%token <lexem> op end_marker lpar nodename rpar terminal_and terminal_not terminal_or turnsto
+%token <lexem> op end_marker lpar nodename rpar subtree_range terminal_and terminal_not terminal_or turnsto
 
 %type <node> start
 %type <node> search_expression
@@ -70,6 +69,7 @@
 start:
   search_expression // turnsto replacement_expression
     {
+      // TODO: Implement all the functionalities this code block needs to do
       cout << *$1;
       $$ = $1;
     }
@@ -78,6 +78,7 @@ start:
 search_expression:
   search_primary opt_restrictions
     {
+      // TODO: Verify if this code block is OK
       if ($2 != nullptr)
       {
         $2->left = $1;
@@ -103,7 +104,9 @@ opt_restrictions:
 restrictions:
   restrictions terminal_or restrictions_and
     {
-      $$ = $3; // TODO: Remove it later
+      // TODO: Implement this code block
+      $$ = $3;
+      delete $2;
     }
   | restrictions_and
     {
@@ -114,10 +117,14 @@ restrictions:
 restrictions_and:
   restrictions_and terminal_and restrictions_not
     {
-      $$ = $3; // TODO: Remove it later
+      // TODO: Implement this code block
+      $$ = $3;
+      delete $2;
     }
   |	restrictions_and restrictions_not	/* same as AND */
     {
+      // TODO: Verify if this code block is OK
+
       // Find the rightmost child of $1 and its parent
       auto parentOfRightmostChildOfS1 = $1;
       auto rightmostChildOfS1 = $1->right;
@@ -147,7 +154,8 @@ restrictions_and:
 restrictions_not:
   terminal_not restrictions_not
     {
-      $$ = $2; // TODO: Remove it later
+      // TODO: Implement this code block
+      $$ = $2;
     }
   |	lpar restrictions rpar
     {
@@ -162,10 +170,18 @@ restrictions_not:
 restriction:
   op search_second
     {
-      // TODO: Verify this code snippet is correct
-      auto node = new Ast::AstNode(nullptr, nullptr, $2, AstInfo(), *$1);
-      $2->parent = node; // TODO: move this action to set method and constructor
-      $$ = node;
+      AstInfo astInfo;
+      // If $2 is a node_specifier
+      if ($2->left == nullptr && $2->right == nullptr)
+        // Make $2 new unique defined nodename
+        astInfo.definedNodenames = new std::vector<unsigned int>{ $2->info.nodenameInfo->placeholderNumber };
+      else
+        // Copy all defined nodenames from $2
+        astInfo.definedNodenames = new std::vector<unsigned int>(*($2->info.definedNodenames));
+
+      // TODO: think about where the "op" information should be stored 
+      $$ = new Ast::AstNode(nullptr, nullptr, $2, astInfo, *$1);;
+      delete $1;
     }
   ;
 
@@ -182,7 +198,7 @@ search_second:
 
 search_primary:
   node_specifier
-    { // TODO: See if this rule can be removed, because its useless
+    { // TODO: See if this rule can be removed, because it's useless
       $$ = $1;
     }
   ;
@@ -192,12 +208,11 @@ node_specifier:
     {
       try
       {
-        istringstream input(*$1); // TODO: Verify if it's needed to delete $1 later
-        NodenameMachine machine(input);
-        auto info = machine.run();
-        AstInfo astInfo;
-        astInfo.nodenameInfo = new NodenameInfo(info);
+        istringstream input(*$1);
+        NodenameInfo nodenameInfo = NodenameMachine(input).run(); // TODO: Change this method to return a pointer to NodenameInfo
+        AstInfo astInfo = { .nodenameInfo = new NodenameInfo(nodenameInfo) };
         $$ = new Ast::AstNode(nullptr, nullptr, nullptr, astInfo, *$1);
+        delete $1;
       }
       catch (const std::exception& e)
       {
@@ -210,8 +225,23 @@ node_specifier:
     }
   | end_marker
     {
-      // TODO: Correct this code snippet later
-      $$ = new Ast::AstNode(nullptr, nullptr, nullptr,  AstInfo(), *$1);
+      AstInfo astInfo = { .nodenameInfo = NodenameInfo::newEndMarkerInstance() };
+      $$ = new Ast::AstNode(nullptr, nullptr, nullptr,  astInfo, *$1);
+      delete $1;
+    }
+  | subtree_range
+    {
+      auto lexem = *$1;
+      auto placeholder =  (lexem[0] == '[') ? Placeholder::CUT : Placeholder::COPY;
+      int placeholderNumber = 0;
+
+      size_t colonPos = lexem.find(':', 1);
+      if (colonPos != string::npos)
+        placeholderNumber = stoi(lexem.substr(1, colonPos - 1));
+
+      AstInfo astInfo = { .nodenameInfo = NodenameInfo::newSubtreeRangeInstance(placeholder, placeholderNumber) };
+      $$ = new Ast::AstNode(nullptr, nullptr, nullptr,  astInfo, *$1);
+      delete $1;
     }
   ;
 

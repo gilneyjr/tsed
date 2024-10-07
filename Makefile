@@ -38,7 +38,7 @@ FLEX = flex
 BISON_SRC = $(SRC_PATH)/parser.y
 FLEX_SRC = $(SRC_PATH)/lexer.l
 
-# TODO: ver uma forma de excluir o main.cpp depois e retirar do find_files_in_subdirs
+# TODO: think about how to delete the main.cpp file and remove it from find_files_in_subdirs function
 MAIN_FILE := $(SRC_PATH)/main.cpp
 
 # Generated files
@@ -70,6 +70,7 @@ $(FLEX_OUTPUT): $(FLEX_SRC)
 	@mkdir -p $(dir $@)
 	$(FLEX) -o $@ $(FLEX_SRC)
 
+# Rule to compile all objects from its .cpp and .hpp files
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp $(INC_PATH)/%.hpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c $< -o $@

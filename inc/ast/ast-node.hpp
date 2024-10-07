@@ -13,12 +13,17 @@ namespace Ast
     AstNode* left;
     AstNode* right;
 
-    std::string name; // TODO: ver se precisa manter isso depois
+    std::string name; // TODO: verify if it's necessary keep this attribute
 
     AstInfo info;
 
     AstNode(AstNode* parent, AstNode* left, AstNode* right, AstInfo info, std::string name = "");
     ~AstNode();
+
+    AstNode* getLeftChild(); // TODO: verify if the get method is really necessary
+    void setLeftChild(AstNode*);
+    AstNode* getRightChild();
+    void setRightChild(AstNode*); // TODO: verify if the get method is really necessary
   };
 }
 

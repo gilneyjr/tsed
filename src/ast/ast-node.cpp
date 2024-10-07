@@ -7,6 +7,11 @@ Ast::AstNode::AstNode(AstNode* parent, AstNode* left, AstNode* right, AstInfo in
   this->right = right;
   this->info = info;
   this->name = name;
+
+  if (left != nullptr)
+    left->parent = this;
+  if (right != nullptr)
+    right->parent = this;
 }
 
 Ast::AstNode::~AstNode()
@@ -18,4 +23,29 @@ Ast::AstNode::~AstNode()
 
   delete left;
   delete right;
+}
+
+
+Ast::AstNode* Ast::AstNode::getLeftChild()
+{
+  return left;
+}
+
+void Ast::AstNode::setLeftChild(AstNode *left)
+{
+  if (left != nullptr)
+    left->parent = this;
+  this->left = left;
+}
+
+Ast::AstNode* Ast::AstNode::getRightChild()
+{
+  return left;
+}
+
+void Ast::AstNode::setRightChild(AstNode *right)
+{
+  if (right != nullptr)
+    right->parent = this;
+  this->right = right;
 }

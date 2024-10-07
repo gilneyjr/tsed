@@ -25,7 +25,7 @@ namespace Nodename {
 
     void setResultType(NodenameInfoType);
     void setPlaceholder(Placeholder);
-    void appendToPlaceholderNumber(int);
+    void appendToPlaceholderNumber(unsigned int);
     void setFreeOfContext(bool);
     void setDefOrRef(DefOrRef);
     void appendToRegex(std::string);

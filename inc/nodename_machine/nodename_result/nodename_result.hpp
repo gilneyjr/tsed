@@ -17,7 +17,7 @@ namespace Nodename
   {
     NodenameInfoType type = NodenameInfoType::SIMPLE_NODE;
     Placeholder placeholder = Placeholder::NONE;
-    int placeholderNumber = 0;
+    unsigned int placeholderNumber = 0;
     bool undetermined = false; // true, when nodename has ANY, WILDCARD or REGEX inside it; false, otherwise.
     bool freeOfContext = true; // true, when nodename doesn't have specified left or right contexts; false, otherwise.
     DefOrRef defOrRef = DefOrRef::NONE; // The placeholder is a definition, a reference or neither of them.
@@ -38,16 +38,37 @@ namespace Nodename
         validAsLNodename(true),
         validAsRNodename(true) {}
 
-    NodenameInfo(const NodenameInfo& other)
-      : type(other.type),
-        placeholder(other.placeholder),
-        placeholderNumber(other.placeholderNumber),
-        undetermined(other.undetermined),
-        freeOfContext(other.freeOfContext),
-        defOrRef(other.defOrRef),
-        regex(other.regex),
-        validAsLNodename(other.validAsLNodename),
-        validAsRNodename(other.validAsRNodename) {}
+    NodenameInfo(const NodenameInfo& other) = default;
+
+    static NodenameInfo* newSubtreeRangeInstance(Placeholder placeholder, unsigned int placeholderNumber)
+    {
+      auto info = new NodenameInfo();
+
+      info->type = NodenameInfoType::SUBTREE_RANGE_PLACEHOLDER;
+      info->placeholder = placeholder;
+      info->placeholderNumber = placeholderNumber;
+      info->undetermined = false; // TODO: Verify if this is correct
+      info->freeOfContext = true;
+      info->defOrRef = DefOrRef::DEFINITION; // TODO: Verify if this is correct
+      info->regex = ".*"; // TODO: Verify if this is correct
+
+      return info;
+    }
+
+    static NodenameInfo* newEndMarkerInstance()
+    {
+      auto info = new NodenameInfo();
+
+      info->type = NodenameInfoType::END_MARKER;
+      info->placeholder = Placeholder::NONE;
+      info->placeholderNumber = -1; // TODO: Verify what it needs to be
+      info->undetermined = false; // TODO: Verify if this is correct
+      info->freeOfContext = true;
+      info->defOrRef = DefOrRef::NONE;
+      info->regex = ""; // TODO: Verify if this is correct
+
+      return info;
+    }
   };
 }
 

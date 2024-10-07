@@ -50,7 +50,7 @@ void Nodename::NodenameMachine::setPlaceholder(Nodename::Placeholder placeholder
   this->result.placeholder = placeholder;
 }
 
-void Nodename::NodenameMachine::appendToPlaceholderNumber(int number) // TODO: make a unit test for this function
+void Nodename::NodenameMachine::appendToPlaceholderNumber(unsigned int number) // TODO: make a unit test for this function
 {
   int tmp = number;
   do {

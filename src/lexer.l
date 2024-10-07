@@ -97,11 +97,11 @@ NODEBLOCK           ({ALFANUM}|{WILDCARD}|{ANYSEQUENCE}|{ESCAPED}|{DQSTRING}|{SQ
 "="                { return op; }
 "~"                { return op; }
 
-{NODEBLOCK}                                             { return nodename; }  // No placeholder
-{NODEBLOCK}?"["({NUMBER}\:)?{NODEBLOCK}?"]"{NODEBLOCK}? { return nodename; }  // Cut declaration/backreference placeholder with/without explicit number
-{NODEBLOCK}?"{"{NUMBER}\:{NODEBLOCK}?"}"{NODEBLOCK}?    { return nodename; }  // Copy declaration/backreference placeholder with explicit number
-"["({NUMBER}\:)?\.\.\."]"                               { return nodename; }  // Cut subtree range placeholder with/without explicit number
-"{"{NUMBER}\:\.\.\."}"                                  { return nodename; }  // Copy subtree range placeholder with explicit number
+{NODEBLOCK}                                             { return nodename; }        // No placeholder
+{NODEBLOCK}?"["({NUMBER}\:)?{NODEBLOCK}?"]"{NODEBLOCK}? { return nodename; }        // Cut declaration/backreference placeholder with/without explicit number
+{NODEBLOCK}?"{"{NUMBER}\:{NODEBLOCK}?"}"{NODEBLOCK}?    { return nodename; }        // Copy declaration/backreference placeholder with explicit number
+"["({NUMBER}\:)?\.\.\."]"                               { return subtree_range; }   // Cut subtree range placeholder with/without explicit number
+"{"{NUMBER}\:\.\.\."}"                                  { return subtree_range; }   // Copy subtree range placeholder with explicit number
 
 "&"                   { return terminal_and; }
 "|"                   { return terminal_or; }
