@@ -1,6 +1,8 @@
 %{
   #include <iostream> // std::cout, std::endl
   #include <sstream> // std::stringstream, std::istringstream
+  #include <algorithm> // std::sort, std::set_intersection, std::set_union, std::find
+  #include <vector> // std::vector
 
   #include "nodename_machine.hpp"
   #include "ast-node.hpp"
@@ -69,6 +71,7 @@
 start:
   search_expression // turnsto replacement_expression
     {
+      
       // TODO: Implement all the functionalities this code block needs to do
       cout << *$1;
       $$ = $1;
@@ -81,9 +84,23 @@ search_expression:
       // TODO: Verify if this code block is OK
       if ($2 != nullptr)
       {
-        $2->left = $1;
-        $1->parent = $2;
-        $$ = $2;
+        auto newDefinedNodenames = new vector<unsigned int>(*($2->info.definedNodenames));
+
+        if ($1->info.nodenameInfo->placeholder != Placeholder::NONE) 
+        {
+          auto placeholderNumber = $1->info.nodenameInfo->placeholderNumber;
+          bool placeholderNotFound = find(
+            newDefinedNodenames->begin(), 
+            newDefinedNodenames->end(), 
+            placeholderNumber
+          ) == newDefinedNodenames->end();
+          
+          if (placeholderNotFound)
+            newDefinedNodenames->push_back(placeholderNumber);
+        }
+
+        AstInfo astInfo = { .definedNodenames = newDefinedNodenames };
+        $$ = new AstNode(nullptr, $1, $2, astInfo, ":>"); // TODO: check if this operator (:>) is appropriate to represent "restricted to"
       }
       else
         $$ = $1;
@@ -104,8 +121,25 @@ opt_restrictions:
 restrictions:
   restrictions terminal_or restrictions_and
     {
-      // TODO: Implement this code block
-      $$ = $3;
+      // Always the restrictions and restrictions_and aren't leaves
+      vector<unsigned int>& leftDefinedNodenames = *($1->info.definedNodenames);
+      vector<unsigned int>& rightDefinedNodenames = *($3->info.definedNodenames);
+      
+      sort(leftDefinedNodenames.begin(), leftDefinedNodenames.end());
+      sort(rightDefinedNodenames.begin(), rightDefinedNodenames.end());
+      
+      auto intersectionDefinedNodenames = new vector<unsigned int>(min(leftDefinedNodenames.size(), rightDefinedNodenames.size()));
+      auto it = set_intersection(
+        leftDefinedNodenames.begin(), leftDefinedNodenames.end(),
+        rightDefinedNodenames.begin(), rightDefinedNodenames.end(), 
+        intersectionDefinedNodenames->begin()
+      );
+      intersectionDefinedNodenames->resize(it - intersectionDefinedNodenames->begin());
+
+      AstInfo astInfo = { .definedNodenames = intersectionDefinedNodenames };
+
+      $$ = new AstNode(nullptr, $1, $3, astInfo, *$2);
+
       delete $2;
     }
   | restrictions_and
@@ -117,33 +151,45 @@ restrictions:
 restrictions_and:
   restrictions_and terminal_and restrictions_not
     {
-      // TODO: Implement this code block
-      $$ = $3;
+      // Always the restricions_and and restrictions_not aren't leaves
+      vector<unsigned int>& leftDefinedNodenames = *($1->info.definedNodenames);
+      vector<unsigned int>& rightDefinedNodenames = *($3->info.definedNodenames);
+      
+      sort(leftDefinedNodenames.begin(), leftDefinedNodenames.end());
+      sort(rightDefinedNodenames.begin(), rightDefinedNodenames.end());
+      
+      auto unionDefinedNodenames = new vector<unsigned int>(leftDefinedNodenames.size() + rightDefinedNodenames.size());
+      auto it = set_union(
+        leftDefinedNodenames.begin(), leftDefinedNodenames.end(),
+        rightDefinedNodenames.begin(), rightDefinedNodenames.end(), 
+        unionDefinedNodenames->begin()
+      );
+      unionDefinedNodenames->resize(it - unionDefinedNodenames->begin());
+
+      AstInfo astInfo = { .definedNodenames = unionDefinedNodenames };
+      $$ = new AstNode(nullptr, $1, $3, astInfo, *$2);
+
       delete $2;
     }
   |	restrictions_and restrictions_not	/* same as AND */
     {
-      // TODO: Verify if this code block is OK
-
-      // Find the rightmost child of $1 and its parent
-      auto parentOfRightmostChildOfS1 = $1;
-      auto rightmostChildOfS1 = $1->right;
-      while (rightmostChildOfS1->right != nullptr)
-      {
-        parentOfRightmostChildOfS1 = rightmostChildOfS1;
-        rightmostChildOfS1 = rightmostChildOfS1->right;
-      }
-
-      // Move rightmost child of $1 to left child of $2
-      $2->left = rightmostChildOfS1;
-      rightmostChildOfS1->parent = $2;
+      // Always the restricions_and and restrictions_not aren't leaves
+      vector<unsigned int>& leftDefinedNodenames = *($1->info.definedNodenames);
+      vector<unsigned int>& rightDefinedNodenames = *($2->info.definedNodenames);
       
-      // Make $2 be child of the parent of the rightmost child of $1
-      parentOfRightmostChildOfS1->right = $2;
-      $2->parent = parentOfRightmostChildOfS1;
+      sort(leftDefinedNodenames.begin(), leftDefinedNodenames.end());
+      sort(rightDefinedNodenames.begin(), rightDefinedNodenames.end());
+      
+      auto unionDefinedNodenames = new vector<unsigned int>(leftDefinedNodenames.size() + rightDefinedNodenames.size());
+      auto it = set_union(
+        leftDefinedNodenames.begin(), leftDefinedNodenames.end(),
+        rightDefinedNodenames.begin(), rightDefinedNodenames.end(),
+        unionDefinedNodenames->begin()
+      );
+      unionDefinedNodenames->resize(it - unionDefinedNodenames->begin());
 
-      // Make $1 be the root
-      $$ = $1;
+      AstInfo astInfo = { .definedNodenames = unionDefinedNodenames };
+      $$ = new AstNode(nullptr, $1, $2, astInfo, "&");
     }
   | restrictions_not
     {
@@ -154,8 +200,9 @@ restrictions_and:
 restrictions_not:
   terminal_not restrictions_not
     {
-      // TODO: Implement this code block
-      $$ = $2;
+      AstInfo astInfo = { .definedNodenames = new vector<unsigned int>() };
+      $$ = new Ast::AstNode(nullptr, $2, nullptr, astInfo, *$1);
+      delete $1;
     }
   |	lpar restrictions rpar
     {
@@ -171,16 +218,16 @@ restriction:
   op search_second
     {
       AstInfo astInfo;
-      // If $2 is a node_specifier
+      // If $2 is a node_specifier (i.e., a leaf)
       if ($2->left == nullptr && $2->right == nullptr)
         // Make $2 new unique defined nodename
-        astInfo.definedNodenames = new std::vector<unsigned int>{ $2->info.nodenameInfo->placeholderNumber };
+        astInfo.definedNodenames = new vector<unsigned int>{ $2->info.nodenameInfo->placeholderNumber };
       else
         // Copy all defined nodenames from $2
-        astInfo.definedNodenames = new std::vector<unsigned int>(*($2->info.definedNodenames));
+        astInfo.definedNodenames = new vector<unsigned int>(*($2->info.definedNodenames)); // TODO: Verify if this need to be a copy or a reference
 
       // TODO: think about where the "op" information should be stored 
-      $$ = new Ast::AstNode(nullptr, nullptr, $2, astInfo, *$1);;
+      $$ = new Ast::AstNode(nullptr, $2, nullptr, astInfo, *$1);
       delete $1;
     }
   ;
@@ -214,7 +261,7 @@ node_specifier:
         $$ = new Ast::AstNode(nullptr, nullptr, nullptr, astInfo, *$1);
         delete $1;
       }
-      catch (const std::exception& e)
+      catch (const exception& e)
       {
         yyerror(e.what());
       }
@@ -232,7 +279,7 @@ node_specifier:
   | subtree_range
     {
       auto lexem = *$1;
-      auto placeholder =  (lexem[0] == '[') ? Placeholder::CUT : Placeholder::COPY;
+      auto placeholder = (lexem[0] == '[') ? Placeholder::CUT : Placeholder::COPY;
       int placeholderNumber = 0;
 
       size_t colonPos = lexem.find(':', 1);

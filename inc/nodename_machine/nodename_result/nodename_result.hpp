@@ -47,10 +47,10 @@ namespace Nodename
       info->type = NodenameInfoType::SUBTREE_RANGE_PLACEHOLDER;
       info->placeholder = placeholder;
       info->placeholderNumber = placeholderNumber;
-      info->undetermined = false; // TODO: Verify if this is correct
+      info->undetermined = false;
       info->freeOfContext = true;
-      info->defOrRef = DefOrRef::DEFINITION; // TODO: Verify if this is correct
-      info->regex = ".*"; // TODO: Verify if this is correct
+      info->defOrRef = DefOrRef::DEFINITION;
+      info->regex = "";
 
       return info;
     }
@@ -61,11 +61,11 @@ namespace Nodename
 
       info->type = NodenameInfoType::END_MARKER;
       info->placeholder = Placeholder::NONE;
-      info->placeholderNumber = -1; // TODO: Verify what it needs to be
-      info->undetermined = false; // TODO: Verify if this is correct
+      info->placeholderNumber = -1;
+      info->undetermined = false;
       info->freeOfContext = true;
       info->defOrRef = DefOrRef::NONE;
-      info->regex = ""; // TODO: Verify if this is correct
+      info->regex = "";
 
       return info;
     }
