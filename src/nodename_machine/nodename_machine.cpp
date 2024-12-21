@@ -35,7 +35,7 @@ Nodename::NodenameInfo Nodename::NodenameMachine::run()
   return this->result;
 }
 
-std::istream& Nodename::NodenameMachine::getInputStream() // Trocar isso para simplesmente char nextInputChar();
+std::istream& Nodename::NodenameMachine::getInputStream() // Change this function name to nextInputChar()
 {
   return this->input;
 }

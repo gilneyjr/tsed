@@ -1,15 +1,27 @@
 #ifndef AST_INFO_HPP
 #define AST_INFO_HPP
 
-#include <vector>
-#include "nodename_result.hpp"
+#include "nodename_info.hpp"
 
 namespace Ast
 {
-  union AstInfo 
+  union AstNodeInfo
   {
-    std::vector<unsigned int> *definedNodenames;
-    Nodename::NodenameInfo *nodenameInfo;
+    AstLeafNodeInfo leaf;
+    AstInternalNodeInfo internal;
+  };
+
+  struct AstLeafNodeInfo
+  {
+    Nodename::NodenameInfo* nodenameInfo;
+  };
+  
+
+  struct AstInternalNodeInfo 
+  {
+    std::string operatorLabel; // TODO: think if this is the best way to represent operator information
+    Nodename::NodenameInfoSet* definitions;
+    Nodename::NodenameInfoSet* references;
   };
 }
 

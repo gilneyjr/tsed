@@ -1,1 +1,1 @@
-NP < PP1 < PP2 < PP3
+[0:NP] < PP1 < PP2 < PP3 ==> [0:NP1]

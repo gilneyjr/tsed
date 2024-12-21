@@ -15,7 +15,7 @@ Nodename::NodenameState* Nodename::RightNodeblockNodenameState::run()
   auto nodeblockResult = nodeblockMachine->run();
   delete nodeblockMachine;
 
-  if (nodeblockResult.regex.length() > 0)
+  if (nodeblockResult.regex.length() > 2) // it's 2 because the empty regex is "()"
     this->machine->setFreeOfContext(false);
   this->machine->incorporateFrom(nodeblockResult);
 

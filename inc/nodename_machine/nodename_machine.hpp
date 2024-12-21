@@ -6,7 +6,7 @@
 
 #include "nodename_state.hpp"
 #include "nodeblock_result.hpp"
-#include "nodename_result.hpp"
+#include "nodename_info.hpp"
 
 namespace Nodename {
   class NodenameState;

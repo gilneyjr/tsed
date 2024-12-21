@@ -1,5 +1,5 @@
-#ifndef NODENAME_RESULT_TYPE_HPP
-#define NODENAME_RESULT_TYPE_HPP
+#ifndef NODENAME_INFO_TYPE_HPP
+#define NODENAME_INFO_TYPE_HPP
 
 namespace Nodename
 {

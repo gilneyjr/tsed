@@ -1,5 +1,5 @@
 %{
-  #include <string> // string
+  #include <string> // std::string
   #include "parser.tab.h" // header genereted by yacc
 
   using namespace std;

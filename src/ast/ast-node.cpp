@@ -1,51 +1,69 @@
 #include "ast-node.hpp"
 
-Ast::AstNode::AstNode(AstNode* parent, AstNode* left, AstNode* right, AstInfo info, std::string name)
+Ast::AstNode::AstNode(
+  AstNode* parent,
+  AstNode* left,
+  AstNode* right,
+  Nodename::NodenameInfo* info
+) : parent(parent), left(left), right(right), type(AstNodeType::Leaf), data(info)
 {
-  this->parent = parent;
-  this->left = left;
-  this->right = right;
-  this->info = info;
-  this->name = name;
-
   if (left != nullptr)
     left->parent = this;
   if (right != nullptr)
     right->parent = this;
 }
 
+Ast::AstNode::AstNode(
+  AstNode* parent,
+  AstNode* left,
+  AstNode* right,
+  std::string &operation,
+  Nodename::NodenameInfoSet& definitions,
+  Nodename::NodenameInfoSet& references
+) : parent(parent), left(left), right(right), type(AstNodeType::Internal), data(operation, definitions, references) {}
+
 Ast::AstNode::~AstNode()
 {
-  if (left == nullptr && right == nullptr)
-    delete info.nodenameInfo;
-  else
-    delete info.definedNodenames;
-
+  // TODO: if this is a leaf, it needs to delete the nodenameInfos
   delete left;
   delete right;
 }
 
-
-Ast::AstNode* Ast::AstNode::getLeftChild()
+Ast::AstNode* Ast::AstNode::getLeft()
 {
   return left;
 }
 
-void Ast::AstNode::setLeftChild(AstNode *left)
+void Ast::AstNode::setLeft(AstNode *left)
 {
   if (left != nullptr)
     left->parent = this;
   this->left = left;
 }
 
-Ast::AstNode* Ast::AstNode::getRightChild()
+Ast::AstNode* Ast::AstNode::getRight()
 {
-  return left;
+  return right;
 }
 
-void Ast::AstNode::setRightChild(AstNode *right)
+void Ast::AstNode::setRight(AstNode *right)
 {
   if (right != nullptr)
     right->parent = this;
   this->right = right;
+}
+
+Ast::AstNode* Ast::AstNode::getParent()
+{
+  return parent;
+}
+
+bool Ast::AstNode::isLeaf()
+{
+  return type == AstNodeType::Leaf;
+}
+
+bool Ast::AstNode::isInternal()
+{
+  return type == AstNodeType::Internal;
 }
