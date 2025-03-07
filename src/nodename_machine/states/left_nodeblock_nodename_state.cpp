@@ -17,7 +17,8 @@ Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
   auto nodeblockResult = nodeblockMachine->run();
   delete nodeblockMachine;
 
-  if (nodeblockResult.regex.length() > 2) // it's 2 because the empty regex is "()"
+  const size_t EMPTY_REGEX_LENGTH = 2;
+  if (nodeblockResult.regex.length() > EMPTY_REGEX_LENGTH)
     this->machine->setFreeOfContext(false);
   this->machine->incorporateFrom(nodeblockResult);
 
@@ -25,7 +26,11 @@ Nodename::NodenameState* Nodename::LeftNodeblockNodenameState::run()
   this->input >> x;
   
   if (this->input.eof())
+  {
+    // set to true because there is no middle and right contexts
+    this->machine->setFreeOfContext(true);
     return new EndNodenameState(this->machine);
+  }
 
   if (x == '[')
   {
