@@ -5,7 +5,7 @@
   #include "ast-node.hpp"
   #include "nodename_machine.hpp"
   #include "replacement-node.hpp"
-  #include "syntactic-tree.hpp"
+  #include "syntax-tree.hpp"
   #include "transduction-functions.hpp"
 
   using namespace std;
@@ -119,8 +119,8 @@ start:
     }
 
     // TODO: Verify if something yet needs to be checked
-    auto tree = new SyntacticTree(string("NP"), nullptr);
-    tree->addChild(new SyntacticTree(string("PP"), nullptr));
+    auto tree = new SyntaxTree(string("NP"), nullptr);
+    tree->addChild(new SyntaxTree(string("PP"), nullptr));
 
     applyTransductionRule(tree, $1, $4);
 

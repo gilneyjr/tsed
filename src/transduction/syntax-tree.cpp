@@ -1,11 +1,11 @@
-#include "syntactic-tree.hpp"
+#include "syntax-tree.hpp"
 
-Transduction::SyntacticTree::SyntacticTree(
+Transduction::SyntaxTree::SyntaxTree(
   const std::string& tag,
-  SyntacticTree *parent = nullptr
+  SyntaxTree *parent = nullptr
 ) : tag(tag), parent(parent) {}
 
-Transduction::SyntacticTree::~SyntacticTree()
+Transduction::SyntaxTree::~SyntaxTree()
 {
   auto aux = firstChild;
   while (aux != nullptr)
@@ -15,7 +15,7 @@ Transduction::SyntacticTree::~SyntacticTree()
   }
 }
 
-void Transduction::SyntacticTree::addChild(SyntacticTree *child)
+void Transduction::SyntaxTree::addChild(SyntaxTree *child)
 {
   if (child == nullptr)
     return;
@@ -35,35 +35,35 @@ void Transduction::SyntacticTree::addChild(SyntacticTree *child)
   aux->rightSibling = child;
 }
 
-Transduction::SyntacticTree::PreOrderIterator
-Transduction::SyntacticTree::begin()
+Transduction::SyntaxTree::PreOrderIterator
+Transduction::SyntaxTree::begin()
 {
   return PreOrderIterator(this);
 }
 
-Transduction::SyntacticTree::PreOrderIterator
-Transduction::SyntacticTree::end()
+Transduction::SyntaxTree::PreOrderIterator
+Transduction::SyntaxTree::end()
 {
   return PreOrderIterator(nullptr);
 }
 
-Transduction::SyntacticTree::PreOrderIterator::PreOrderIterator(
-  Transduction::SyntacticTree::PreOrderIterator::pointer current) : current(current) {}
+Transduction::SyntaxTree::PreOrderIterator::PreOrderIterator(
+  Transduction::SyntaxTree::PreOrderIterator::pointer current) : current(current) {}
 
-Transduction::SyntacticTree::PreOrderIterator::reference 
-Transduction::SyntacticTree::PreOrderIterator::operator*() const
+Transduction::SyntaxTree::PreOrderIterator::reference 
+Transduction::SyntaxTree::PreOrderIterator::operator*() const
 {
   return *current;
 }
 
-Transduction::SyntacticTree::PreOrderIterator::pointer 
-Transduction::SyntacticTree::PreOrderIterator::operator->() const
+Transduction::SyntaxTree::PreOrderIterator::pointer 
+Transduction::SyntaxTree::PreOrderIterator::operator->() const
 {
   return current;
 }
 
-Transduction::SyntacticTree::PreOrderIterator&
-Transduction::SyntacticTree::PreOrderIterator::operator++()
+Transduction::SyntaxTree::PreOrderIterator&
+Transduction::SyntaxTree::PreOrderIterator::operator++()
 {
   if (!current)
     return *this;
@@ -89,20 +89,20 @@ Transduction::SyntacticTree::PreOrderIterator::operator++()
   return *this;
 }
 
-Transduction::SyntacticTree::PreOrderIterator
-Transduction::SyntacticTree::PreOrderIterator::operator++(int)
+Transduction::SyntaxTree::PreOrderIterator
+Transduction::SyntaxTree::PreOrderIterator::operator++(int)
 {
   PreOrderIterator temp = *this;
   ++(*this);
   return temp;
 }
 
-bool Transduction::SyntacticTree::PreOrderIterator::operator==(const PreOrderIterator& other) const
+bool Transduction::SyntaxTree::PreOrderIterator::operator==(const PreOrderIterator& other) const
 {
   return current == other.current;
 }
 
-bool Transduction::SyntacticTree::PreOrderIterator::operator!=(const PreOrderIterator& other) const
+bool Transduction::SyntaxTree::PreOrderIterator::operator!=(const PreOrderIterator& other) const
 {
   return current != other.current;
 }

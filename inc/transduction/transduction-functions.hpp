@@ -7,25 +7,25 @@
 
 #include "ast-node.hpp"
 #include "replacement-node.hpp"
-#include "syntactic-tree.hpp"
+#include "syntax-tree.hpp"
 
 namespace Transduction
 {
   void applyTransductionRule(
-    std::list<SyntacticTree*>&,
+    std::list<SyntaxTree*>&,
     Ast::AstNode*,
     std::vector<Ast::ReplacementNode*>*);
 
   void applyTransductionRule(
-    SyntacticTree*,
+    SyntaxTree*,
     Ast::AstNode*,
     std::vector<Ast::ReplacementNode*>*);
   
   bool subtreeMatchesSearchExpression(
-    SyntacticTree &tree,
+    SyntaxTree &tree,
     Ast::AstNode *searchExpression);
 
-    bool isImmediatelyDominatedBy(SyntacticTree &searchPrimary, Ast::AstNode *searchExpression);
+    bool isImmediatelyDominatedBy(SyntaxTree &searchPrimary, Ast::AstNode *searchExpression);
 
   bool tagMatchesPattern(const std::string&, const std::string&);
 }

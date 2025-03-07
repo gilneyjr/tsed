@@ -6,23 +6,23 @@
 #include <iostream> // TODO: Remove it later
 
 void Transduction::applyTransductionRule(
-  std::list<SyntacticTree*> &trees,
+  std::list<SyntaxTree*> &trees,
   Ast::AstNode *searchExpression,
   std::vector<Ast::ReplacementNode*> *replacementExpression)
 {
-  for (SyntacticTree *tree: trees)
+  for (SyntaxTree *tree: trees)
     applyTransductionRule(tree, searchExpression, replacementExpression);
 }
 
 void Transduction::applyTransductionRule(
-  SyntacticTree *tree,
+  SyntaxTree *tree,
   Ast::AstNode *searchExpression,
   std::vector<Ast::ReplacementNode*> *replacementExpression)
 {
   if (tree == nullptr)
     return;
 
-  // std::set<SyntacticTree> modifiedTrees;
+  // std::set<SyntaxTree> modifiedTrees;
   auto it = tree->begin();
   while (it != tree->end())
   {
@@ -65,13 +65,13 @@ void Transduction::applyTransductionRule(
   // }
   // else
   // {
-  //   for (SyntacticTree *child: tree->children)
+  //   for (SyntaxTree *child: tree->children)
   //     applyTransductionRule(child, searchExpression, replacementExpression);
   // }
 }
 
 bool Transduction::subtreeMatchesSearchExpression(
-  SyntacticTree &tree,
+  SyntaxTree &tree,
   Ast::AstNode *searchExpression)
 {
   if (searchExpression == nullptr)
@@ -79,7 +79,7 @@ bool Transduction::subtreeMatchesSearchExpression(
 
   if (searchExpression->isLeaf())
   {
-    // TODO: link Nodename Placeholders to Syntactic Trees here
+    // TODO: link Nodename Placeholders to Syntax Trees here
     Nodename::NodenameInfo *nodenameInfo = searchExpression->data.leaf.nodenameInfo;
     return tagMatchesPattern(tree.tag, nodenameInfo->regex);
   }
@@ -98,7 +98,7 @@ bool Transduction::subtreeMatchesSearchExpression(
   return false;
 }
 
-bool Transduction::isImmediatelyDominatedBy(SyntacticTree &tree, Ast::AstNode *searchExpression)
+bool Transduction::isImmediatelyDominatedBy(SyntaxTree &tree, Ast::AstNode *searchExpression)
 {
   if (searchExpression == nullptr)
     return false;

@@ -1,21 +1,22 @@
-#ifndef SYNTACTIC_TREE_HPP
-#define SYNTACTIC_TREE_HPP
+#ifndef SYNTAX_TREE_HPP
+#define SYNTAX_TREE_HPP
 
 #include <string>
 
 namespace Transduction
 {
-  class SyntacticTree
+  class SyntaxTree
   {
   public:
+    // TODO: turn some attributes to protected
     std::string tag;
-    SyntacticTree* parent;
-    SyntacticTree* firstChild;
-    SyntacticTree* rightSibling;
+    SyntaxTree* parent;
+    SyntaxTree* firstChild;
+    SyntaxTree* rightSibling;
 
-    SyntacticTree(const std::string&, SyntacticTree*);
-    ~SyntacticTree();
-    void addChild(SyntacticTree*);
+    SyntaxTree(const std::string&, SyntaxTree*);
+    ~SyntaxTree();
+    void addChild(SyntaxTree*);
 
     class PreOrderIterator
     {
@@ -23,9 +24,9 @@ namespace Transduction
       // Types for compatibility with standard iterators
       using iterator_category = std::forward_iterator_tag;
       using difference_type = std::ptrdiff_t;
-      using value_type = SyntacticTree;
-      using pointer = SyntacticTree*;
-      using reference = SyntacticTree&;
+      using value_type = SyntaxTree;
+      using pointer = SyntaxTree*;
+      using reference = SyntaxTree&;
 
     private:
       pointer current;
