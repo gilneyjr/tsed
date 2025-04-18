@@ -6,7 +6,8 @@
   #include "nodename_machine.hpp"
   #include "replacement-node.hpp"
   #include "syntax-tree.hpp"
-  #include "transduction-functions.hpp"
+  #include "transducer.hpp"
+  #include "transducer-builder.hpp"
 
   using namespace std;
   using namespace Nodename;
@@ -119,11 +120,17 @@ start:
     }
 
     // TODO: Verify if something yet needs to be checked
-    auto tree = new SyntaxTree(string("NP"), nullptr);
-    tree->addChild(new SyntaxTree(string("PP"), nullptr));
+    auto tree = new SyntaxTree("NP", nullptr);
+    tree->addChild(new SyntaxTree("PP", nullptr));
 
-    applyTransductionRule(tree, $1, $4);
-
+    Transducer* transducer = TransducerBuilder()
+      .setIteratorStrategyType(SyntaxTreeIteratorStrategyType::PRE_ORDER)
+      .setTransversalStrategyType(TransversalStrategyType::STOP)
+      .build();
+    
+    transducer->applyTransductionRule(tree, $1, $4);
+    
+    delete transducer;
     cout << *$1;
     $$ = $1;
   }
