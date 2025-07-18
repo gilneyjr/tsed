@@ -15,6 +15,5 @@ Transduction::StopTransversalStrategy::next()
 
 void Transduction::StopTransversalStrategy::notifyTransduction()
 {
-  std::cout << "MATCHED: StopTransversalStrategy" << std::endl; 
   current = this->createIterator(nullptr);
 }

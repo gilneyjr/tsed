@@ -1,5 +1,6 @@
 #include "transducer.hpp"
 
+#include <map>
 #include <regex>
 #include <string>
 
@@ -16,7 +17,8 @@ Transduction::Transducer::~Transducer()
 
 bool Transduction::Transducer::subtreeMatchesSearchExpression(
   SyntaxTree &tree,
-  Ast::AstNode *searchExpression)
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
 {
   if (searchExpression == nullptr)
     return false;
@@ -25,7 +27,23 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   {
     // TODO: link Nodename Placeholders to Syntax Trees here
     Nodename::NodenameInfo *nodenameInfo = searchExpression->data.leaf.nodenameInfo;
-    return tagMatchesPattern(tree.tag, nodenameInfo->regex);
+
+    auto tag = tree.tag;
+    std::regex pattern(nodenameInfo->regex);
+    std::smatch matches;
+
+    if (std::regex_match(tag, matches, pattern))
+    {
+      Transduction::NodenameMatch match;
+      match.left = matches[1];
+      match.middle = matches[2];
+      match.right = matches[3];
+      match.tree = &tree;
+      placeholderMatches[nodenameInfo->placeholderNumber] = match;
+      return true;
+    }
+
+    return false;
   }
 
   std::string operation = searchExpression->data.internal.operation;
@@ -33,17 +51,20 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   // TODO: use factory design pattern here
   if (operation == ":>")
   {
-    return subtreeMatchesSearchExpression(tree, searchExpression->getLeft())
-      && subtreeMatchesSearchExpression(tree, searchExpression->getRight());
+    return subtreeMatchesSearchExpression(tree, searchExpression->getLeft(), placeholderMatches)
+      && subtreeMatchesSearchExpression(tree, searchExpression->getRight(), placeholderMatches);
   }
 
   if (operation == "<")
-    return isImmediatelyDominatedBy(tree, searchExpression->getLeft());
+    return isImmediatelyDominatedBy(tree, searchExpression->getLeft(), placeholderMatches);
 
   return false;
 }
 
-bool Transduction::Transducer::isImmediatelyDominatedBy(SyntaxTree &tree, Ast::AstNode *searchExpression)
+bool Transduction::Transducer::isImmediatelyDominatedBy(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
 {
   if (searchExpression == nullptr)
     return false;
@@ -51,9 +72,13 @@ bool Transduction::Transducer::isImmediatelyDominatedBy(SyntaxTree &tree, Ast::A
   auto aux = tree.firstChild;
   while (aux != nullptr)
   {
-    bool matched = subtreeMatchesSearchExpression(*aux, searchExpression);
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*aux, searchExpression, matches);
     if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
       return true;
+    }
     aux = aux->rightSibling;
   }
 
@@ -62,6 +87,10 @@ bool Transduction::Transducer::isImmediatelyDominatedBy(SyntaxTree &tree, Ast::A
 
 bool Transduction::Transducer::tagMatchesPattern(const std::string &tag, const std::string &pattern)
 {
+  // TODO: procurar algoritmo para determinar estas partes
+  // 1 - left
+  // - middle
+  // - right
   return std::regex_match(tag, std::regex("^" + pattern + "$"));
 }
 
@@ -82,14 +111,26 @@ void Transduction::Transducer::applyTransductionRule(
   if (tree == nullptr)
     return;
 
+  // NP < ...
+
   // std::set<SyntaxTree> modifiedTrees;
   this->transversalStrategy->start(tree); 
   while (this->transversalStrategy->hasNext())
   {
     SyntaxTree* current = this->transversalStrategy->next();
-    if (subtreeMatchesSearchExpression(*current, searchExpression))
+    std::map<int, Transduction::NodenameMatch> matches; 
+    if (subtreeMatchesSearchExpression(*current, searchExpression, matches))
     {
-      std::cout << "MATCHED: " << current->tag << std::endl;
+      // TODO: remove these cout below
+      std::cout << "MATCHED!" << std::endl;
+      for (const auto& [key, value] : matches)
+      {
+        std::cout << "Placeholder " << key << ":" << std::endl;
+        std::cout << "\tTree tag: " << value.tree->tag << std::endl;
+        std::cout << "\tLeft: " << value.left << std::endl;
+        std::cout << "\tMiddle: " << value.middle << std::endl;
+        std::cout << "\tRight: " << value.right << std::endl;
+      }
       this->transversalStrategy->notifyTransduction();
       // TODO: apply replacement expression here
     }

@@ -31,7 +31,8 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::DoubleQuotedNodeblockS
   }
   else 
   {
-    this->machine->appendToOutput("\\" + x);
+    this->machine->appendToOutput('\\');
+    this->machine->appendToOutput(x);
     return this;
   }
 }

@@ -122,7 +122,6 @@ start:
     // TODO: Verify if something yet needs to be checked
     auto tree = new SyntaxTree("NP", nullptr);
     tree->addChild(new SyntaxTree("PP", nullptr));
-
     Transducer* transducer = TransducerBuilder()
       .setIteratorStrategyType(SyntaxTreeIteratorStrategyType::PRE_ORDER)
       .setTransversalStrategyType(TransversalStrategyType::STOP)
@@ -131,7 +130,7 @@ start:
     transducer->applyTransductionRule(tree, $1, $4);
     
     delete transducer;
-    cout << *$1;
+    // cout << *$1;
     $$ = $1;
   }
   ;

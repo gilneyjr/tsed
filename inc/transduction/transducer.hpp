@@ -2,10 +2,12 @@
 #define TRANSDUCER_HPP
 
 #include <list>
+#include <map>
 #include <string>
 #include <vector>
 
 #include "ast-node.hpp"
+#include "nodename-match.hpp"
 #include "replacement-node.hpp"
 #include "syntax-tree.hpp"
 #include "transversal-strategy.hpp"
@@ -17,9 +19,17 @@ namespace Transduction
   protected:
     TransversalStrategy* transversalStrategy;
   
-    bool subtreeMatchesSearchExpression(SyntaxTree &tree, Ast::AstNode *searchExpression);
+    bool subtreeMatchesSearchExpression(
+      SyntaxTree &tree,
+      Ast::AstNode *searchExpression,
+      std::map<int, Transduction::NodenameMatch>&
+    );
 
-    bool isImmediatelyDominatedBy(SyntaxTree &searchPrimary, Ast::AstNode *searchExpression);
+    bool isImmediatelyDominatedBy(
+      SyntaxTree &searchPrimary,
+      Ast::AstNode *searchExpression,
+      std::map<int, Transduction::NodenameMatch>&
+    );
   
     bool tagMatchesPattern(const std::string&, const std::string&);
 

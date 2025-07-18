@@ -3,7 +3,7 @@
 Transduction::SyntaxTree::SyntaxTree(
   const std::string tag,
   SyntaxTree *parent
-) : tag(tag), parent(parent) {}
+) : tag(tag), parent(parent), firstChild(nullptr), rightSibling(nullptr) {}
 
 Transduction::SyntaxTree::~SyntaxTree()
 {

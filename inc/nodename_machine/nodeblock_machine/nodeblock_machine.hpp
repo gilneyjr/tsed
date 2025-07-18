@@ -22,7 +22,6 @@ namespace Nodename::Nodeblock
     NodeblockResult run();
     std::istream& getInputStream();
     void setUndetermined(bool);
-    void appendToOutput(std::string);
     void appendToOutput(char);
   };
 }

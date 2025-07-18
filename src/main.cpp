@@ -72,7 +72,8 @@ void testNodename()
   while (true)
   {
     std::cout << "Enter the Nodename Pattern: ";
-    if (!(std::cin >> nodenamePattern))
+    std::cin >> nodenamePattern;
+    if (nodenamePattern == "\\q")
       break;
 
     std::istringstream* input = new std::istringstream(nodenamePattern);
@@ -83,14 +84,16 @@ void testNodename()
     {
       auto result = machine->run();
       output = result.regex;
+      std::cout << output << std::endl;
     }
     catch (const std::exception& e)
     {
-      std::cout << e.what() << std::endl;
+      std::cerr << e.what() << std::endl;
+      return;
     }
     catch (const char* error)
     {
-      std::cout << error << std::endl;
+      std::cerr << error << std::endl;
       return;
     }
 
@@ -103,13 +106,16 @@ void testNodename()
     {
       std::cout << "Enter the Nodename to be recognized: ";
       std::string nodenameStr;
-      if (!(std::cin >> nodenameStr))
+      std::cin >> nodenameStr;
+      if (nodenameStr == "\\q")
         break;
       
       std::smatch matches;
       if (std::regex_match(nodenameStr, matches, pattern))
         for (size_t i = 0; i < matches.size(); i++)
-          std::cout << "Match [" << matches.position(i) << "," << matches.position(i)+matches.length(i) << "]: " << matches[i] << std::endl;
+          std::cout << "[" << (matches[i].matched ? "OK" : "NO") << "] "
+            << "Match " << i << " [" << matches.position(i) << "," << matches.position(i)+matches.length(i)-1 << "," << matches.length(i) << "]: "
+            << matches[i] << std::endl;
     }
   }
 }

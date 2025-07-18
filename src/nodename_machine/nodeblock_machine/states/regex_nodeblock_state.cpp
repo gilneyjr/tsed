@@ -24,6 +24,13 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexNodeblockState::r
   }
   else if (x == '\\')
     return  new RegexEscapeNodeblockState(this->machine);
+  else if (x == '(')
+  {
+    this->machine->appendToOutput(x);
+    this->machine->appendToOutput('?');
+    this->machine->appendToOutput(':');
+    return this;
+  }
   else
   {
     this->machine->appendToOutput(x);

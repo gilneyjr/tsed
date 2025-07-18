@@ -19,7 +19,10 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::RegexEscapeNodeblockSt
   if (x == '/')
     this->machine->appendToOutput(x);
   else
-    this->machine->appendToOutput("\\" + x);
+  {
+    this->machine->appendToOutput('\\');
+    this->machine->appendToOutput(x);
+  }
 
   return new RegexNodeblockState(this->machine);
 }

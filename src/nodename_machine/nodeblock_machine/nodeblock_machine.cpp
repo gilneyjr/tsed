@@ -46,11 +46,6 @@ void Nodename::Nodeblock::NodeblockMachine::setUndetermined(bool undetermined)
   this->result.undetermined = undetermined;
 }
 
-void Nodename::Nodeblock::NodeblockMachine::appendToOutput(std::string input)
-{
-  this->result.regex += input;
-}
-
 void Nodename::Nodeblock::NodeblockMachine::appendToOutput(char input)
 {
   this->result.regex += input;

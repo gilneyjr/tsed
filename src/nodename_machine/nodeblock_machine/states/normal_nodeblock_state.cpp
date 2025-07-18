@@ -24,7 +24,8 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
   }
 
   if (x == '*') {
-    this->machine->appendToOutput(".*");
+    this->machine->appendToOutput('.');
+    this->machine->appendToOutput('*');
     this->machine->setUndetermined(true);
     return this;
   }
@@ -42,11 +43,15 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
   else if (x == '\'')
   {
     this->machine->appendToOutput('(');
+    this->machine->appendToOutput('?');
+    this->machine->appendToOutput(':');
     return new SingleQuotedNodeblockState(this->machine);
   }
   else if (x == '"')
   {
     this->machine->appendToOutput('(');
+    this->machine->appendToOutput('?');
+    this->machine->appendToOutput(':');
     return new DoubleQuotedNodeblockState(this->machine);
   }
   else if (x == '\\')
@@ -54,6 +59,8 @@ Nodename::Nodeblock::NodeblockState* Nodename::Nodeblock::NormalNodeblockState::
   else if (x == '/')
   {
     this->machine->appendToOutput('(');
+    this->machine->appendToOutput('?');
+    this->machine->appendToOutput(':');
     this->machine->setUndetermined(true);
     return new RegexNodeblockState(this->machine);
   }
