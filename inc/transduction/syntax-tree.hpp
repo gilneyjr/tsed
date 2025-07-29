@@ -2,6 +2,7 @@
 #define SYNTAX_TREE_HPP
 
 #include <string>
+#include <vector>
 
 namespace Transduction
 {
@@ -17,6 +18,16 @@ namespace Transduction
     SyntaxTree(const std::string, SyntaxTree* = nullptr);
     ~SyntaxTree();
     void addChild(SyntaxTree*);
+    static std::vector<SyntaxTree*> readFromFile(std::string&);
+
+  private:
+    static void printTree(SyntaxTree*, int = 0);
+    static std::string getNextTokenFromStream(std::istream&);
+    static void putTokenBackToStream(std::string&, std::istream&);
+    static std::vector<SyntaxTree*> parseTrees(std::istream&);
+    static std::vector<SyntaxTree*> parseTreesOpt(std::istream&);
+    static SyntaxTree* parseTree(std::istream&);
+    static std::string parseWord(std::istream&);
   };
 }
 
