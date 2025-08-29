@@ -67,3 +67,26 @@ bool Ast::AstNode::isInternal()
 {
   return type == AstNodeType::Internal;
 }
+
+std::ostream& operator<<(std::ostream& os, Ast::AstNode& node)
+{
+  os << "{";
+
+  if (node.isLeaf())
+    os << "\"root\":\"" << node.data.leaf.nodenameInfo->regex << "\",";
+  else
+    os << "\"root\":\"" << node.data.internal.operation << "\",";
+  
+  if (node.left)
+    os << "\"left\":" << *node.left << ",";
+  else
+    os << "\"left\":null,";
+
+  if (node.right)
+    os << "\"right\":" << *node.right;
+  else
+    os << "\"right\":null";
+
+  os << "}";
+  return os;
+}

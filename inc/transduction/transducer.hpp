@@ -19,17 +19,11 @@ namespace Transduction
   protected:
     TransversalStrategy* transversalStrategy;
   
-    bool subtreeMatchesSearchExpression(
-      SyntaxTree &tree,
-      Ast::AstNode *searchExpression,
-      std::map<int, Transduction::NodenameMatch>&
-    );
+    bool subtreeMatchesSearchExpression(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
 
-    bool isImmediatelyDominatedBy(
-      SyntaxTree &searchPrimary,
-      Ast::AstNode *searchExpression,
-      std::map<int, Transduction::NodenameMatch>&
-    );
+    bool immediatelyDominates(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool isImmediatelyLeftSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool isImmediatelyRightSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
   
     bool tagMatchesPattern(const std::string&, const std::string&);
 

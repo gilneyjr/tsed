@@ -3,6 +3,7 @@
 
 #include "ast-node-data.hpp"
 #include "ast-node-type.hpp"
+#include <ostream> // TODO: Remove it later
 
 namespace Ast
 {
@@ -44,5 +45,8 @@ namespace Ast
     bool isInternal();
   };
 }
+
+// TODO: Remove it later
+std::ostream& operator<<(std::ostream& os, Ast::AstNode& node);
 
 #endif

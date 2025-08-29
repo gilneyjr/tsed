@@ -32,30 +32,6 @@
 
   // TODO: Remove it later
   std::string NodenameInfoToString(NodenameInfo); // Auxiliary function defined below
-
-  // TODO: Remove it later
-  std::ostream& operator<<(std::ostream& os, AstNode& node)
-  {
-    os << "{";
-
-    if (node.isLeaf())
-      os << "\"root\":\"" << node.data.leaf.nodenameInfo->regex << "\",";
-    else
-      os << "\"root\":\"" << node.data.internal.operation << "\",";
-    
-    if (node.left)
-      os << "\"left\":" << *node.left << ",";
-    else
-      os << "\"left\":null,";
-
-    if (node.right)
-      os << "\"right\":" << *node.right;
-    else
-      os << "\"right\":null";
-
-    os << "}";
-    return os;
-  }
 %}
 
 %code requires {

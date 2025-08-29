@@ -5,15 +5,17 @@
 Transduction::SyntaxTree::SyntaxTree(
   const std::string tag,
   SyntaxTree *parent
-) : tag(tag), parent(parent), firstChild(nullptr), rightSibling(nullptr) {}
+) : tag(tag), parent(parent), firstChild(nullptr)
+  , lastChild(nullptr), leftSibling(nullptr), rightSibling(nullptr) {}
 
 Transduction::SyntaxTree::~SyntaxTree()
 {
   auto aux = firstChild;
   while (aux != nullptr)
   {
+    auto next = aux->rightSibling; 
     delete aux;
-    aux = aux->rightSibling;
+    aux = next;
   }
 }
 
@@ -24,17 +26,15 @@ void Transduction::SyntaxTree::addChild(SyntaxTree *child)
 
   child->parent = this;
   child->rightSibling = nullptr;
+  child->leftSibling = this->lastChild;
+
+  if (this->lastChild != nullptr)
+    this->lastChild->rightSibling = child;
+  
+  this->lastChild = child;
 
   if (firstChild == nullptr)
-  {
     firstChild = child;
-    return;
-  }
-
-  auto aux = firstChild;
-  while (aux != nullptr && aux->rightSibling != nullptr)
-    aux = aux->rightSibling;
-  aux->rightSibling = child;
 }
 
 std::vector<Transduction::SyntaxTree*>
