@@ -89,6 +89,12 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
 
     if (op == ">")
       return isNthChildOf(tree, searchExpression->getLeft(), (unsigned int) number, placeholderMatches);
+
+    if (op == "<-")
+      return hasNthToLastChildAs(tree, searchExpression->getLeft(), (unsigned int) number, placeholderMatches);
+
+    if (op == ">-")
+      return isNthToLastChildOf(tree, searchExpression->getLeft(), (unsigned int) number, placeholderMatches);
   }
   
   if (operation == "$.")
@@ -201,24 +207,64 @@ bool Transduction::Transducer::isNthChildOf(
   return true;
 }
 
+bool Transduction::Transducer::hasNthToLastChildAs(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  unsigned int n,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.lastChild == nullptr || n == 0)
+    return false;
 
-// bool Transduction::Transducer::isFirstChildOf(
-//   SyntaxTree &tree,
-//   Ast::AstNode *searchExpression,
-//   std::map<int, Transduction::NodenameMatch> &placeholderMatches)
-// {
-//   if (searchExpression == nullptr)
-//     return false;
+  auto nthToLastChild = tree.lastChild;
+  for (auto i = n; i > 1u; i--)
+  {
+    if (nthToLastChild == nullptr)
+      return false;
+    nthToLastChild = nthToLastChild->leftSibling;
+  }
 
-//   std::map<int, Transduction::NodenameMatch> matches;
-//   bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(*nthToLastChild, searchExpression, matches);
 
-//   if (!matched || tree.parent->firstChild != )
-//     return false;
+  if (!matched)
+    return false;
   
-//   placeholderMatches.insert(matches.begin(), matches.end());
-//   return true;
-// }
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
+
+bool Transduction::Transducer::isNthToLastChildOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  unsigned int n,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.parent == nullptr || tree.parent->lastChild == nullptr || n == 0)
+    return false;
+
+  auto nthToLastChildOfParent = tree.parent->lastChild;
+  for (auto i = n; i > 1u; i--)
+  {
+    if (nthToLastChildOfParent == nullptr)
+      return false;
+    nthToLastChildOfParent = nthToLastChildOfParent->leftSibling;
+  }
+
+  // There is no need to use subtreeMatchesSearchExpression here, because the tree was already matched before
+  if (nthToLastChildOfParent != &tree)
+    return false;
+
+  // Just try to match the parent
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
+
+  if (!matched)
+    return false;
+  
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
 
 bool Transduction::Transducer::isImmediatelyLeftSiblingOf(
   SyntaxTree &tree,
