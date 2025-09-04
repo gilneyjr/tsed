@@ -29,7 +29,7 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
     Nodename::NodenameInfo *nodenameInfo = searchExpression->data.leaf.nodenameInfo;
 
     auto tag = tree.tag;
-    std::regex pattern(nodenameInfo->regex);
+    std::regex pattern("^" + nodenameInfo->regex + "$");
     std::smatch matches;
 
     if (std::regex_match(tag, matches, pattern))
@@ -71,6 +71,25 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   
   if (operation == ">,")
     return isNthChildOf(tree, searchExpression->getLeft(), 1, placeholderMatches);
+
+  std::regex numberedOperationPattern("^([<>]-?)([1-9][0-9]*)$");
+  std::smatch matches;
+  
+  if (std::regex_match(operation, matches, numberedOperationPattern))
+  {
+    auto op = matches[1].str();
+    auto numberStr = matches[2].str();
+
+    unsigned long number = std::stoul(numberStr);
+    if (number > UINT_MAX)
+      throw "The operator \"" + operation + "\" has a number out of range.";
+
+    if (op == "<")
+      return hasNthChildAs(tree, searchExpression->getLeft(), (unsigned int) number, placeholderMatches);
+
+    if (op == ">")
+      return isNthChildOf(tree, searchExpression->getLeft(), (unsigned int) number, placeholderMatches);
+  }
   
   if (operation == "$.")
     return isImmediatelyLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
@@ -235,15 +254,6 @@ bool Transduction::Transducer::isImmediatelyRightSiblingOf(
   
   placeholderMatches.insert(matches.begin(), matches.end());
   return true;
-}
-
-bool Transduction::Transducer::tagMatchesPattern(const std::string &tag, const std::string &pattern)
-{
-  // TODO: procurar algoritmo para determinar estas partes
-  // 1 - left
-  // - middle
-  // - right
-  return std::regex_match(tag, std::regex("^" + pattern + "$"));
 }
 
 void Transduction::Transducer::applyTransductionRule(
