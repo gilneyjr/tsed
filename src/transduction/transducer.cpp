@@ -34,12 +34,17 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
 
     if (std::regex_match(tag, matches, pattern))
     {
-      Transduction::NodenameMatch match;
-      match.left = matches[1];
-      match.middle = matches[2];
-      match.right = matches[3];
-      match.tree = &tree;
-      placeholderMatches[nodenameInfo->placeholderNumber] = match;
+      if (nodenameInfo->placeholder != Nodename::Placeholder::NONE)
+      {
+        Transduction::NodenameMatch match;
+        match.left = matches[1];
+        match.middle = matches[2];
+        match.right = matches[3];
+        match.tree = &tree;
+        match.placeholder = nodenameInfo->placeholder;
+        placeholderMatches[nodenameInfo->placeholderNumber] = match;
+      }
+      
       return true;
     }
 
@@ -56,8 +61,17 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   }
 
   if (operation == "<")
-    return immediatelyDominates(tree, searchExpression->getLeft(), placeholderMatches);
+    return isParentOf(tree, searchExpression->getLeft(), placeholderMatches);
 
+  if (operation == ">")
+    return isChildOf(tree, searchExpression->getLeft(), placeholderMatches);
+
+  if (operation == "<,")
+    return hasNthChildAs(tree, searchExpression->getLeft(), 1, placeholderMatches);
+  
+  if (operation == ">,")
+    return isNthChildOf(tree, searchExpression->getLeft(), 1, placeholderMatches);
+  
   if (operation == "$.")
     return isImmediatelyLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
 
@@ -67,7 +81,7 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   return false;
 }
 
-bool Transduction::Transducer::immediatelyDominates(
+bool Transduction::Transducer::isParentOf(
   SyntaxTree &tree,
   Ast::AstNode *searchExpression,
   std::map<int, Transduction::NodenameMatch> &placeholderMatches)
@@ -90,6 +104,102 @@ bool Transduction::Transducer::immediatelyDominates(
 
   return false;
 }
+
+bool Transduction::Transducer::isChildOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr)
+    return false;
+
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
+
+  if (!matched)
+    return false;
+  
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
+
+bool Transduction::Transducer::hasNthChildAs(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  unsigned int n,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.firstChild == nullptr || n == 0)
+    return false;
+
+  auto nthChild = tree.firstChild;
+  for (auto i = 1u; i < n; i++)
+  {
+    if (nthChild == nullptr)
+      return false;
+    nthChild = nthChild->rightSibling;
+  }
+
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(*nthChild, searchExpression, matches);
+
+  if (!matched)
+    return false;
+  
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
+
+bool Transduction::Transducer::isNthChildOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  unsigned int n,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.parent == nullptr || tree.parent->firstChild == nullptr || n == 0)
+    return false;
+
+  auto nthChildOfParent = tree.parent->firstChild;
+  for (auto i = 1u; i < n; i++)
+  {
+    if (nthChildOfParent == nullptr)
+      return false;
+    nthChildOfParent = nthChildOfParent->rightSibling;
+  }
+
+  // There is no need to use subtreeMatchesSearchExpression here, because the tree was already matched before
+  if (nthChildOfParent != &tree)
+    return false;
+
+  // Just try to match the parent
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
+
+  if (!matched)
+    return false;
+  
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
+
+
+// bool Transduction::Transducer::isFirstChildOf(
+//   SyntaxTree &tree,
+//   Ast::AstNode *searchExpression,
+//   std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+// {
+//   if (searchExpression == nullptr)
+//     return false;
+
+//   std::map<int, Transduction::NodenameMatch> matches;
+//   bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
+
+//   if (!matched || tree.parent->firstChild != )
+//     return false;
+  
+//   placeholderMatches.insert(matches.begin(), matches.end());
+//   return true;
+// }
 
 bool Transduction::Transducer::isImmediatelyLeftSiblingOf(
   SyntaxTree &tree,
@@ -168,7 +278,8 @@ void Transduction::Transducer::applyTransductionRule(
       std::cout << "MATCHED!" << std::endl;
       for (const auto& [key, value] : matches)
       {
-        std::cout << "Placeholder " << key << ":" << std::endl;
+        std::cout << (value.placeholder == Nodename::Placeholder::CUT ? "Cut" : "Copy")
+          << " placeholder " << key << ":" << std::endl;
         std::cout << "\tTree tag: " << value.tree->tag << std::endl;
         std::cout << "\tLeft: " << value.left << std::endl;
         std::cout << "\tMiddle: " << value.middle << std::endl;

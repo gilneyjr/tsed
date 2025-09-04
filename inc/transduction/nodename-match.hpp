@@ -2,6 +2,7 @@
 #define NODENAME_MATCH_HPP
 
 #include <string>
+#include "placeholder.hpp"
 #include "syntax-tree.hpp"
 
 namespace Transduction
@@ -11,6 +12,7 @@ namespace Transduction
     std::string left;
     std::string middle;
     std::string right;
+    Nodename::Placeholder placeholder;
     SyntaxTree* tree;
   };
 }
