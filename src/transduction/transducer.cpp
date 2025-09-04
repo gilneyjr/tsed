@@ -72,6 +72,12 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   if (operation == ">,")
     return isNthChildOf(tree, searchExpression->getLeft(), 1, placeholderMatches);
 
+  if (operation == "<-" || operation == "<'")
+    return hasNthToLastChildAs(tree, searchExpression->getLeft(), 1, placeholderMatches);
+  
+    if (operation == ">-" || operation == ">'")
+    return isNthToLastChildOf(tree, searchExpression->getLeft(), 1, placeholderMatches);
+
   std::regex numberedOperationPattern("^([<>]-?)([1-9][0-9]*)$");
   std::smatch matches;
   
