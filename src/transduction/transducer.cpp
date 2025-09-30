@@ -3,6 +3,7 @@
 #include <map>
 #include <regex>
 #include <string>
+#include <queue>
 
 #include <iostream> // TODO: Remove it later
 
@@ -108,12 +109,19 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
 
   if (operation == ">:")
     return isUniqueChildOf(tree, searchExpression->getLeft(), placeholderMatches);
+
+  if (operation == "<<")
+    return isAncestorOf(tree, searchExpression->getLeft(), placeholderMatches);
+  
+  if (operation == ">>")
+    return isDescendantOf(tree, searchExpression->getLeft(), placeholderMatches);
   
   if (operation == "$.")
     return isImmediatelyLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
 
   if (operation == "$,")
     return isImmediatelyRightSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
+
 
   return false;
 }
@@ -314,6 +322,62 @@ bool Transduction::Transducer::isUniqueChildOf(
   
   placeholderMatches.insert(matches.begin(), matches.end());
   return true;
+}
+
+bool Transduction::Transducer::isAncestorOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.firstChild == nullptr)
+    return false;
+
+  std::queue<SyntaxTree*> queue;
+  for (auto child = tree.firstChild; child != nullptr; child = child->rightSibling)
+    queue.push(child);
+
+  while (!queue.empty())
+  {
+    auto aux = queue.front();
+    queue.pop();
+
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*aux, searchExpression, matches);
+    if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
+      return true;
+    }
+
+    for (auto child = aux->firstChild; child != nullptr; child = child->rightSibling)
+      queue.push(child);
+  }
+
+  return false;
+}
+
+bool Transduction::Transducer::isDescendantOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.parent == nullptr)
+    return false;
+
+  std::queue<SyntaxTree*> queue;
+
+  for (auto ancestor = tree.parent; ancestor != nullptr; ancestor = ancestor->parent)
+  {
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*ancestor, searchExpression, matches);
+    if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool Transduction::Transducer::isImmediatelyLeftSiblingOf(
