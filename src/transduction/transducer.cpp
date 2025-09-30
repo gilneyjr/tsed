@@ -391,12 +391,12 @@ bool Transduction::Transducer::hasLeftmostDescendantAs(
   Ast::AstNode *searchExpression,
   std::map<int, Transduction::NodenameMatch> &placeholderMatches)
 {
-  if (searchExpression == nullptr || tree.lastChild == nullptr)
+  if (searchExpression == nullptr || tree.firstChild == nullptr)
     return false;
 
-  auto leftmostDescendant = tree.lastChild;
-  while (leftmostDescendant->lastChild != nullptr)
-    leftmostDescendant = leftmostDescendant->lastChild;
+  auto leftmostDescendant = tree.firstChild;
+  while (leftmostDescendant->firstChild != nullptr)
+    leftmostDescendant = leftmostDescendant->firstChild;
   
   std::map<int, Transduction::NodenameMatch> matches;
   bool matched = subtreeMatchesSearchExpression(*leftmostDescendant, searchExpression, matches);
@@ -418,6 +418,8 @@ bool Transduction::Transducer::isLeftmostDescendantOf(
 
   for (auto ancestor = tree.parent; ancestor != nullptr; ancestor = ancestor->parent)
   {
+    if (ancestor->leftSibling != nullptr) 
+      break;
     std::map<int, Transduction::NodenameMatch> matches;
     bool matched = subtreeMatchesSearchExpression(*ancestor, searchExpression, matches);
     
