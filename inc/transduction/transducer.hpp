@@ -29,6 +29,8 @@ namespace Transduction
     bool isImmediatelyRightSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
     bool hasNthToLastChildAs(SyntaxTree&, Ast::AstNode*, unsigned int, std::map<int, Transduction::NodenameMatch>&);
     bool isNthToLastChildOf(SyntaxTree&, Ast::AstNode*, unsigned int, std::map<int, Transduction::NodenameMatch>&);
+    bool hasUniqueChildAs(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool isUniqueChildOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
 
   public:
     Transducer(TransversalStrategy*);

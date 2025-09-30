@@ -75,7 +75,7 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   if (operation == "<-" || operation == "<'")
     return hasNthToLastChildAs(tree, searchExpression->getLeft(), 1, placeholderMatches);
   
-    if (operation == ">-" || operation == ">'")
+  if (operation == ">-" || operation == ">'")
     return isNthToLastChildOf(tree, searchExpression->getLeft(), 1, placeholderMatches);
 
   std::regex numberedOperationPattern("^([<>]-?)([1-9][0-9]*)$");
@@ -102,6 +102,12 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
     if (op == ">-")
       return isNthToLastChildOf(tree, searchExpression->getLeft(), (unsigned int) number, placeholderMatches);
   }
+
+  if (operation == "<:")
+    return hasUniqueChildAs(tree, searchExpression->getLeft(), placeholderMatches);
+
+  if (operation == ">:")
+    return isUniqueChildOf(tree, searchExpression->getLeft(), placeholderMatches);
   
   if (operation == "$.")
     return isImmediatelyLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
@@ -262,6 +268,44 @@ bool Transduction::Transducer::isNthToLastChildOf(
     return false;
 
   // Just try to match the parent
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
+
+  if (!matched)
+    return false;
+  
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
+
+bool Transduction::Transducer::hasUniqueChildAs(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.firstChild == nullptr || tree.firstChild != tree.lastChild)
+    return false;
+
+  auto& child = *(tree.firstChild);
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(child, searchExpression, matches);
+  if (matched)
+  {
+    placeholderMatches.insert(matches.begin(), matches.end());
+    return true;
+  }
+
+  return false;
+}
+
+bool Transduction::Transducer::isUniqueChildOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.parent == nullptr || tree.parent->firstChild == nullptr || tree.parent->firstChild != tree.parent->lastChild)
+    return false;
+
   std::map<int, Transduction::NodenameMatch> matches;
   bool matched = subtreeMatchesSearchExpression(*(tree.parent), searchExpression, matches);
 
