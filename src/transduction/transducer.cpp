@@ -134,6 +134,15 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   if (operation == ">>:")
     return hasUniquePathFrom(tree, searchExpression->getLeft(), placeholderMatches);
 
+  if (operation == "$")
+    return isSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
+  
+  if (operation == "$..")
+    return isLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
+
+  if (operation == "$,,")
+    return isRightSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
+
   if (operation == "$.")
     return isImmediatelyLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
 
@@ -547,6 +556,63 @@ bool Transduction::Transducer::hasUniquePathFrom(
       return false;
 
     ancestor = ancestor->parent;
+  }
+
+  return false;
+}
+
+bool Transduction::Transducer::isSiblingOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  return isLeftSiblingOf(tree, searchExpression, placeholderMatches)
+    || isRightSiblingOf(tree, searchExpression, placeholderMatches);
+}
+
+bool Transduction::Transducer::isLeftSiblingOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.leftSibling == nullptr)
+    return false;
+
+  auto leftSibling = tree.leftSibling;
+  while (leftSibling != nullptr)
+  {
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*leftSibling, searchExpression, matches);
+    if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
+      return true;
+    }
+    leftSibling = leftSibling->leftSibling;
+  }
+
+  return false;
+}
+
+bool Transduction::Transducer::isRightSiblingOf(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.rightSibling == nullptr)
+    return false;
+
+  auto rightSibling = tree.rightSibling;
+  while (rightSibling != nullptr)
+  {
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*rightSibling, searchExpression, matches);
+    if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
+      return true;
+    }
+    rightSibling = rightSibling->rightSibling;
   }
 
   return false;
