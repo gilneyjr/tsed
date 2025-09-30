@@ -37,6 +37,8 @@ namespace Transduction
     bool isLeftmostDescendantOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
     bool hasRightmostDescendantAs(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
     bool isRightmostDescendantOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool hasUniquePathTo(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool hasUniquePathFrom(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
 
   public:
     Transducer(TransversalStrategy*);

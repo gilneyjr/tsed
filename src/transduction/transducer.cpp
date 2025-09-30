@@ -128,6 +128,12 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   if (operation == ">>'")
     return isRightmostDescendantOf(tree, searchExpression->getLeft(), placeholderMatches);
 
+  if (operation == "<<:")
+    return hasUniquePathTo(tree, searchExpression->getLeft(), placeholderMatches);
+
+  if (operation == ">>:")
+    return hasUniquePathFrom(tree, searchExpression->getLeft(), placeholderMatches);
+
   if (operation == "$.")
     return isImmediatelyLeftSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
 
@@ -483,6 +489,64 @@ bool Transduction::Transducer::isRightmostDescendantOf(
       placeholderMatches.insert(matches.begin(), matches.end());
       return true;
     }
+  }
+
+  return false;
+}
+
+bool Transduction::Transducer::hasUniquePathTo(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.firstChild != tree.lastChild || tree.firstChild == nullptr)
+    return false;
+
+  auto descendant = tree.firstChild;
+
+  while (descendant != nullptr)
+  {
+    if (descendant->leftSibling != nullptr || descendant->rightSibling != nullptr)
+      return false;
+    
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*descendant, searchExpression, matches);
+    if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
+      return true;
+    }
+
+    descendant = descendant->firstChild;
+  }
+
+  return false;
+}
+
+bool Transduction::Transducer::hasUniquePathFrom(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr || tree.parent == nullptr || tree.leftSibling != nullptr || tree.rightSibling != nullptr)
+    return false;
+
+  auto ancestor = tree.parent;
+
+  while (ancestor != nullptr)
+  {
+    std::map<int, Transduction::NodenameMatch> matches;
+    bool matched = subtreeMatchesSearchExpression(*ancestor, searchExpression, matches);
+    if (matched)
+    {
+      placeholderMatches.insert(matches.begin(), matches.end());
+      return true;
+    }
+
+    if (ancestor->leftSibling != nullptr || ancestor->rightSibling != nullptr)
+      return false;
+
+    ancestor = ancestor->parent;
   }
 
   return false;
