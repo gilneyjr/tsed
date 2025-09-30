@@ -149,6 +149,8 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
   if (operation == "$,")
     return isImmediatelyRightSiblingOf(tree, searchExpression->getLeft(), placeholderMatches);
 
+  if (operation == "=")
+    return isEqualTo(tree, searchExpression->getLeft(), placeholderMatches);
 
   return false;
 }
@@ -646,6 +648,24 @@ bool Transduction::Transducer::isImmediatelyRightSiblingOf(
 
   std::map<int, Transduction::NodenameMatch> matches;
   bool matched = subtreeMatchesSearchExpression(*(tree.leftSibling), searchExpression, matches);
+
+  if (!matched)
+    return false;
+  
+  placeholderMatches.insert(matches.begin(), matches.end());
+  return true;
+}
+
+bool Transduction::Transducer::isEqualTo(
+  SyntaxTree &tree,
+  Ast::AstNode *searchExpression,
+  std::map<int, Transduction::NodenameMatch> &placeholderMatches)
+{
+  if (searchExpression == nullptr)
+    return false;
+
+  std::map<int, Transduction::NodenameMatch> matches;
+  bool matched = subtreeMatchesSearchExpression(tree, searchExpression, matches);
 
   if (!matched)
     return false;

@@ -42,6 +42,7 @@ namespace Transduction
     bool isSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
     bool isLeftSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
     bool isRightSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool isEqualTo(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
 
   public:
     Transducer(TransversalStrategy*);
