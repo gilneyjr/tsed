@@ -6,8 +6,8 @@ TSED is a tree transducer developed to modify treebanks using  powerful command-
 ### Required Software for Compilation
 These are the required software to compile and run TSED:
 - G++ compiler
-- Bison
 - Flex
+- Bison
 - Make
 
 Ensure you have them installed:
