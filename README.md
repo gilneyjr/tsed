@@ -1,5 +1,4 @@
 # TSED
----
 TSED is a tree transducer developed to modify treebanks using  powerful command-line tool for searching and filtering text, similar to grep.
 
 ## 🚀 Getting Started
@@ -13,13 +12,13 @@ These are the required software to compile and run TSED:
 
 Ensure you have them installed:
 ```sh
-g++ --version   # Check if G++
-make --version  # Check if Make is installed
-flex --version  # Check if Flex is installed
-bison --version # Check if Bison is installed
+g++ --version
+flex --version
+bison --version
+make --version
 ```
 
-If any of these commands return an error or are not recognized, you may need to install the missing dependencies.
+If any command fails or isn’t recognized, install the corresponding program.
 
 ### Installation of Required Software
 #### Windows (via MSYS2)
@@ -61,7 +60,7 @@ brew install flex bison make
    ```
 4. Run TSED:
    ```sh
-   ./build/tsed [pattern] [input-file]
+   ./build/tsed [TRANSDUCTION] [FILE]...
    ```
 
 ## 📌 Authors
