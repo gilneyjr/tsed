@@ -617,7 +617,7 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  cout << "Transduction rule to be processed: " << argv[1] << endl;
+  // cout << "Transduction rule to be processed: " << argv[1] << endl;
   yy_scan_string(argv[1]);
 
   if (yyparse() == 0)
@@ -630,7 +630,7 @@ int main(int argc, char *argv[])
     for (int i = 2; i < argc; i++)
     {
       string filename(argv[i]);
-      cout << "Processing file: " << filename << endl;
+      // cout << "Processing file: " << filename << endl;
       auto trees = SyntaxTree::readFromFile(filename);
 
       for (auto *tree : trees)
@@ -640,7 +640,6 @@ int main(int argc, char *argv[])
     delete transducer;
   }
 
-  cout << "\n\nExiting Success...\n"; // TODO: Remove it later
   return 0;
 }
 

@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 #include <queue>
-
+#include <climits>
 #include <iostream> // TODO: Remove it later
 
 Transduction::Transducer::Transducer(TransversalStrategy* transversalStrategy)
@@ -702,17 +702,18 @@ void Transduction::Transducer::applyTransductionRule(
     std::map<int, Transduction::NodenameMatch> matches;
     if (subtreeMatchesSearchExpression(*current, searchExpression, matches))
     {
-      // TODO: remove these cout below
-      std::cout << "MATCHED!" << std::endl;
-      for (const auto& [key, value] : matches)
-      {
-        std::cout << (value.placeholder == Nodename::Placeholder::CUT ? "Cut" : "Copy")
-          << " placeholder " << key << ":" << std::endl;
-        std::cout << "\tTree tag: " << value.tree->tag << std::endl;
-        std::cout << "\tLeft: " << value.left << std::endl;
-        std::cout << "\tMiddle: " << value.middle << std::endl;
-        std::cout << "\tRight: " << value.right << std::endl;
-      }
+      auto mainMatch = matches[0];
+      std::cout << *mainMatch.tree << std::endl;
+
+      // for (const auto& [key, value] : matches)
+      // {
+      //   std::cout << (value.placeholder == Nodename::Placeholder::CUT ? "Cut" : "Copy")
+      //     << " placeholder " << key << ":" << std::endl;
+      //   std::cout << "\tTree tag: " << value.tree->tag << std::endl;
+      //   std::cout << "\tLeft: " << value.left << std::endl;
+      //   std::cout << "\tMiddle: " << value.middle << std::endl;
+      //   std::cout << "\tRight: " << value.right << std::endl;
+      // }
       this->transversalStrategy->notifyTransduction();
       // TODO: apply replacement expression here
     }

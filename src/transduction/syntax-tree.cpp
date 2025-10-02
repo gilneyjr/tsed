@@ -179,3 +179,23 @@ void Transduction::SyntaxTree::printTree(SyntaxTree* tree, int pad)
     work = work->rightSibling;
   }
 }
+
+std::ostream& Transduction::operator<<(std::ostream& os, const SyntaxTree& tree)
+{
+  if (tree.firstChild == nullptr)
+  {
+    os << tree.tag;
+    return os;
+  }
+
+  os << "(" << tree.tag;
+
+  for (auto child = tree.firstChild; child != nullptr; child = child->rightSibling)
+  {
+    os << " " << *child;
+  }
+
+  os << ")";
+
+  return os;
+}
