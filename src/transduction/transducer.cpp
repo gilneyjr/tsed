@@ -720,8 +720,7 @@ void Transduction::Transducer::applyTransductionRule(
     std::map<int, Transduction::NodenameMatch> matches;
     if (subtreeMatchesSearchExpression(*current, searchExpression, matches))
     {
-      auto mainMatch = matches[0];
-      std::cout << *mainMatch.tree << std::endl;
+      std::cout << *current << std::endl;
 
       // for (const auto& [key, value] : matches)
       // {
