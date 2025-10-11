@@ -79,6 +79,32 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
     return true;
   }
 
+  if (operation == "|")
+  {
+    std::map<int, Transduction::NodenameMatch> leftMatches;
+    std::map<int, Transduction::NodenameMatch> rightMatches;
+
+    if (subtreeMatchesSearchExpression(tree, searchExpression->getLeft(), leftMatches))
+    {
+      placeholderMatches.insert(leftMatches.begin(), leftMatches.end());
+      return true;
+    }
+
+    if (!subtreeMatchesSearchExpression(tree, searchExpression->getRight(), rightMatches))
+    {
+      placeholderMatches.insert(rightMatches.begin(), rightMatches.end());
+      return true;
+    }
+
+    return false;
+  }
+
+  if (operation == "!")
+  {
+    std::map<int, Transduction::NodenameMatch> discardedMatches; // matches found in negation are discarded
+    return !subtreeMatchesSearchExpression(tree, searchExpression->getLeft(), discardedMatches);
+  }
+
   if (operation == "<")
     return isParentOf(tree, searchExpression->getLeft(), placeholderMatches);
 
