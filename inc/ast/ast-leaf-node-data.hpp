@@ -7,7 +7,7 @@ namespace Ast
 {
   struct AstLeafNodeData 
   {
-    Nodename::NodenameInfo* nodenameInfo; // TODO: Decide if pointer is better than reference
+    Nodename::NodenameInfo* nodenameInfo;
   };
 }
 

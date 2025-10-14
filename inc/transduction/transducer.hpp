@@ -9,6 +9,7 @@
 #include "ast-node.hpp"
 #include "nodename-match.hpp"
 #include "replacement-node.hpp"
+#include "symbol-table.hpp"
 #include "syntax-tree.hpp"
 #include "transversal-strategy.hpp"
 
@@ -19,30 +20,30 @@ namespace Transduction
   protected:
     TransversalStrategy* transversalStrategy;
   
-    bool subtreeMatchesSearchExpression(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool subtreeMatchesSearchExpression(SyntaxTree&, Ast::AstNode*, SymbolTable&);
 
-    bool isParentOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isChildOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool hasNthChildAs(SyntaxTree&, Ast::AstNode*, unsigned int, std::map<int, Transduction::NodenameMatch>&);
-    bool isNthChildOf(SyntaxTree&, Ast::AstNode*, unsigned int, std::map<int, Transduction::NodenameMatch>&);
-    bool isImmediatelyLeftSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isImmediatelyRightSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool hasNthToLastChildAs(SyntaxTree&, Ast::AstNode*, unsigned int, std::map<int, Transduction::NodenameMatch>&);
-    bool isNthToLastChildOf(SyntaxTree&, Ast::AstNode*, unsigned int, std::map<int, Transduction::NodenameMatch>&);
-    bool hasUniqueChildAs(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isUniqueChildOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isAncestorOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isDescendantOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool hasLeftmostDescendantAs(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isLeftmostDescendantOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool hasRightmostDescendantAs(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isRightmostDescendantOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool hasUniquePathTo(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool hasUniquePathFrom(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isLeftSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isRightSiblingOf(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
-    bool isEqualTo(SyntaxTree&, Ast::AstNode*, std::map<int, Transduction::NodenameMatch>&);
+    bool isParentOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isChildOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool hasNthChildAs(SyntaxTree&, Ast::AstNode*, unsigned int, SymbolTable&);
+    bool isNthChildOf(SyntaxTree&, Ast::AstNode*, unsigned int, SymbolTable&);
+    bool isImmediatelyLeftSiblingOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isImmediatelyRightSiblingOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool hasNthToLastChildAs(SyntaxTree&, Ast::AstNode*, unsigned int, SymbolTable&);
+    bool isNthToLastChildOf(SyntaxTree&, Ast::AstNode*, unsigned int, SymbolTable&);
+    bool hasUniqueChildAs(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isUniqueChildOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isAncestorOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isDescendantOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool hasLeftmostDescendantAs(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isLeftmostDescendantOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool hasRightmostDescendantAs(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isRightmostDescendantOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool hasUniquePathTo(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool hasUniquePathFrom(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isSiblingOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isLeftSiblingOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isRightSiblingOf(SyntaxTree&, Ast::AstNode*, SymbolTable&);
+    bool isEqualTo(SyntaxTree&, Ast::AstNode*, SymbolTable&);
 
   public:
     Transducer(TransversalStrategy*);

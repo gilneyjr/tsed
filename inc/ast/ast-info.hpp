@@ -16,7 +16,6 @@ namespace Ast
     Nodename::NodenameInfo* nodenameInfo;
   };
   
-
   struct AstInternalNodeInfo 
   {
     std::string operatorLabel; // TODO: think if this is the best way to represent operator information

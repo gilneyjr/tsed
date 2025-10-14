@@ -16,7 +16,7 @@ Nodename::NodenameState* Nodename::MiddleCutNodeblockNodenameState::run()
   auto nodeblockResult = nodeblockMachine->run();
   delete nodeblockMachine;
 
-  if (nodeblockResult.regex.length() > 0)
+  if (nodeblockResult.regex.length() > 2) // 2 is an empty regex: "()"
     this->machine->setDefOrRef(DefOrRef::DEFINITION);
   else
     this->machine->setDefOrRef(DefOrRef::REFERENCE);
