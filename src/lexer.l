@@ -63,37 +63,6 @@ NODEBLOCK           ({ALFANUM}|{WILDCARD}|{ANYSEQUENCE}|{ESCAPED}|{DQSTRING}|{SQ
 ",,"               { return op; }
 "<<:"              { return op; }
 ">>:"              { return op; }
-"!<"               { return op; }
-"!<<"              { return op; }
-"!>"               { return op; }
-"!>>"              { return op; }
-"!$"               { return op; }  // is not a sibling of
-"!$."              { return op; }  // not immediate left sibling //same
-"!$,"              { return op; }  // not immediate right sibling
-"!$.."             { return op; }  // not left sibling
-"!$,,"             { return op; }  // not right sibling
-"!<,"              { return op; }  // is not the parent of first child
-"!<-"              { return op; }  // is not the parent of last child
-"!<'"              { return op; }  // same as "!<-"
-"!>,"              { return op; }  // is not the first child of
-"!>-"              { return op; }  // is not the last child of
-"!>'"              { return op; }  // same as "!>-"
-"!<:"              { return op; }
-"!>:"              { return op; }
-"!<<,"             { return op; }  // is not ancestor of leftmost descendant
-"!<<'"             { return op; }  // is not ancestor of rightmost descendant
-"!>>,"             { return op; }  // is not leftmost descendant
-"!>>'"             { return op; }  // is not rightmost descendant
-"!<"{NUMBER}       { return op; }  // is the parent of n-th child
-"!>"{NUMBER}       { return op; }  // is n-th child of
-"!<-"{NUMBER}      { return op; }  // is the parent of n-th child from r to l
-"!>-"{NUMBER}      { return op; }  // is n-th child from right to left of
-"!."               { return op; }
-"!,"               { return op; }
-"!.."              { return op; }
-"!,,"              { return op; }
-"!<<:"             { return op; }
-"!>>:"             { return op; }
 "="                { return op; }
 "~"                { return op; }
 

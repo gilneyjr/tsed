@@ -60,7 +60,6 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
     return subtreeMatchesSearchExpression(tree, searchExpression->getLeft(), placeholderMatches)
       && subtreeMatchesSearchExpression(tree, searchExpression->getRight(), placeholderMatches);
   }
-// S < NP & < VP
 
   if (operation == "&")
   {
@@ -90,7 +89,7 @@ bool Transduction::Transducer::subtreeMatchesSearchExpression(
       return true;
     }
 
-    if (!subtreeMatchesSearchExpression(tree, searchExpression->getRight(), rightMatches))
+    if (subtreeMatchesSearchExpression(tree, searchExpression->getRight(), rightMatches))
     {
       placeholderMatches.insert(rightMatches.begin(), rightMatches.end());
       return true;
@@ -228,7 +227,7 @@ bool Transduction::Transducer::isChildOf(
   Ast::AstNode *searchExpression,
   std::map<int, Transduction::NodenameMatch> &placeholderMatches)
 {
-  if (searchExpression == nullptr)
+  if (searchExpression == nullptr || tree.parent == nullptr)
     return false;
 
   std::map<int, Transduction::NodenameMatch> matches;
