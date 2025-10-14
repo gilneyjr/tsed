@@ -43,10 +43,11 @@ namespace Ast
     AstNode* getParent();
     bool isLeaf();
     bool isInternal();
-  };
-}
 
-// TODO: Remove it later
-std::ostream& operator<<(std::ostream& os, Ast::AstNode& node);
+    friend std::ostream& operator<<(std::ostream& os, Ast::AstNode& node);
+  };
+
+  std::ostream& operator<<(std::ostream& os, Ast::AstNode& node);
+}
 
 #endif

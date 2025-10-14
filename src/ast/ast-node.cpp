@@ -68,7 +68,7 @@ bool Ast::AstNode::isInternal()
   return type == AstNodeType::Internal;
 }
 
-std::ostream& operator<<(std::ostream& os, Ast::AstNode& node)
+std::ostream& Ast::operator<<(std::ostream& os, Ast::AstNode& node)
 {
   os << "{";
 
