@@ -4,7 +4,9 @@
 
   #include "ast-node.hpp"
   #include "nodename_machine.hpp"
+  #include "parsing-rules.hpp"
   #include "replacement-node.hpp"
+  #include "search-expression.hpp"
   #include "syntax-tree.hpp"
   #include "transducer.hpp"
   #include "transducer-builder.hpp"
@@ -36,127 +38,87 @@
 
 %code requires {
   #include <string>
-  #include "ast-node.hpp"
-  #include "replacement-node.hpp"
+  #include "nodename-expression.hpp"
+  #include "replacement-leaf-node.hpp"
+  #include "replacement-tree.hpp"
+  #include "search-expression.hpp"
+  #include "transduction-rule.hpp"
 }
 
 /* Definition of union used to define terminal and non-terminal types */
 %union {
   std::string *lexem;
-  Ast::AstNode *astNode;
-  Ast::ReplacementNode *replacementNode;
-  std::vector<Ast::ReplacementNode*> *treeSeq;
+  Transduction::Search::SearchExpression *searchExpression;
+  Transduction::Search::NodenameExpression *nodenameExpression;
+  Transduction::Replacement::ReplacementLeafNode *replacementNode;
+  Transduction::Replacement::ReplacementTree *replacementTree;
+  Transduction::Replacement::TreeSequence *treeSequence;
+  Transduction::TransductionRule *transductionRule;
 };
 
 %token <lexem> op end_marker lpar nodename rpar subtree_range terminal_and terminal_not terminal_or turnsto
 
-%type <astNode> start
-%type <astNode> search_expression
-%type <astNode> opt_restrictions
-%type <astNode> restrictions
-%type <astNode> restrictions_and
-%type <astNode> restrictions_not
-%type <astNode> restriction
-%type <astNode> search_second
-%type <astNode> search_primary
-%type <astNode> node_specifier
+%type <transductionRule> transduction
+%type <searchExpression> search_expression
+%type <searchExpression> opt_restrictions
+%type <searchExpression> restrictions
+%type <searchExpression> restrictions_and
+%type <searchExpression> restrictions_not
+%type <searchExpression> restriction
+%type <searchExpression> search_second
+%type <nodenameExpression> search_primary
 
-%type <treeSeq> replacement_expression
-%type <treeSeq> tree_seq
-%type <replacementNode> tree
+%type <treeSequence> replacement_expression
+%type <treeSequence> tree_seq
+%type <replacementTree> tree
 %type <replacementNode> node
 
 %%
 
-start:
-  search_expression turnsto { if ($1->isInternal()) searchExpressionDefinitions = $1->data.internal.definitions; } replacement_expression
+transduction:
+  search_expression turnsto { searchExpressionDefinitions = $1->getDefinitions(); } replacement_expression
   {
-    if ($1->isLeaf())
+    try
     {
-      // Check if the main placehoilder exists
-      NodenameInfo *nodenameInfo = $1->data.leaf.nodenameInfo;
-      if (nodenameInfo->placeholder != Placeholder::CUT 
-        || nodenameInfo->placeholderNumber != 0 
-        || nodenameInfo->defOrRef != DefOrRef::DEFINITION)
-      {
-        yyerror("The search expression needs to have a definition to main placeholder."); // TODO: improve this message
-      } 
+      $$ = yaccResult = Parsing::parseTransduction($1, $4);
+      delete $2;
     }
-    else
+    catch (const exception& e)
     {
-      // Check if all references are defined
-      NodenameInfoSet& references = $1->data.internal.references;
-      if (!references.empty())
-        yyerror("There are references that are not defined in search expression."); // TODO: improve this message
-      
-      // Check if the main placeholder exists
-      NodenameInfoSet& definitions = $1->data.internal.definitions;
-      NodenameInfo nodenameWithPlaceholderNumber0;
-      nodenameWithPlaceholderNumber0.placeholderNumber = 0;
-      NodenameInfoSet::iterator it = definitions.find(&nodenameWithPlaceholderNumber0);
-      if (it == definitions.end() || (*it)->placeholder != Placeholder::CUT || (*it)->defOrRef != DefOrRef::DEFINITION)
-        yyerror("The search expression needs to have a definition to main placeholder."); // TODO: improve this message
+      delete $1;
+      delete $2;
+      delete $4;
+      yyerror(e.what());
     }
-
-    auto transduction = new TransductionRule;
-    transduction->search = $1;
-    transduction->replacement = $4;
-    yaccResult = transduction;
-    
-    $$ = $1;
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      delete $4;
+      yyerror(error);
+    }
   }
   ;
 
 search_expression:
   search_primary opt_restrictions
   {
-    NodenameInfo *searchPrimaryNodename = $1->data.leaf.nodenameInfo;
-
-    if ($2 != nullptr)
+    try
     {
-      NodenameInfoSet& restrictionsDefinitions = $2->data.internal.definitions;
-      NodenameInfoSet& restrictionsReferences = $2->data.internal.references;
-
-      string operation = ":>"; // TODO: create a constant for this symbol
-      NodenameInfoSet definitions = restrictionsDefinitions;
-      NodenameInfoSet references = restrictionsReferences;
-
-      if (searchPrimaryNodename->defOrRef == DefOrRef::DEFINITION)
-      {
-        NodenameInfoSet::iterator restrDefIt = restrictionsDefinitions.find(searchPrimaryNodename);
-        if (restrDefIt != restrictionsDefinitions.end())
-          yyerror("The nodename is already defined before."); // TODO: Correct/Improve this error message
-        
-        NodenameInfoSet::iterator restrRefIt = restrictionsReferences.find(searchPrimaryNodename);
-        if (restrRefIt != restrictionsReferences.end())
-        {
-          if (searchPrimaryNodename->placeholder != (*restrRefIt)->placeholder)
-            yyerror("The nodename reference must have the same placeholder type as its definition."); // TODO: Correct/Improve this error message
-          references.erase(searchPrimaryNodename); // Resolve the search primary reference
-        }
-
-        definitions.insert(searchPrimaryNodename);
-      }
-      else if (searchPrimaryNodename->defOrRef == DefOrRef::REFERENCE)
-      {
-        NodenameInfoSet::iterator restrDefIt = restrictionsDefinitions.find(searchPrimaryNodename);
-        if (restrDefIt != restrictionsDefinitions.end())
-          yyerror("The nodename is defined after its reference."); // TODO: Correct/Improve this error message
-
-        NodenameInfoSet::iterator restrRefIt = restrictionsReferences.find(searchPrimaryNodename);
-        if (restrRefIt != restrictionsReferences.end())
-        {
-          if (searchPrimaryNodename->placeholder != (*restrRefIt)->placeholder)
-            yyerror("The nodename reference must have the same placeholder type in all references."); // TODO: Correct/Improve this error message
-        }
-        else
-          references.insert(searchPrimaryNodename);
-      }
-
-      $$ = new AstNode(nullptr, $1, $2, operation, definitions, references); // TODO: Change to *definitions and instantiate this dinamically
+      $$ = Parsing::parseSearchExpression($1, $2);
     }
-    else
-      $$ = $1;
+    catch (const exception& e)
+    {
+      delete $1;
+      delete $2;
+      yyerror(e.what());
+    }
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      yyerror(error);
+    }
   }
   ;
 
@@ -174,86 +136,25 @@ opt_restrictions:
 restrictions:
   restrictions terminal_or restrictions_and
   {
-    NodenameInfoSet& leftDefinitions = $1->data.internal.definitions;
-    NodenameInfoSet& leftReferences = $1->data.internal.references;
-    NodenameInfoSet& rightDefinitions = $3->data.internal.definitions;
-    NodenameInfoSet& rightReferences = $3->data.internal.references;
-
-    string operation = *$2;
-    NodenameInfoSet definitions;
-    NodenameInfoSet references;
-
-    // Rules for nodenames visibility of the OR operator:
-    // def x def: must have the same type to propagate; otherwise, it results in an error.
-    // def x ref: results in an error because it is referenced but not defined on this side.
-    // def x ---: does not propagate and may generate a warning.
-    // ref x def: results in an error because it is referenced but not defined on this side.
-    // ref x ref: must have the same type to propagate; otherwise, it results in an error.
-    // ref x ---: results in an error because the reference is not present on the other side and is unresolved on this side.
-    // --- x def: does not propagate and may generate a warning.
-    // --- x ref: results in an error because the reference is not present on the other side and is unresolved on this side.
-    
-    // The code bellow was implemented in the most straightforward way possible for readability purposes,
-    // but it can be optimized in the future.
-
-    for (NodenameInfo *leftDef : leftDefinitions)
+    try
     {
-      NodenameInfoSet::iterator rightDefIt = rightDefinitions.find(leftDef);
-      NodenameInfoSet::iterator rightRefIt = rightReferences.find(leftDef);
-
-      if (rightDefIt != rightDefinitions.end()) // def x def
-      {
-        if (leftDef->placeholder != (*rightDefIt)->placeholder)
-          yyerror("The nodename definition must have the same placeholder type in every sides of the OR operator."); // TODO: Correct/Improve this error message
-        else
-          definitions.insert(leftDef);
-      } 
-      else if (rightRefIt != rightReferences.end()) // def x ref
-        yyerror("The node name reference is not being defined on the side of the OR operator where it is used."); // TODO: Correct/Improve this error message
-      else // def x ---
-        yywarn("The nodename definition is not present on every side of the OR operator, so it will not be accessible outside the side where it is defined."); // TODO: Correct/Improve this warn message
+      $$ = Parsing::parseOr($1, $3);
+      delete $2;
     }
-
-    for (NodenameInfo *leftRef : leftReferences)
+    catch (const exception& e)
     {
-      NodenameInfoSet::iterator rightDefIt = rightDefinitions.find(leftRef);
-      NodenameInfoSet::iterator rightRefIt = rightReferences.find(leftRef);
-
-      if (rightDefIt != rightDefinitions.end()) // ref x def
-      {
-        yyerror("The node name reference is not being defined on the side of the OR operator where it is used."); // TODO: Correct/Improve this error message
-      }
-      else if (rightRefIt != rightReferences.end()) // ref x ref
-      {
-        if (leftRef->placeholder != (*rightRefIt)->placeholder)
-          yyerror("The nodename reference must have the same placeholder type in every sides of the OR operator."); // TODO: Correct/Improve this error message
-        else
-          references.insert(leftRef);
-      }
-      else // ref x ---
-        yyerror("The nodename reference is not present on every side of the OR operator, resulting in an unresolved reference."); // TODO: Correct/Improve this error message
+      delete $1;
+      delete $2;
+      delete $3;
+      yyerror(e.what());
     }
-
-    for (NodenameInfo *rightDef : rightDefinitions)
+    catch (const char* error)
     {
-      NodenameInfoSet::iterator leftDefIt = leftDefinitions.find(rightDef);
-      NodenameInfoSet::iterator leftRefIt = leftReferences.find(rightDef);
-
-      if (leftDefIt == leftDefinitions.end() && leftRefIt == leftReferences.end()) // --- x def
-        yywarn("The nodename definition is not present on every side of the OR operator, so it will not be accessible outside the side where it is defined."); // TODO: Correct/Improve this warn message
+      delete $1;
+      delete $2;
+      delete $3;
+      yyerror(error);
     }
-
-    for (NodenameInfo *rightRef : rightReferences)
-    {
-      NodenameInfoSet::iterator leftDefIt = leftDefinitions.find(rightRef);
-      NodenameInfoSet::iterator leftRefIt = leftReferences.find(rightRef);
-
-      if (leftDefIt == leftDefinitions.end() && leftRefIt == leftReferences.end()) // --- x ref
-        yyerror("The nodename reference is not present on every side of the OR operator, resulting in an unresolved reference."); // TODO: Correct/Improve this error message
-    }
-
-    $$ = new AstNode(nullptr, $1, $3, operation, definitions, references); // TODO: Change to *definitions and instantiate this dinamically
-    delete $2;
   }
   | restrictions_and
   {
@@ -264,94 +165,45 @@ restrictions:
 restrictions_and:
   restrictions_and terminal_and restrictions_not
   {
-    NodenameInfoSet& leftDefinitions = $1->data.internal.definitions;
-    NodenameInfoSet& leftReferences = $1->data.internal.references;
-    NodenameInfoSet& rightDefinitions = $3->data.internal.definitions;
-    NodenameInfoSet& rightReferences = $3->data.internal.references;
-
-    string operation = *$2;
-    NodenameInfoSet definitions = leftDefinitions;
-    NodenameInfoSet references = leftReferences;
-
-    for (NodenameInfo *rightDef : rightDefinitions)
+    try
     {
-      bool definedBefore = leftDefinitions.find(rightDef) != leftDefinitions.end();
-      bool referencedBefore = leftReferences.find(rightDef) == leftReferences.end();
-
-      if (definedBefore)
-        yyerror("The nodename definition is already defined before."); // TODO: Correct/Improve this error message
-      else if (referencedBefore)
-        yyerror("The nodename definition is being referenced before."); // TODO: Correct/Improve this error message
-      else
-        definitions.insert(rightDef);
+      $$ = Parsing::parseAnd($1, $3);
+      delete $2;
     }
-
-    for (NodenameInfo *rightRef : rightReferences)
+    catch (const exception& e)
     {
-      NodenameInfoSet::iterator leftDefIt = leftDefinitions.find(rightRef);
-      NodenameInfoSet::iterator leftRefIt = leftReferences.find(rightRef);
-      
-      bool isDefinedBefore = leftDefIt != leftDefinitions.end();
-      bool isDefinedBeforeWithDifferentPlaceholder = isDefinedBefore
-        && (*leftDefIt)->placeholder != rightRef->placeholder;
-      bool isReferencedBeforeWithDifferentPlaceholder = leftRefIt != leftReferences.end()
-        && (*leftRefIt)->placeholder != rightRef->placeholder;
-
-      if (isDefinedBeforeWithDifferentPlaceholder)
-        yyerror("The nodename reference is defined before, but with a different placeholder type."); // TODO: Correct/Improve this error message
-      else if (isReferencedBeforeWithDifferentPlaceholder)
-        yyerror("The nodename reference is referenced before, but with a different placeholder type."); // TODO: Correct/Improve this error message
-      else if (!isDefinedBefore)
-        references.insert(rightRef);
+      delete $1;
+      delete $2;
+      delete $3;
+      yyerror(e.what());
     }
-
-    $$ = new AstNode(nullptr, $1, $3, operation, definitions, references); // TODO: Change to *definitions and instantiate this dinamically
-    delete $2;
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      delete $3;
+      yyerror(error);
+    }
   }
   |	restrictions_and restrictions_not	/* same as AND */
   {
-    NodenameInfoSet& leftDefinitions = $1->data.internal.definitions;
-    NodenameInfoSet& leftReferences = $1->data.internal.references;
-    NodenameInfoSet& rightDefinitions = $2->data.internal.definitions;
-    NodenameInfoSet& rightReferences = $2->data.internal.references;
-
-    string operation = "&"; // TODO: create a constant for this symbol
-    NodenameInfoSet definitions = leftDefinitions;
-    NodenameInfoSet references = leftReferences;
-
-    for (NodenameInfo *rightDef : rightDefinitions)
+    
+    try
     {
-      bool definedBefore = leftDefinitions.find(rightDef) != leftDefinitions.end();
-      bool referencedBefore = leftReferences.find(rightDef) == leftReferences.end();
-
-      if (definedBefore)
-        yyerror("The nodename definition is already defined before."); // TODO: Correct/Improve this error message
-      else if (referencedBefore)
-        yyerror("The nodename definition is being referenced before."); // TODO: Correct/Improve this error message
-      else
-        definitions.insert(rightDef);
+      $$ = Parsing::parseAnd($1, $2);
     }
-
-    for (NodenameInfo *rightRef : rightReferences)
+    catch (const exception& e)
     {
-      NodenameInfoSet::iterator leftDefIt = leftDefinitions.find(rightRef);
-      NodenameInfoSet::iterator leftRefIt = leftReferences.find(rightRef);
-      
-      bool isDefinedBefore = leftDefIt != leftDefinitions.end();
-      bool isDefinedBeforeWithDifferentPlaceholder = isDefinedBefore
-        && (*leftDefIt)->placeholder != rightRef->placeholder;
-      bool isReferencedBeforeWithDifferentPlaceholder = leftRefIt != leftReferences.end()
-        && (*leftRefIt)->placeholder != rightRef->placeholder;
-
-      if (isDefinedBeforeWithDifferentPlaceholder)
-        yyerror("The nodename reference is defined before, but with a different placeholder type."); // TODO: Correct/Improve this error message
-      else if (isReferencedBeforeWithDifferentPlaceholder)
-        yyerror("The nodename reference is referenced before, but with a different placeholder type."); // TODO: Correct/Improve this error message
-      else if (!isDefinedBefore)
-        references.insert(rightRef);
+      delete $1;
+      delete $2;
+      yyerror(e.what());
     }
-
-    $$ = new AstNode(nullptr, $1, $2, operation, definitions, references); // TODO: Change to *definitions and instantiate this dinamically
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      yyerror(error);
+    }
   }
   | restrictions_not
   {
@@ -362,18 +214,29 @@ restrictions_and:
 restrictions_not:
   terminal_not restrictions_not
   {
-    string operation = *$1;
-    NodenameInfoSet definitions;
-    NodenameInfoSet references;
-
-    $$ = new AstNode(nullptr, $2, nullptr, operation, definitions, references); // TODO: Change to *definitions and instantiate this dinamically
-    delete $1;
+    try
+    {
+      $$ = Parsing::parseNot($2);
+      delete $1;
+    }
+    catch (const exception& e)
+    {
+      delete $1;
+      delete $2;
+      yyerror(e.what());
+    }
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      yyerror(error);
+    }
   }
   |	lpar restrictions rpar
   {
     $$ = $2;
   }
-  | restriction /* break precedence, [] on tgrep*/
+  | restriction
   {
     $$ = $1;
   }
@@ -382,29 +245,23 @@ restrictions_not:
 restriction:
   op search_second
   {
-    string *operation = $1;
-    NodenameInfoSet *definitions = new NodenameInfoSet;
-    NodenameInfoSet *references = new NodenameInfoSet;
-
-    if ($2->isLeaf())
+    try
     {
-      NodenameInfo *nodenameInfo = $2->data.leaf.nodenameInfo;
-
-      if (nodenameInfo->defOrRef == DefOrRef::DEFINITION)
-        definitions->insert(nodenameInfo);
-      else if (nodenameInfo->defOrRef == DefOrRef::REFERENCE)
-        references->insert(nodenameInfo);
+      $$ = Parsing::parseRestriction(*$1, $2);
+      delete $1;
     }
-    else
+    catch (const exception& e)
     {
-      *definitions = $2->data.internal.definitions;
-      *references = $2->data.internal.references;
+      delete $1;
+      delete $2;
+      yyerror(e.what());
     }
-
-    $$ = new AstNode(nullptr, $2, nullptr, *operation, *definitions, *references); // TODO: Change to *definitions and instantiate this dinamically
-    delete operation;
-    delete definitions;
-    delete references;
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      yyerror(error);
+    }
   }
   ;
 
@@ -420,48 +277,32 @@ search_second:
   ;
 
 search_primary:
-  node_specifier
-  {
-    // TODO: See if this rule can be removed, because it's useless
-    $$ = $1;
-  }
-  ;
-
-node_specifier:
   nodename
   {
     try
     {
-      istringstream input(*$1);
-      NodenameInfo nodenameInfo = NodenameMachine(input).run(); // TODO: Change this method to return a pointer to NodenameInfo
-      $$ = new AstNode(nullptr, nullptr, nullptr, new NodenameInfo(nodenameInfo));
+      $$ = Parsing::parseNodename(*$1);
       delete $1;
     }
     catch (const exception& e)
     {
+      delete $1;
       yyerror(e.what());
     }
     catch (const char* error)
     {
+      delete $1;
       yyerror(error);
     }
   }
   | end_marker
   {
-    $$ = new AstNode(nullptr, nullptr, nullptr, NodenameInfo::newEndMarkerInstance());
+    $$ = Parsing::parseEndMarker();
     delete $1;
   }
   | subtree_range
   {
-    string lexem = *$1;
-    Placeholder placeholder = (lexem[0] == '[') ? Placeholder::CUT : Placeholder::COPY;
-    int placeholderNumber = 0;
-
-    size_t colonPos = lexem.find(':', 1);
-    if (colonPos != string::npos)
-      placeholderNumber = stoi(lexem.substr(1, colonPos - 1));
-
-    $$ = new AstNode(nullptr, nullptr, nullptr, NodenameInfo::newSubtreeRangeInstance(placeholder, placeholderNumber));
+    $$ = Parsing::parseSubtreeRange(*$1);
     delete $1;
   }
   ;
@@ -473,21 +314,18 @@ replacement_expression:
   }
   | /* empty */
   {
-    $$ = new vector<ReplacementNode*>;
+    $$ = new Transduction::Replacement::TreeSequence;
   }
   ;
 
 tree_seq: 
   tree_seq tree
   {
-    vector<ReplacementNode*> &treeSeq = *$1;
-    ReplacementNode* tree = $2;
-    treeSeq.push_back(tree);
-    $$ = &treeSeq;
+    $$ = Parsing::parseReplacementTreeSequence($1, $2);
   }
   | tree
   {
-    $$ = new vector<ReplacementNode*>{ $1 };
+    $$ = new Transduction::Replacement::TreeSequence({ $1 });
   }
   ;
 
@@ -498,13 +336,28 @@ tree:
   }
   | lpar node tree_seq rpar
   {
-    NodenameInfo *node = $2->nodenameInfo;
-    vector<ReplacementNode*> *treeSeq = $3;
-
-    if (node->placeholder != Placeholder::NONE)
-      yyerror("The tree root in replacement expression cannot have a placeholder."); // TODO: Correct/Improve this error message
-
-    $$ = new ReplacementNode(node, treeSeq);
+    try
+    {
+      $$ = Parsing::parseReplacementTree($2, $3);
+      delete $1;
+      delete $4;
+    }
+    catch (const exception& e)
+    {
+      delete $1;
+      delete $2;
+      delete $3;
+      delete $4;
+      yyerror(e.what());
+    }
+    catch (const char* error)
+    {
+      delete $1;
+      delete $2;
+      delete $3;
+      delete $4;
+      yyerror(error);
+    }
   }
   ;
 
@@ -513,32 +366,17 @@ node:
   {
     try
     {
-      istringstream input(*$1);
-      NodenameInfo nodenameInfo = NodenameMachine(input).run(); // TODO: Change this method to return a pointer to NodenameInfo
-
-      if (!nodenameInfo.freeOfContext)
-        yyerror("Nodenames in replacement expression cannot have left or right contexts."); // TODO: Correct/Improve this error message
-      if (nodenameInfo.undetermined)
-        yyerror("Nodenames in replacement expression cannot contain ANY, WILDCARD or REGEX."); // TODO: Correct/Improve this error message
-      
-      if (nodenameInfo.placeholder != Placeholder::NONE)
-      {
-        NodenameInfoSet::iterator it = searchExpressionDefinitions.find(&nodenameInfo);
-        if (it == searchExpressionDefinitions.end())
-          yyerror("The placeholder is not defined in the search expression.");  // TODO: Correct/Improve this error message
-        if ((*it)->placeholder != nodenameInfo.placeholder)
-          yyerror("The placeholder has a different type of its definition in the search expression.");  // TODO: Correct/Improve this error message
-      }
-
-      $$ = new ReplacementNode(new NodenameInfo(nodenameInfo));
+      $$ = Parsing::parseReplacementNode(*$1, searchExpressionDefinitions);
       delete $1;
     }
     catch (const exception& e)
     {
+      delete $1;
       yyerror(e.what());
     }
     catch (const char* error)
     {
+      delete $1;
       yyerror(error);
     }
   }
@@ -598,6 +436,7 @@ void printHelp()
   // TODO: Improve this manual
 }
 
+// TODO: Move this to a main file and adjust Makefile
 int main(int argc, char *argv[]) 
 {
   for (int i = 0; i < argc; i++)
@@ -620,6 +459,8 @@ int main(int argc, char *argv[])
   // cout << "Transduction rule to be processed: " << argv[1] << endl;
   yy_scan_string(argv[1]);
 
+  // TODO: use %parser-param to pass params here
+  // https://www.gnu.org/software/bison/manual/bison.html#index-_0025parse_002dparam:~:text=parse%2Dparam%3A-,Directive%3A%20%25parse%2Dparam%20%7Bargument%2Ddeclaration%7D,-%E2%80%A6%20%C2%B6
   if (yyparse() == 0)
   {
     Transducer* transducer = TransducerBuilder()
@@ -633,8 +474,8 @@ int main(int argc, char *argv[])
       // cout << "Processing file: " << filename << endl;
       auto trees = SyntaxTree::readFromFile(filename);
 
-      for (auto *tree : trees)
-        transducer->applyTransductionRule(tree, yaccResult->search, yaccResult->replacement);
+      // for (auto *tree : trees)
+      //   transducer->applyTransductionRule(tree, yaccResult->search, yaccResult->replacement);
     }
 
     delete transducer;

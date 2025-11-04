@@ -1,5 +1,5 @@
-#ifndef PLACEHOLDER_TYPE_HPP
-#define PLACEHOLDER_TYPE_HPP
+#ifndef PLACEHOLDER_HPP
+#define PLACEHOLDER_HPP
 
 namespace Nodename
 {

@@ -1,16 +1,18 @@
 #ifndef TRANSDUCTION_RULE_HPP
 #define TRANSDUCTION_RULE_HPP
 
-#include <vector>
-#include "ast-node.hpp"
-#include "replacement-node.hpp"
+#include "search-expression.hpp"
+#include "replacement-tree.hpp"
 
 namespace Transduction
 {
-  struct TransductionRule
+  class TransductionRule
   {
-    Ast::AstNode *search;
-    std::vector<Ast::ReplacementNode*> *replacement;
+  public:
+    Transduction::Search::SearchExpression *search;
+    Transduction::Replacement::TreeSequence *replacement;
+    TransductionRule(Transduction::Search::SearchExpression*, Transduction::Replacement::TreeSequence*);
+    ~TransductionRule();
   };
 }
 

@@ -18,7 +18,7 @@ namespace Nodename
   {
     NodenameInfoType type = NodenameInfoType::SIMPLE_NODE;
     Placeholder placeholder = Placeholder::NONE;
-    unsigned int placeholderNumber = -1;
+    unsigned int placeholderNumber = 0;
     bool undetermined = false; // true, when nodename has ANY, WILDCARD or REGEX inside it; false, otherwise.
     bool freeOfContext = true; // true, when nodename doesn't have specified left or right contexts; false, otherwise.
     DefOrRef defOrRef = DefOrRef::NONE; // The placeholder is a definition, a reference or neither of them.
@@ -42,7 +42,7 @@ namespace Nodename
     NodenameInfo(const NodenameInfo& other) = default;
 
     // TODO: move to .cpp
-    static NodenameInfo* newSubtreeRangeInstance(Placeholder placeholder, unsigned int placeholderNumber)
+    static NodenameInfo* createSubtreeRangeInstance(Placeholder placeholder, unsigned int placeholderNumber)
     {
       auto info = new NodenameInfo();
 
@@ -58,7 +58,7 @@ namespace Nodename
     }
 
     // TODO: move to .cpp
-    static NodenameInfo* newEndMarkerInstance()
+    static NodenameInfo* createEndMarkerInstance()
     {
       auto info = new NodenameInfo();
 
