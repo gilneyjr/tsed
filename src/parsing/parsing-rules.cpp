@@ -1,8 +1,8 @@
 #include <regex>
 #include <sstream>
 #include "and-expression.hpp"
-#include "nodename_info.hpp"
-#include "nodename_machine.hpp"
+#include "nodename-info.hpp"
+#include "nodename-machine.hpp"
 #include "not-expression.hpp"
 #include "or-expression.hpp"
 #include "parsing-rules.hpp"

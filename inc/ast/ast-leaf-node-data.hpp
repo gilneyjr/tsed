@@ -1,7 +1,7 @@
 #ifndef AST_LEAF_NODE_DATA
 #define AST_LEAF_NODE_DATA
 
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 namespace Ast
 {

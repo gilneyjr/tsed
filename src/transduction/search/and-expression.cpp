@@ -1,5 +1,5 @@
 #include "and-expression.hpp"
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 Transduction::Search::AndExpression::AndExpression(SearchExpression *leftExpression, SearchExpression *rightExpression)
   : SearchExpression(leftExpression->getDefinitions(), leftExpression->getReferences()), leftExpression(leftExpression), rightExpression(rightExpression)

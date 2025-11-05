@@ -5,7 +5,7 @@
 #include <list>
 #include <regex>
 
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 // TODO: make a tree after
 struct Tree

@@ -2,7 +2,7 @@
 #define AST_INTERNAL_NODE_DATA
 
 #include <string>
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 namespace Ast
 {

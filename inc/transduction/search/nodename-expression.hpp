@@ -1,7 +1,7 @@
 #ifndef NODENAME_EXPRESSION_HPP
 #define NODENAME_EXPRESSION_HPP
 
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 #include "search-expression.hpp"
 
 namespace Transduction::Search

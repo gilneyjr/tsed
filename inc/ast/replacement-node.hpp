@@ -2,7 +2,7 @@
 #define REPLACEMENT_NODE_HPP
 
 #include <vector>
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 namespace Ast
 {

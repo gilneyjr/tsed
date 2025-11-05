@@ -3,7 +3,7 @@
   #include <sstream> // std::stringstream, std::istringstream
 
   #include "ast-node.hpp"
-  #include "nodename_machine.hpp"
+  #include "nodename-machine.hpp"
   #include "parsing-rules.hpp"
   #include "replacement-node.hpp"
   #include "search-expression.hpp"

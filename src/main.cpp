@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
-#include "nodename_machine.hpp"
-#include "nodeblock_machine.hpp"
+#include "nodename-machine.hpp"
+#include "nodeblock-machine.hpp"
 
 using namespace Nodename;
 using namespace Nodename::Nodeblock;

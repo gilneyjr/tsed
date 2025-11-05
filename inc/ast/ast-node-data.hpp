@@ -3,7 +3,7 @@
 
 #include "ast-internal-node-data.hpp"
 #include "ast-leaf-node-data.hpp"
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 namespace Ast
 {

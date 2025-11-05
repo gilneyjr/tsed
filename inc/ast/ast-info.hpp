@@ -1,7 +1,7 @@
 #ifndef AST_INFO_HPP
 #define AST_INFO_HPP
 
-#include "nodename_info.hpp"
+#include "nodename-info.hpp"
 
 namespace Ast
 {
