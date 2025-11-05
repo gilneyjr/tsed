@@ -2,10 +2,8 @@
   #include <iostream> // std::cout, std::endl
   #include <sstream> // std::stringstream, std::istringstream
 
-  #include "ast-node.hpp"
   #include "nodename-machine.hpp"
   #include "parsing-rules.hpp"
-  #include "replacement-node.hpp"
   #include "search-expression.hpp"
   #include "syntax-tree.hpp"
   #include "transducer.hpp"
@@ -14,7 +12,6 @@
 
   using namespace std;
   using namespace Nodename;
-  using namespace Ast;
   using namespace Transduction;
 
   // TODO: verify if all these declarion are being used
