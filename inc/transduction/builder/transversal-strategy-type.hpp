@@ -7,7 +7,7 @@ namespace Transduction
   {
     RESTART_FROM_ROOT = 1,
     STOP = 2
-    // TODO: add the others iterator strategies here later
+    // TODO: add the others transveral strategies here later
   };
 }
 

@@ -1,6 +1,5 @@
 #include "syntax-tree.hpp"
 #include <fstream>
-#include <iostream> // TODO: remove it later
 
 Transduction::SyntaxTree::SyntaxTree(
   const std::string tag,

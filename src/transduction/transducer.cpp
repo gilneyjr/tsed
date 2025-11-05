@@ -33,15 +33,3 @@ void Transduction::Transducer::apply(TransductionRule *rule, SyntaxTree* tree)
     }
   }
 }
-
-// TODO: remove these comments later
-// NP >> [0:PP]
-// NP < [0:PP] // Poderia entrar embaixo do NP, mas não no PP
-// NP $, [0:PP] // Poderia entrar nos filhos de NP sem problema
-// NP $. [0:PP] // Não poderia entrar no PP
-// 3 possíveis comportamentos:
-// 1. Continua a partir do placeholder como se ele estivesse 
-//    já sido processado, se ele estiver adiante do tree na preorder.
-// 2. Armazena em um conjunto as árvores já alteradas e não permite 
-//    entrar nos filhos delas.
-// 3. Permitir recursividade

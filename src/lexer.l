@@ -78,12 +78,12 @@ NODEBLOCK           ({ALFANUM}|{WILDCARD}|{ANYSEQUENCE}|{ESCAPED}|{DQSTRING}|{SQ
 "#"                   { return end_marker; }
 "("                   { return lpar; }
 ")"                   { return rpar; }
-\/\/.*                ; // TODO: Verify what is this for (Is this for comments?)
+\/\/.*                ;
 
 "==>"                 { return turnsto; }
 
 " "                   ; // Spaces allowed for readability
-\n|\r|\n\r|\r\n       ; // New line // TODO: Verify if new line should be allowed
+\n|\r|\n\r|\r\n       ; // New line
 .                     { yyerror("lexical error: unexpected character"); }
 
 %%

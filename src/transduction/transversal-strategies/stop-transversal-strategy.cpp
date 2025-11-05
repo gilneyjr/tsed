@@ -1,5 +1,5 @@
 #include "stop-transversal-strategy.hpp"
-#include <iostream> // TODO: remove it later
+#include <iostream>
 
 Transduction::StopTransversalStrategy::StopTransversalStrategy(
   Transduction::SyntaxTreeIteratorStrategy* iteratorFactory

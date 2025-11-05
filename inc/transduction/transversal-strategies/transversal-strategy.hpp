@@ -19,7 +19,7 @@ namespace Transduction
     virtual void start(SyntaxTree*);
     bool hasNext();
     virtual SyntaxTree* next() = 0;
-    virtual void notifyTransduction() = 0; // TODO: mudar parâmetros aqui
+    virtual void notifyTransduction() = 0; // TODO: review parameters when implement other transversals
   };
 }
 
