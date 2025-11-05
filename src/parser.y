@@ -28,9 +28,6 @@
   Transduction::TransductionRule *yaccResult;
 
   NodenameInfoSet searchExpressionDefinitions; // Global variable used in replacement expression
-
-  // TODO: Remove it later
-  std::string NodenameInfoToString(NodenameInfo); // Auxiliary function defined below
 %}
 
 %code requires {
@@ -380,42 +377,6 @@ node:
   ;
 
 %%
-
-std::string NodenameInfoToString(NodenameInfo result)
-{
-  std::stringstream stream;
-
-  std::string types[] = {
-    "SIMPLE_NODE",
-    "NODE_PLACEHOLDER",
-    "SUBTREE_RANGE_PLACEHOLDER",
-    "END_MARKER"
-  };
-
-  std::string placeholders[] = {
-    "NONE",
-    "CUT",
-    "COPY"
-  };
-
-  std::string defOrRefs[] = {
-    "NONE",
-    "DEFINITION",
-    "REFERENCE"
-  };
-
-  stream << "{";
-  stream << "type:\"" << types[(int)result.type] << "\",";
-  stream << "placeholder:\"" << placeholders[(int)result.placeholder] << "\",";
-  stream << "placeholderNumber:" << result.placeholderNumber << ",";
-  stream << "undetermined:" << (result.undetermined ? "true" : "false") << ",";
-  stream << "freeOfContext:" << (result.freeOfContext ? "true" : "false") << ",";
-  stream << "defOrRef:\"" << defOrRefs[(int)result.defOrRef] << "\",";
-  stream << "regex:\"" << result.regex << "\"";
-  stream << "}";
-
-  return stream.str();
-}
 
 void printUsage()
 {
