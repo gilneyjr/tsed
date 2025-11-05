@@ -474,8 +474,8 @@ int main(int argc, char *argv[])
       // cout << "Processing file: " << filename << endl;
       auto trees = SyntaxTree::readFromFile(filename);
 
-      // for (auto *tree : trees)
-      //   transducer->applyTransductionRule(tree, yaccResult->search, yaccResult->replacement);
+      for (auto *tree : trees)
+        transducer->apply(yaccResult, tree);
     }
 
     delete transducer;

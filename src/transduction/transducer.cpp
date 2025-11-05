@@ -542,6 +542,25 @@ bool Transduction::Transducer::isEqualTo(
   return subtreeMatchesSearchExpression(tree, searchExpression, symbolTable);
 }
 
+void Transduction::Transducer::apply(TransductionRule *rule, SyntaxTree* tree)
+{
+  if (rule == nullptr || tree == nullptr)
+    return;
+
+  transversalStrategy->start(tree);
+  while (transversalStrategy->hasNext())
+  {
+    SyntaxTree* current = transversalStrategy->next();
+    SymbolTable symbolTable;
+    if (rule->search->match(current, symbolTable))
+    {
+      std::cout << *current << std::endl;
+      this->transversalStrategy->notifyTransduction();
+      // TODO: apply replacement expression here
+    }
+  }
+}
+
 void Transduction::Transducer::applyTransductionRule(
   std::list<SyntaxTree*> &trees,
   Ast::AstNode *searchExpression,

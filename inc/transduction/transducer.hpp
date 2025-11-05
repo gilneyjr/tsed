@@ -11,6 +11,7 @@
 #include "replacement-node.hpp"
 #include "symbol-table.hpp"
 #include "syntax-tree.hpp"
+#include "transduction-rule.hpp"
 #include "transversal-strategy.hpp"
 
 namespace Transduction
@@ -48,6 +49,8 @@ namespace Transduction
   public:
     Transducer(TransversalStrategy*);
     ~Transducer();
+
+    void apply(TransductionRule*, SyntaxTree*);
 
     void applyTransductionRule(
       std::list<SyntaxTree*>&,
