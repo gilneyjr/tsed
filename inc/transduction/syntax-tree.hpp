@@ -38,7 +38,6 @@ namespace Transduction
     void addChild(SyntaxTree*);
 
     static std::vector<SyntaxTree*> readFromFile(std::string&);
-    static void printTree(SyntaxTree*, int = 0); // TODO: Remove it later
     friend std::ostream& operator<<(std::ostream&, const SyntaxTree&);
   };
 

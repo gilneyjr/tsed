@@ -169,24 +169,6 @@ std::string Transduction::SyntaxTree::parseWord(std::istream &in)
   return token;
 }
 
-// TODO: remove this method later
-void Transduction::SyntaxTree::printTree(SyntaxTree* tree, int pad)
-{
-  if (tree == nullptr)
-    return;
-  
-  for (int i = 0; i < pad; i++)
-    std::cout << " ";
-  std::cout << tree->tag << std::endl;
-  
-  auto work = tree->firstChild;
-  while (work != nullptr)
-  {
-    printTree(work, pad+1);
-    work = work->rightSibling;
-  }
-}
-
 std::ostream& Transduction::operator<<(std::ostream& os, const SyntaxTree& tree)
 {
   if (tree.firstChild == nullptr)
