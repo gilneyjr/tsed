@@ -10,7 +10,7 @@ Transduction::Search::IsUniqueChildOfExpression::~IsUniqueChildOfExpression()
   
 bool Transduction::Search::IsUniqueChildOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->parent == nullptr || tree->parent->firstChild == nullptr || tree->parent->firstChild != tree->parent->lastChild)
+  if (tree == nullptr || tree->getParent() == nullptr || tree->getParent()->getFirstChild() == nullptr || tree->getParent()->getFirstChild() != tree->getParent()->getLastChild())
     return false;
-  return expression->match(tree->parent, symbolTable);
+  return expression->match(tree->getParent(), symbolTable);
 }

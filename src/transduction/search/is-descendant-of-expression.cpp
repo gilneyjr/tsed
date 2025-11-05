@@ -13,7 +13,7 @@ bool Transduction::Search::IsDescendantOfExpression::match(SyntaxTree *tree, Sym
   if (tree == nullptr)
     return false;
 
-  for (auto ancestor = tree->parent; ancestor != nullptr; ancestor = ancestor->parent)
+  for (auto ancestor = tree->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
     if (expression->match(ancestor, symbolTable))
       return true;
   return false;

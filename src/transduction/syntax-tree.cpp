@@ -19,6 +19,13 @@ Transduction::SyntaxTree::~SyntaxTree()
   }
 }
 
+const std::string& Transduction::SyntaxTree::getTag() const { return tag; }
+Transduction::SyntaxTree* Transduction::SyntaxTree::getParent() const { return parent; }
+Transduction::SyntaxTree* Transduction::SyntaxTree::getFirstChild() const { return firstChild; }
+Transduction::SyntaxTree* Transduction::SyntaxTree::getLastChild() const { return lastChild; }
+Transduction::SyntaxTree* Transduction::SyntaxTree::getLeftSibling() const { return leftSibling; }
+Transduction::SyntaxTree* Transduction::SyntaxTree::getRightSibling() const { return rightSibling; }
+
 void Transduction::SyntaxTree::addChild(SyntaxTree *child)
 {
   if (child == nullptr)
@@ -26,12 +33,12 @@ void Transduction::SyntaxTree::addChild(SyntaxTree *child)
 
   child->parent = this;
   child->rightSibling = nullptr;
-  child->leftSibling = this->lastChild;
+  child->leftSibling = lastChild;
 
-  if (this->lastChild != nullptr)
-    this->lastChild->rightSibling = child;
+  if (lastChild != nullptr)
+    lastChild->rightSibling = child;
   
-  this->lastChild = child;
+  lastChild = child;
 
   if (firstChild == nullptr)
     firstChild = child;

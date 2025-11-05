@@ -10,15 +10,15 @@ Transduction::Search::HasUniquePathFromExpression::~HasUniquePathFromExpression(
   
 bool Transduction::Search::HasUniquePathFromExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->leftSibling != nullptr || tree->rightSibling != nullptr)
+  if (tree == nullptr || tree->getLeftSibling() != nullptr || tree->getRightSibling() != nullptr)
     return false;
 
-  for (auto ancestor = tree->parent; ancestor != nullptr; ancestor = ancestor->parent)
+  for (auto ancestor = tree->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
   {
     if (expression->match(ancestor, symbolTable))
       return true;
 
-    if (ancestor->leftSibling != nullptr || ancestor->rightSibling != nullptr)
+    if (ancestor->getLeftSibling() != nullptr || ancestor->getRightSibling() != nullptr)
       return false;
   }
 

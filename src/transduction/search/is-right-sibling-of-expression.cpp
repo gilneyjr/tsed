@@ -13,7 +13,7 @@ bool Transduction::Search::IsRightSiblingOfExpression::match(SyntaxTree *tree, S
   if (tree == nullptr)
     return false;
 
-  for (auto rightSibling = tree->rightSibling; rightSibling != nullptr; rightSibling = rightSibling->rightSibling)
+  for (auto rightSibling = tree->getRightSibling(); rightSibling != nullptr; rightSibling = rightSibling->getRightSibling())
     if (expression->match(rightSibling, symbolTable))
       return true;
 

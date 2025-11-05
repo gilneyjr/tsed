@@ -13,9 +13,9 @@ bool Transduction::Search::HasUniquePathToExpression::match(SyntaxTree *tree, Sy
   if (tree == nullptr)
     return false;
 
-  for (auto descendant = tree->firstChild; descendant != nullptr; descendant = descendant->firstChild)
+  for (auto descendant = tree->getFirstChild(); descendant != nullptr; descendant = descendant->getFirstChild())
   {
-    if (descendant->leftSibling != nullptr || descendant->rightSibling != nullptr)
+    if (descendant->getLeftSibling() != nullptr || descendant->getRightSibling() != nullptr)
       return false;
 
     if (expression->match(descendant, symbolTable))

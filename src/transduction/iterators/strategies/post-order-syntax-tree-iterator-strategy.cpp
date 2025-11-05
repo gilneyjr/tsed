@@ -4,8 +4,8 @@ Transduction::SyntaxTree*
 Transduction::PostOrderSyntaxTreeIteratorStrategy::start(SyntaxTree* root)
 {
   if (root != nullptr)
-    while (root->firstChild != nullptr)
-      root = root->firstChild;
+    while (root->getFirstChild() != nullptr)
+      root = root->getFirstChild();
   return root;
 }
 
@@ -15,15 +15,15 @@ Transduction::PostOrderSyntaxTreeIteratorStrategy::next(SyntaxTree* current)
   if (current == nullptr)
     return current;
   
-  if (current->rightSibling)
+  if (current->getRightSibling())
   {
-    current = current->rightSibling;
-    while (current->firstChild)
-      current = current->firstChild;
+    current = current->getRightSibling();
+    while (current->getFirstChild())
+      current = current->getFirstChild();
   }
   else
   {
-    current = current->parent;
+    current = current->getParent();
   }
   
   return current;

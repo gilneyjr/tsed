@@ -10,7 +10,7 @@ Transduction::Search::IsImmediatelyLeftSiblingOfExpression::~IsImmediatelyLeftSi
   
 bool Transduction::Search::IsImmediatelyLeftSiblingOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->rightSibling == nullptr)
+  if (tree == nullptr || tree->getRightSibling() == nullptr)
     return false;
-  return expression->match(tree->rightSibling, symbolTable);
+  return expression->match(tree->getRightSibling(), symbolTable);
 }

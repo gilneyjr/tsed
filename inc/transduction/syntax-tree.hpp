@@ -9,21 +9,6 @@ namespace Transduction
 {
   class SyntaxTree
   {
-  public:
-    // TODO: turn some attributes to protected
-    std::string tag;
-    SyntaxTree* parent;
-    SyntaxTree* firstChild;
-    SyntaxTree* lastChild;
-    SyntaxTree* leftSibling;
-    SyntaxTree* rightSibling;
-
-    SyntaxTree(const std::string, SyntaxTree* = nullptr);
-    ~SyntaxTree();
-    void addChild(SyntaxTree*);
-    static std::vector<SyntaxTree*> readFromFile(std::string&);
-    static void printTree(SyntaxTree*, int = 0);
-    friend std::ostream& operator<<(std::ostream&, const SyntaxTree&);
   private:
     static std::string getNextTokenFromStream(std::istream&);
     static void putTokenBackToStream(std::string&, std::istream&);
@@ -31,6 +16,30 @@ namespace Transduction
     static std::vector<SyntaxTree*> parseTreesOpt(std::istream&);
     static SyntaxTree* parseTree(std::istream&);
     static std::string parseWord(std::istream&);
+  
+  protected:
+    std::string tag;
+    SyntaxTree* parent;
+    SyntaxTree* firstChild;
+    SyntaxTree* lastChild;
+    SyntaxTree* leftSibling;
+    SyntaxTree* rightSibling;
+
+  public:
+    SyntaxTree(const std::string, SyntaxTree* = nullptr);
+    ~SyntaxTree();
+    
+    const std::string& getTag() const;
+    SyntaxTree* getParent() const;
+    SyntaxTree* getFirstChild() const;
+    SyntaxTree* getLastChild() const;
+    SyntaxTree* getLeftSibling() const;
+    SyntaxTree* getRightSibling() const;
+    void addChild(SyntaxTree*);
+
+    static std::vector<SyntaxTree*> readFromFile(std::string&);
+    static void printTree(SyntaxTree*, int = 0); // TODO: Remove it later
+    friend std::ostream& operator<<(std::ostream&, const SyntaxTree&);
   };
 
   std::ostream& operator<<(std::ostream&, const SyntaxTree&);

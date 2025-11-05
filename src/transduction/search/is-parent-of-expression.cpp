@@ -13,10 +13,10 @@ bool Transduction::Search::IsParentOfExpression::match(SyntaxTree *tree, SymbolT
   if (tree == nullptr) // TODO: Implement end marker on left case later
     return false;
 
-  if (tree->firstChild == nullptr)
+  if (tree->getFirstChild() == nullptr)
     return expression->match(nullptr, symbolTable); // try to match end marker
 
-  for (auto child = tree->firstChild; child != nullptr; child = child->rightSibling)
+  for (auto child = tree->getFirstChild(); child != nullptr; child = child->getRightSibling())
     if (expression->match(child, symbolTable))
       return true;
   return false;

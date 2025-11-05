@@ -10,10 +10,10 @@ Transduction::Search::IsSiblingOfExpression::~IsSiblingOfExpression()
   
 bool Transduction::Search::IsSiblingOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->parent == nullptr)
+  if (tree == nullptr || tree->getParent() == nullptr)
     return false;
 
-  for (auto sibling = tree->parent->firstChild; sibling != nullptr; sibling = sibling->rightSibling)
+  for (auto sibling = tree->getParent()->getFirstChild(); sibling != nullptr; sibling = sibling->getRightSibling())
   {
     if (tree == sibling)
       continue;

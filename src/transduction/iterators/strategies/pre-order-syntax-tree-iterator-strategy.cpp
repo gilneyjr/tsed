@@ -12,21 +12,21 @@ Transduction::PreOrderSyntaxTreeIteratorStrategy::next(SyntaxTree* current)
   if (current == nullptr)
     return current;
 
-  if (current->firstChild != nullptr)
-    current = current->firstChild;
-  else if (current->rightSibling != nullptr)
-    current = current->rightSibling;
+  if (current->getFirstChild() != nullptr)
+    current = current->getFirstChild();
+  else if (current->getRightSibling() != nullptr)
+    current = current->getRightSibling();
   else
   {
-    auto aux = current->parent;
+    auto aux = current->getParent();
     while (aux != nullptr)
     {
-      if (aux->rightSibling != nullptr)
+      if (aux->getRightSibling() != nullptr)
       {
-        aux = aux->rightSibling;
+        aux = aux->getRightSibling();
         break;
       }
-      aux = aux->parent;
+      aux = aux->getParent();
     }
     current = aux;
   }

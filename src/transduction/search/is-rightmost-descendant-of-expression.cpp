@@ -10,12 +10,12 @@ Transduction::Search::IsRightmostDescendantOfExpression::~IsRightmostDescendantO
   
 bool Transduction::Search::IsRightmostDescendantOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->lastChild != nullptr || tree->firstChild != nullptr || tree->parent == nullptr)
+  if (tree == nullptr || tree->getLastChild() != nullptr || tree->getFirstChild() != nullptr || tree->getParent() == nullptr)
     return false;
 
-  for (auto ancestor = tree->parent; ancestor != nullptr; ancestor = ancestor->parent)
+  for (auto ancestor = tree->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
   {
-    if (ancestor->rightSibling != nullptr) 
+    if (ancestor->getRightSibling() != nullptr) 
       return false;
 
     if (expression->match(ancestor, symbolTable))

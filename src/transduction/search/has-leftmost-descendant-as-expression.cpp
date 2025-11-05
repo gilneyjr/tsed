@@ -10,12 +10,12 @@ Transduction::Search::HasLeftmostDescendantAsExpression::~HasLeftmostDescendantA
   
 bool Transduction::Search::HasLeftmostDescendantAsExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->firstChild == nullptr)
+  if (tree == nullptr || tree->getFirstChild() == nullptr)
     return false;
 
-  auto leftmostDescendant = tree->firstChild;
-  while (leftmostDescendant->firstChild != nullptr)
-    leftmostDescendant = leftmostDescendant->firstChild;
+  auto leftmostDescendant = tree->getFirstChild();
+  while (leftmostDescendant->getFirstChild() != nullptr)
+    leftmostDescendant = leftmostDescendant->getFirstChild();
 
   return expression->match(leftmostDescendant, symbolTable);
 }

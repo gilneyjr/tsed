@@ -10,16 +10,16 @@ Transduction::Search::IsNthChildOfExpression::~IsNthChildOfExpression()
   
 bool Transduction::Search::IsNthChildOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->parent == nullptr || tree->parent->firstChild || n == 0u)
+  if (tree == nullptr || tree->getParent() == nullptr || tree->getParent()->getFirstChild() || n == 0u)
     return false;
 
-  auto nthChildOfParent = tree->parent->firstChild;
+  auto nthChildOfParent = tree->getParent()->getFirstChild();
   for (auto i = 1u; i < n; i++)
   {
-    nthChildOfParent = nthChildOfParent->rightSibling;
+    nthChildOfParent = nthChildOfParent->getRightSibling();
     if (nthChildOfParent == nullptr)
       return false;
   }
 
-  return nthChildOfParent == tree && expression->match(tree->parent, symbolTable);
+  return nthChildOfParent == tree && expression->match(tree->getParent(), symbolTable);
 }

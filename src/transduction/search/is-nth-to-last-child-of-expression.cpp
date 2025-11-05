@@ -10,13 +10,13 @@ Transduction::Search::IsNthToLastChildOfExpression::~IsNthToLastChildOfExpressio
 
 bool Transduction::Search::IsNthToLastChildOfExpression::match(Transduction::SyntaxTree *tree, Transduction::SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->parent == nullptr || tree->parent->lastChild == nullptr || n == 0)
+  if (tree == nullptr || tree->getParent() == nullptr || tree->getParent()->getLastChild() == nullptr || n == 0)
     return false;
 
-  auto nthToLastChildOfParent = tree->parent->lastChild;
+  auto nthToLastChildOfParent = tree->getParent()->getLastChild();
   for (auto i = n; i > 1u; i--)
   {
-    nthToLastChildOfParent = nthToLastChildOfParent->leftSibling;
+    nthToLastChildOfParent = nthToLastChildOfParent->getLeftSibling();
     if (nthToLastChildOfParent == nullptr)
       return false;
   }

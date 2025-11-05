@@ -11,12 +11,12 @@ Transduction::Search::IsAncestorOfExpression::~IsAncestorOfExpression()
   
 bool Transduction::Search::IsAncestorOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->firstChild == nullptr)
+  if (tree == nullptr || tree->getFirstChild() == nullptr)
     return false;
 
   // TODO: should I use tree tranversal strategies here?
   std::queue<SyntaxTree*> queue;
-  for (auto child = tree->firstChild; child != nullptr; child = child->rightSibling)
+  for (auto child = tree->getFirstChild(); child != nullptr; child = child->getRightSibling())
     queue.push(child);
 
   while (!queue.empty())
@@ -27,7 +27,7 @@ bool Transduction::Search::IsAncestorOfExpression::match(SyntaxTree *tree, Symbo
     if (expression->match(descendant, symbolTable))
       return true;
 
-    for (auto child = descendant->firstChild; child != nullptr; child = child->rightSibling)
+    for (auto child = descendant->getFirstChild(); child != nullptr; child = child->getRightSibling())
       queue.push(child);
   }
 

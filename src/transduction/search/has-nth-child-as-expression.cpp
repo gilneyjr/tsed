@@ -10,13 +10,13 @@ Transduction::Search::HasNthChildAsExpression::~HasNthChildAsExpression()
   
 bool Transduction::Search::HasNthChildAsExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
 {
-  if (tree == nullptr || tree->firstChild == nullptr || n == 0)
+  if (tree == nullptr || tree->getFirstChild() == nullptr || n == 0)
     return false;
 
-  auto nthChild = tree->firstChild;
+  auto nthChild = tree->getFirstChild();
   for (auto i = 1u; i < n; i++)
   {
-    nthChild = nthChild->rightSibling;
+    nthChild = nthChild->getRightSibling();
     if (nthChild == nullptr)
       return false;
   }

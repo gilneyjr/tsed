@@ -12,5 +12,5 @@ bool Transduction::Search::IsChildOfExpression::match(SyntaxTree *tree, SymbolTa
 {
   if (tree == nullptr) // TODO: Implement end marker on left case later
     return false;
-  return expression->match(tree->parent, symbolTable);
+  return expression->match(tree->getParent(), symbolTable);
 }
