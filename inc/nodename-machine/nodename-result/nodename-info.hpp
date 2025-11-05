@@ -21,70 +21,19 @@ namespace Nodename
     unsigned int placeholderNumber = 0;
     bool undetermined = false; // true, when nodename has ANY, WILDCARD or REGEX inside it; false, otherwise.
     bool freeOfContext = true; // true, when nodename doesn't have specified left or right contexts; false, otherwise.
-    DefOrRef defOrRef = DefOrRef::NONE; // The placeholder is a definition, a reference or neither of them.
+    DefOrRef defOrRef = DefOrRef::NONE;
     std::string regex = "";
 
-    // TODO: Verify if the following attributes need to be in this class
-    bool validAsLNodename = true; // Depends on context 
-    bool validAsRNodename = true; // !undetermined && freeOfContext && defOrRef != DEFINITION
-
-    NodenameInfo()
-      : type(NodenameInfoType::SIMPLE_NODE),
-        placeholder(Placeholder::NONE),
-        placeholderNumber(0),
-        undetermined(false),
-        freeOfContext(true),
-        defOrRef(DefOrRef::NONE),
-        regex(""),
-        validAsLNodename(true),
-        validAsRNodename(true) {}
-
+    NodenameInfo();
     NodenameInfo(const NodenameInfo& other) = default;
 
-    // TODO: move to .cpp
-    static NodenameInfo* createSubtreeRangeInstance(Placeholder placeholder, unsigned int placeholderNumber)
-    {
-      auto info = new NodenameInfo();
-
-      info->type = NodenameInfoType::SUBTREE_RANGE_PLACEHOLDER;
-      info->placeholder = placeholder;
-      info->placeholderNumber = placeholderNumber;
-      info->undetermined = false;
-      info->freeOfContext = true;
-      info->defOrRef = DefOrRef::DEFINITION;
-      info->regex = "";
-
-      return info;
-    }
-
-    // TODO: move to .cpp
-    static NodenameInfo* createEndMarkerInstance()
-    {
-      auto info = new NodenameInfo();
-
-      info->type = NodenameInfoType::END_MARKER;
-      info->placeholder = Placeholder::NONE;
-      info->placeholderNumber = -1;
-      info->undetermined = false;
-      info->freeOfContext = true;
-      info->defOrRef = DefOrRef::NONE;
-      info->regex = "";
-
-      return info;
-    }
+    static NodenameInfo* createSubtreeRangeInstance(Placeholder placeholder, unsigned int placeholderNumber);
+    static NodenameInfo* createEndMarkerInstance();
   };
 
-  // TODO: move to a .cpp file
   struct NodenameInfoPointerComparator 
   {
-    bool operator()(const NodenameInfo* left, const NodenameInfo* right) const
-    {
-      if (left == nullptr)
-        return false;
-      if (right == nullptr)
-        return true;
-      return left->placeholderNumber < right->placeholderNumber;
-    }
+    bool operator()(const NodenameInfo* left, const NodenameInfo* right) const;
   };
 
   typedef std::set<NodenameInfo*, NodenameInfoPointerComparator> NodenameInfoSet;
