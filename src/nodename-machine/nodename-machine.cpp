@@ -18,7 +18,7 @@ void Nodename::NodenameMachine::finish()
   this->finished = true;
 }
 
-Nodename::NodenameInfo Nodename::NodenameMachine::run() 
+Nodename::NodenameInfo* Nodename::NodenameMachine::run() 
 {
   this->result = NodenameInfo();
 
@@ -32,7 +32,7 @@ Nodename::NodenameInfo Nodename::NodenameMachine::run()
     }
   }
 
-  return this->result;
+  return new NodenameInfo(this->result);
 }
 
 std::istream& Nodename::NodenameMachine::getInputStream() // Change this function name to nextInputChar()

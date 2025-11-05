@@ -20,7 +20,7 @@ namespace Nodename {
     NodenameMachine(std::istream&);
     ~NodenameMachine();
     void finish();
-    NodenameInfo run();
+    NodenameInfo* run();
     std::istream& getInputStream();
 
     void setResultType(NodenameInfoType);

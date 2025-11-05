@@ -15,8 +15,8 @@
 Transduction::Search::NodenameExpression* Parsing::parseNodename(std::string &lexem)
 {
   std::istringstream input(lexem);
-  auto nodenameInfo = Nodename::NodenameMachine(input).run(); // TODO: Change this method to return a pointer to NodenameInfo
-  return new Transduction::Search::NodenameExpression(new Nodename::NodenameInfo(nodenameInfo));
+  auto nodenameInfo = Nodename::NodenameMachine(input).run();
+  return new Transduction::Search::NodenameExpression(nodenameInfo);
 }
 
 Transduction::Search::NodenameExpression* Parsing::parseEndMarker()
@@ -70,25 +70,25 @@ Transduction::Search::SearchExpression* Parsing::parseSearchExpression(
 Transduction::Replacement::ReplacementLeafNode* Parsing::parseReplacementNode(const std::string &lexem, const Nodename::NodenameInfoSet &searchExpressionDefinitions)
 {
   istringstream input(lexem);
-  Nodename::NodenameInfo nodenameInfo = Nodename::NodenameMachine(input).run(); // TODO: Change this method to return a pointer to NodenameInfo
+  auto nodenameInfo = Nodename::NodenameMachine(input).run();
 
-  if (!nodenameInfo.freeOfContext)
+  if (!nodenameInfo->freeOfContext)
     // TODO: Correct/Improve this error message
     // TODO: Create an exception for this
     throw "Nodenames in replacement expression cannot have left or right contexts."; 
-  if (nodenameInfo.undetermined)
+  if (nodenameInfo->undetermined)
     // TODO: Correct/Improve this error message
     // TODO: Create an exception for this
     throw "Nodenames in replacement expression cannot contain ANY, WILDCARD or REGEX.";
   
-  if (nodenameInfo.placeholder != Nodename::Placeholder::NONE)
+  if (nodenameInfo->placeholder != Nodename::Placeholder::NONE)
   {
-    auto it = searchExpressionDefinitions.find(&nodenameInfo);
+    auto it = searchExpressionDefinitions.find(nodenameInfo);
     if (it == searchExpressionDefinitions.end())
       // TODO: Correct/Improve this error message
       // TODO: Create an exception for this
       throw "The placeholder is not defined in the search expression.";
-    if ((*it)->placeholder != nodenameInfo.placeholder)
+    if ((*it)->placeholder != nodenameInfo->placeholder)
       // TODO: Correct/Improve this error message
       // TODO: Create an exception for this
       throw "The placeholder has a different type of its definition in the search expression.";
@@ -99,9 +99,12 @@ Transduction::Replacement::ReplacementLeafNode* Parsing::parseReplacementNode(co
   std::regex extractTagRegex(R"([\[\{]\s*(?:\d+\s*:\s*)?([^\]\}]*)\s*[\]\}])");
   if (!std::regex_match(lexem, matches, extractTagRegex))
     throw "The given tag is invalid.";
+  
   auto tag = matches[1].str();
-
-  return new Transduction::Replacement::ReplacementLeafNode(tag, nodenameInfo.placeholder, nodenameInfo.placeholderNumber);
+  auto placeholder = nodenameInfo->placeholder;
+  auto placeholderNumber = nodenameInfo->placeholderNumber;
+  delete nodenameInfo;
+  return new Transduction::Replacement::ReplacementLeafNode(tag, placeholder, placeholderNumber);
 }
 
 Transduction::Replacement::ReplacementTree* Parsing::parseReplacementTree(Transduction::Replacement::ReplacementLeafNode *root, Transduction::Replacement::TreeSequence *children)
