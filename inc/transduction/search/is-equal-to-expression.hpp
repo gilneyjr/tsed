@@ -1,18 +1,16 @@
 #ifndef IS_EQUAL_TO_EXPRESSION_HPP
 #define IS_EQUAL_TO_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsEqualToExpression : public SearchExpression
+  class IsEqualToExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsEqualToExpression(SearchExpression*);
-    ~IsEqualToExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

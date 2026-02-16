@@ -1,25 +1,34 @@
 #include "has-nth-to-last-child-as-expression.hpp"
 
 Transduction::Search::HasNthToLastChildAsExpression::HasNthToLastChildAsExpression(unsigned int n, SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), n(n), expression(expression) {}
+  : RestrictionExpression(expression), n(n) {}
 
-Transduction::Search::HasNthToLastChildAsExpression::~HasNthToLastChildAsExpression()
+bool Transduction::Search::HasNthToLastChildAsExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::HasNthToLastChildAsExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getLastChild() == nullptr || n == 0)
+  if (context.matchedIsEndMarker || context.matched->getLastChild() == nullptr || n == 0)
     return false;
 
-  auto nthChild = tree->getLastChild();
+  auto nthToLastChild = context.matched->getLastChild();
   for (auto i = 1u; i < n; i++)
   {
-    nthChild = nthChild->getRightSibling();
-    if (nthChild == nullptr)
+    nthToLastChild = nthToLastChild->getLeftSibling();
+    if (nthToLastChild == nullptr)
       return false;
   }
 
-  return expression->match(nthChild, symbolTable);
+  return expression->match(Contexts::SearchMatchContext(nthToLastChild, context.symbolTable));
+}
+
+void Transduction::Search::HasNthToLastChildAsExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operators \"<'\", \"<-\" and \"<-N\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

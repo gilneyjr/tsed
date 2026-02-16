@@ -1,21 +1,30 @@
 #include "is-right-sibling-of-expression.hpp"
 
 Transduction::Search::IsRightSiblingOfExpression::IsRightSiblingOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsRightSiblingOfExpression::~IsRightSiblingOfExpression()
+bool Transduction::Search::IsRightSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsRightSiblingOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr)
+  if (context.matchedIsEndMarker)
     return false;
 
-  for (auto rightSibling = tree->getRightSibling(); rightSibling != nullptr; rightSibling = rightSibling->getRightSibling())
-    if (expression->match(rightSibling, symbolTable))
+  for (auto rightSibling = context.matched->getRightSibling(); rightSibling != nullptr; rightSibling = rightSibling->getRightSibling())
+    if (expression->match(Contexts::SearchMatchContext(rightSibling, context.symbolTable)))
       return true;
 
   return false;
+}
+
+void Transduction::Search::IsRightSiblingOfExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \"$,,\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

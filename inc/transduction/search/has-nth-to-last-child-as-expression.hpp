@@ -1,19 +1,18 @@
 #ifndef HAS_NTH_TO_LAST_CHILD_AS_EXPRESSION_HPP
 #define HAS_NTH_TO_LAST_CHILD_AS_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class HasNthToLastChildAsExpression : public SearchExpression
+  class HasNthToLastChildAsExpression : public RestrictionExpression
   {
   private:
     unsigned int n;
-    SearchExpression* expression;
   public:
     HasNthToLastChildAsExpression(unsigned int, SearchExpression*);
-    ~HasNthToLastChildAsExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

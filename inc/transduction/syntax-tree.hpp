@@ -26,7 +26,11 @@ namespace Transduction
     SyntaxTree* rightSibling;
 
   public:
-    SyntaxTree(const std::string, SyntaxTree* = nullptr);
+    SyntaxTree(
+      const std::string, SyntaxTree* = nullptr,
+      SyntaxTree* = nullptr, SyntaxTree* = nullptr,
+      SyntaxTree* = nullptr, SyntaxTree* = nullptr
+    );
     ~SyntaxTree();
     
     const std::string& getTag() const;
@@ -36,6 +40,11 @@ namespace Transduction
     SyntaxTree* getLeftSibling() const;
     SyntaxTree* getRightSibling() const;
     void addChild(SyntaxTree*);
+
+    static SyntaxTree* createEndMarkerOnLeftOf(SyntaxTree*);
+    static SyntaxTree* createEndMarkerOnRightOf(SyntaxTree*);
+    static SyntaxTree* createEndMarkerAbove(SyntaxTree*);
+    static SyntaxTree* createEndMarkerBellow(SyntaxTree*);
 
     static std::vector<SyntaxTree*> readFromFile(std::string&);
     friend std::ostream& operator<<(std::ostream&, const SyntaxTree&);

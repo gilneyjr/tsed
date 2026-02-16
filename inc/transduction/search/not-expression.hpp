@@ -1,18 +1,19 @@
 #ifndef NOT_EXPRESSION_HPP
 #define NOT_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "operation-expression.hpp"
 
 namespace Transduction::Search
 {
-  class NotExpression : public SearchExpression
+  class NotExpression : public OperationExpression
   {
   private:
-    SearchExpression* expression;
+    OperationExpression *operationExpression;
   public:
-    NotExpression(SearchExpression*);
+    NotExpression(OperationExpression*);
     ~NotExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    bool match(Contexts::SearchMatchContext&) const override;
+    void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

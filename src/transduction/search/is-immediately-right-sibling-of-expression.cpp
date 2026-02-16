@@ -1,16 +1,14 @@
 #include "is-immediately-right-sibling-of-expression.hpp"
 
 Transduction::Search::IsImmediatelyRightSiblingOfExpression::IsImmediatelyRightSiblingOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsImmediatelyRightSiblingOfExpression::~IsImmediatelyRightSiblingOfExpression()
+bool Transduction::Search::IsImmediatelyRightSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsImmediatelyRightSiblingOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getLeftSibling() == nullptr)
-    return false;
-  return expression->match(tree->getLeftSibling(), symbolTable);
+  bool rightSiblingIsEndMarker = context.matched->getRightSibling() == nullptr;
+  auto rightSibling = rightSiblingIsEndMarker
+    ? SyntaxTree::createEndMarkerOnRightOf(context.matched)
+    : context.matched->getRightSibling(); 
+
+  return expression->match(Contexts::SearchMatchContext(rightSibling, context.symbolTable, rightSiblingIsEndMarker));
 }

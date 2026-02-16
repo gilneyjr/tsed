@@ -1,19 +1,14 @@
 #include "has-nth-child-as-expression.hpp"
 
 Transduction::Search::HasNthChildAsExpression::HasNthChildAsExpression(unsigned int n, SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), n(n), expression(expression) {}
+  : RestrictionExpression(expression), n(n) {}
 
-Transduction::Search::HasNthChildAsExpression::~HasNthChildAsExpression()
+bool Transduction::Search::HasNthChildAsExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::HasNthChildAsExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getFirstChild() == nullptr || n == 0)
+  if (context.matchedIsEndMarker || context.matched->getFirstChild() == nullptr || n == 0)
     return false;
 
-  auto nthChild = tree->getFirstChild();
+  auto nthChild = context.matched->getFirstChild();
   for (auto i = 1u; i < n; i++)
   {
     nthChild = nthChild->getRightSibling();
@@ -21,5 +16,20 @@ bool Transduction::Search::HasNthChildAsExpression::match(SyntaxTree *tree, Symb
       return false;
   }
 
-  return expression->match(nthChild, symbolTable);
+  return expression->match(Contexts::SearchMatchContext(nthChild, context.symbolTable));
 }
+
+void Transduction::Search::HasNthChildAsExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operators \"<,\" and \"<N\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
+}
+

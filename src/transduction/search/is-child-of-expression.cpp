@@ -1,16 +1,14 @@
 #include "is-child-of-expression.hpp"
 
 Transduction::Search::IsChildOfExpression::IsChildOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsChildOfExpression::~IsChildOfExpression()
+bool Transduction::Search::IsChildOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsChildOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr) // TODO: Implement end marker on left case later
-    return false;
-  return expression->match(tree->getParent(), symbolTable);
+  bool parentIsEndMarker = context.matched->getParent() == nullptr;
+  auto parent = parentIsEndMarker
+    ? SyntaxTree::createEndMarkerAbove(context.matched)
+    : context.matched->getParent(); 
+
+  return expression->match(Contexts::SearchMatchContext(parent, context.symbolTable, parentIsEndMarker));
 }

@@ -2,6 +2,7 @@
 #define RESTRICTION_EXPRESSION_FACTORY_HPP
 
 #include <string>
+#include "restriction-expression.hpp"
 #include "search-expression.hpp"
 
 namespace Transduction::Search
@@ -9,7 +10,7 @@ namespace Transduction::Search
   class RestrictionExpressionFactory
   {
   public:
-    static SearchExpression* create(const std::string&, SearchExpression*);
+    static RestrictionExpression* create(const std::string&, SearchExpression*);
   };
 }
 

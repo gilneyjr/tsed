@@ -1,18 +1,16 @@
 #ifndef IS_SIBLING_OF_EXPRESSION_HPP
 #define IS_SIBLING_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsSiblingOfExpression : public SearchExpression
+  class IsSiblingOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsSiblingOfExpression(SearchExpression*);
-    ~IsSiblingOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

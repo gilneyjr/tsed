@@ -1,17 +1,29 @@
 #include "not-expression.hpp"
 
-Transduction::Search::NotExpression::NotExpression(SearchExpression *expression)
-  : expression(expression) {}
+Transduction::Search::NotExpression::NotExpression(OperationExpression *operationExpression)
+  : operationExpression(operationExpression) {}
 
 Transduction::Search::NotExpression::~NotExpression()
 {
-  delete expression;
+  if (!operationExpression)
+    delete operationExpression;
 }
-  
-bool Transduction::Search::NotExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
+
+bool Transduction::Search::NotExpression::match(Contexts::SearchMatchContext &context) const
 {
-  symbolTable.enterScope();
-  bool matched = !expression->match(tree, symbolTable);
-  symbolTable.exitScope(); // all matches found in negation are discarded
+  context.symbolTable->enterScope();
+  bool matched = !operationExpression->match(context);
+  context.symbolTable->exitScope(); // all matches found in negation are discarded
   return matched;
+}
+
+void Transduction::Search::NotExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  if (!operationExpression)
+  {
+    context.errors.emplace_back("Malformed search expression: not expression must have a sub expression to be matched in syntax tree search.");
+    return;
+  }
+
+  operationExpression->validate(context);
 }

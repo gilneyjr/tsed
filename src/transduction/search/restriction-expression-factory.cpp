@@ -23,7 +23,7 @@
 #include "is-unique-child-of-expression.hpp"
 #include "restriction-expression-factory.hpp"
 
-Transduction::Search::SearchExpression*
+Transduction::Search::RestrictionExpression*
 Transduction::Search::RestrictionExpressionFactory::create(
   const std::string &operation,
   Transduction::Search::SearchExpression *expression)
@@ -44,7 +44,7 @@ Transduction::Search::RestrictionExpressionFactory::create(
     return new Transduction::Search::HasNthToLastChildAsExpression(1u, expression);
 
   if (operation == ">-" || operation == ">'")
-    return new Transduction::Search::IsNthChildOfExpression(1u, expression);
+    return new Transduction::Search::IsNthToLastChildOfExpression(1u, expression);
 
   if (operation == "<:")
     return new Transduction::Search::HasUniqueChildAsExpression(expression);

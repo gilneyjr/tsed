@@ -2,10 +2,12 @@
 #include <fstream>
 
 Transduction::SyntaxTree::SyntaxTree(
-  const std::string tag,
-  SyntaxTree *parent
-) : tag(tag), parent(parent), firstChild(nullptr)
-  , lastChild(nullptr), leftSibling(nullptr), rightSibling(nullptr) {}
+  const std::string tag, SyntaxTree *parent,
+  SyntaxTree *firstChild, SyntaxTree *lastChild,
+  SyntaxTree *leftSibling, SyntaxTree *rightSibling
+) : tag(tag), parent(parent)
+  , firstChild(firstChild), lastChild(lastChild)
+  , leftSibling(leftSibling), rightSibling(rightSibling) {}
 
 Transduction::SyntaxTree::~SyntaxTree()
 {
@@ -41,6 +43,39 @@ void Transduction::SyntaxTree::addChild(SyntaxTree *child)
 
   if (firstChild == nullptr)
     firstChild = child;
+}
+
+Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerOnLeftOf(SyntaxTree *tree)
+{
+  auto result = new SyntaxTree("#");
+  if (tree == nullptr)
+    return result;
+  result->rightSibling = tree;
+}
+
+Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerOnRightOf(SyntaxTree *tree)
+{
+  auto result = new SyntaxTree("#");
+  if (tree == nullptr)
+    return result;
+  result->leftSibling = tree;
+}
+
+Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerAbove(SyntaxTree *tree)
+{
+  auto result = new SyntaxTree("#");
+  if (tree == nullptr)
+    return result;
+  result->firstChild = tree;
+  result->lastChild = tree;
+}
+
+Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerBellow(SyntaxTree *tree)
+{
+  auto result = new SyntaxTree("#");
+  if (tree == nullptr)
+    return result;
+  result->parent = tree;
 }
 
 std::vector<Transduction::SyntaxTree*>

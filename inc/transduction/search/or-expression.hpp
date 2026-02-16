@@ -1,19 +1,22 @@
 #ifndef Or_EXPRESSION_HPP
 #define Or_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "operation-expression.hpp"
+#include "search-match-context.hpp"
+#include "search-validation-context.hpp"
 
 namespace Transduction::Search
 {
-  class OrExpression : public SearchExpression
+  class OrExpression : public OperationExpression
   {
   private:
-    SearchExpression* leftExpression;
-    SearchExpression* rightExpression;
+    OperationExpression* leftExpression;
+    OperationExpression* rightExpression;
   public:
-    OrExpression(SearchExpression*, SearchExpression*);
+    OrExpression(OperationExpression*, OperationExpression*);
     ~OrExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    bool match(Contexts::SearchMatchContext&) const override;
+    void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

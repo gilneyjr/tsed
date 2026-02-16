@@ -1,18 +1,15 @@
 #ifndef IS_CHILD_OF_EXPRESSION_HPP
 #define IS_CHILD_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsChildOfExpression : public SearchExpression
+  class IsChildOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsChildOfExpression(SearchExpression*);
-    ~IsChildOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
   };
 }
 

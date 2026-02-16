@@ -1,18 +1,16 @@
 #ifndef IS_RIGHTMOST_DESCENDANT_OF_EXPRESSION_HPP
 #define IS_RIGHTMOST_DESCENDANT_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsRightmostDescendantOfExpression : public SearchExpression
+  class IsRightmostDescendantOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsRightmostDescendantOfExpression(SearchExpression*);
-    ~IsRightmostDescendantOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

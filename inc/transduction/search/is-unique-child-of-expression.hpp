@@ -1,18 +1,16 @@
 #ifndef IS_UNIQUE_CHILD_OF_EXPRESSION_HPP
 #define IS_UNIQUE_CHILD_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsUniqueChildOfExpression : public SearchExpression
+  class IsUniqueChildOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsUniqueChildOfExpression(SearchExpression*);
-    ~IsUniqueChildOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 
