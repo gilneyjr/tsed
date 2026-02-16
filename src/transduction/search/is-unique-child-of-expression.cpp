@@ -1,16 +1,32 @@
 #include "is-unique-child-of-expression.hpp"
 
 Transduction::Search::IsUniqueChildOfExpression::IsUniqueChildOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsUniqueChildOfExpression::~IsUniqueChildOfExpression()
+bool Transduction::Search::IsUniqueChildOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsUniqueChildOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getParent() == nullptr || tree->getParent()->getFirstChild() == nullptr || tree->getParent()->getFirstChild() != tree->getParent()->getLastChild())
+  if (context.matchedIsEndMarker
+    || context.matched->getParent() == nullptr
+    || context.matched->getLeftSibling() != nullptr
+    || context.matched->getRightSibling() != nullptr
+  )
+  {
     return false;
-  return expression->match(tree->getParent(), symbolTable);
+  }
+
+  return expression->match(Contexts::SearchMatchContext(context.matched->getParent(), context.symbolTable));
+}
+
+void Transduction::Search::IsUniqueChildOfExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \">:\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

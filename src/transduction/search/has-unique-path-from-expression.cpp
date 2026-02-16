@@ -1,21 +1,21 @@
 #include "has-unique-path-from-expression.hpp"
 
 Transduction::Search::HasUniquePathFromExpression::HasUniquePathFromExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::HasUniquePathFromExpression::~HasUniquePathFromExpression()
+bool Transduction::Search::HasUniquePathFromExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::HasUniquePathFromExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getLeftSibling() != nullptr || tree->getRightSibling() != nullptr)
-    return false;
-
-  for (auto ancestor = tree->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
+  if (context.matchedIsEndMarker
+    || context.matched->getLeftSibling() != nullptr
+    || context.matched->getRightSibling() != nullptr
+  )
   {
-    if (expression->match(ancestor, symbolTable))
+    return false;
+  }
+
+  for (auto ancestor = context.matched->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
+  {
+    if (expression->match(Contexts::SearchMatchContext(ancestor, context.symbolTable)))
       return true;
 
     if (ancestor->getLeftSibling() != nullptr || ancestor->getRightSibling() != nullptr)
@@ -23,4 +23,18 @@ bool Transduction::Search::HasUniquePathFromExpression::match(SyntaxTree *tree, 
   }
 
   return false;
+}
+
+void Transduction::Search::HasUniquePathFromExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \">>:\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

@@ -1,18 +1,16 @@
 #ifndef HAS_UNIQUE_PATH_TO_EXPRESSION_HPP
 #define HAS_UNIQUE_PATH_TO_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class HasUniquePathToExpression : public SearchExpression
+  class HasUniquePathToExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     HasUniquePathToExpression(SearchExpression*);
-    ~HasUniquePathToExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

@@ -1,18 +1,15 @@
 #ifndef IS_IMMEDIATELY_RIGHT_SIBLING_OF_EXPRESSION_HPP
 #define IS_IMMEDIATELY_RIGHT_SIBLING_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsImmediatelyRightSiblingOfExpression : public SearchExpression
+  class IsImmediatelyRightSiblingOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsImmediatelyRightSiblingOfExpression(SearchExpression*);
-    ~IsImmediatelyRightSiblingOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
   };
 }
 

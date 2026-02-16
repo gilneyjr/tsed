@@ -1,24 +1,25 @@
 #ifndef SEARCH_EXPRESSION_HPP
 #define SEARCH_EXPRESSION_HPP
 
-#include "nodename-info.hpp"
-#include "symbol-table.hpp"
-#include "syntax-tree.hpp"
+#include "nodename-expression.hpp"
+#include "search-match-context.hpp"
+#include "search-validation-context.hpp"
+#include "operation-expression.hpp"
 
 namespace Transduction::Search
 {
   class SearchExpression
   {
-  protected:
-    Nodename::NodenameInfoSet definitions;
-    Nodename::NodenameInfoSet references;
+  private:
+    NodenameExpression* nodenameExpression;
+    OperationExpression* operationExpression;
   public:
-    SearchExpression() = default;
-    SearchExpression(const Nodename::NodenameInfoSet&, const Nodename::NodenameInfoSet&);
-    virtual ~SearchExpression() = default;
-    virtual bool match(SyntaxTree*, SymbolTable&) = 0;
-    const Nodename::NodenameInfoSet& getDefinitions() const;
-    const Nodename::NodenameInfoSet& getReferences() const;
+    SearchExpression(NodenameExpression*, OperationExpression* = nullptr);
+    ~SearchExpression();
+    bool leftIsEndMarker() const;
+    bool match(Contexts::SearchMatchContext&&) const;
+    bool match(Contexts::SearchMatchContext&) const;
+    void validate(Contexts::SearchValidationContext&) const;
   };
 }
 

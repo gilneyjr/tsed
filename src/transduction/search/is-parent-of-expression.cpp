@@ -1,23 +1,19 @@
 #include "is-parent-of-expression.hpp"
 
 Transduction::Search::IsParentOfExpression::IsParentOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsParentOfExpression::~IsParentOfExpression()
+bool Transduction::Search::IsParentOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsParentOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr) // TODO: Implement end marker on left case later
-    return false;
+  if (context.matched->getFirstChild() == nullptr)
+  {
+    // try to match right side of restriction with end marker
+    auto child = SyntaxTree::createEndMarkerBellow(context.matched);
+    return expression->match(Contexts::SearchMatchContext(child, context.symbolTable, true));
+  }
 
-  if (tree->getFirstChild() == nullptr)
-    return expression->match(nullptr, symbolTable); // try to match end marker
-
-  for (auto child = tree->getFirstChild(); child != nullptr; child = child->getRightSibling())
-    if (expression->match(child, symbolTable))
+  for (auto child = context.matched->getFirstChild(); child != nullptr; child = child->getRightSibling())
+    if (expression->match(Contexts::SearchMatchContext(child, context.symbolTable)))
       return true;
   return false;
 }

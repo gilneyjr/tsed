@@ -1,35 +1,38 @@
 #include <regex>
 #include "nodename-expression.hpp"
+#include "nodename-match.hpp"
 
 Transduction::Search::NodenameExpression::NodenameExpression(Nodename::NodenameInfo *nodenameInfo)
-  : nodenameInfo(nodenameInfo)
+  : nodenameInfo(nodenameInfo) {}
+
+Transduction::Search::NodenameExpression::~NodenameExpression()
 {
-  if (nodenameInfo->defOrRef == Nodename::DefOrRef::DEFINITION)
-    definitions.insert(nodenameInfo);
-  else if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
-    references.insert(nodenameInfo);
+  if (nodenameInfo)
+    delete nodenameInfo;
 }
 
-bool Transduction::Search::NodenameExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
+bool Transduction::Search::NodenameExpression::isEndMarker() const
 {
-  if (nodenameInfo == nullptr)
-    throw "Unexpected error occurred because nodename information was not parsed correctly."; // TODO: Correct/Improve this message
+  return nodenameInfo != nullptr && nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
+}
 
-  if (tree == nullptr)
-    return isEndMarker();
+bool Transduction::Search::NodenameExpression::match(Contexts::SearchMatchContext &context) const
+{
+  if (!context.matched)
+    return context.matchedIsEndMarker && nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
 
   if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
   {
-    auto result = symbolTable.lookup(nodenameInfo->placeholderNumber);
+    auto result = context.symbolTable->lookup(nodenameInfo->placeholderNumber);
     if (!result.first)
       return false;
-    return tree == result.second.tree;
+    return context.matched == result.second.tree;
   }
 
   std::regex pattern("^" + nodenameInfo->regex + "$");
   std::smatch matches;
 
-  if (std::regex_match(tree->tag, matches, pattern))
+  if (std::regex_match(context.matched->getTag(), matches, pattern))
   {
     if (nodenameInfo->placeholder != Nodename::Placeholder::NONE)
     {
@@ -37,9 +40,9 @@ bool Transduction::Search::NodenameExpression::match(SyntaxTree *tree, SymbolTab
       match.left = matches[1];
       match.middle = matches[2];
       match.right = matches[3];
-      match.tree = tree;
+      match.tree = context.matched;
       match.placeholder = nodenameInfo->placeholder;
-      symbolTable.insert(nodenameInfo->placeholderNumber, match);
+      context.symbolTable->insert(nodenameInfo->placeholderNumber, match);
     }
     
     return true;
@@ -48,12 +51,16 @@ bool Transduction::Search::NodenameExpression::match(SyntaxTree *tree, SymbolTab
   return false;
 }
 
-bool Transduction::Search::NodenameExpression::isEndMarker()
+void Transduction::Search::NodenameExpression::validate(Contexts::SearchValidationContext &context) const
 {
-  return nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
-}
+  if (!nodenameInfo)
+  {
+    context.errors.emplace_back("Malformed search expression: a nodename expression must have a nodename information in order to match nodes in the syntax tree search.");
+    return;
+  }
 
-Nodename::NodenameInfo* Transduction::Search::NodenameExpression::getNodenameInfo()
-{
-  return nodenameInfo;
+  if (nodenameInfo->defOrRef == Nodename::DefOrRef::DEFINITION)
+    context.definitions.insert(nodenameInfo);
+  else if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
+    context.references.insert(nodenameInfo);
 }

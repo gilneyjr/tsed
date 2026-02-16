@@ -1,19 +1,18 @@
 #ifndef IS_NTH_CHILD_OF_EXPRESSION_HPP
 #define IS_NTH_CHILD_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsNthChildOfExpression : public SearchExpression
+  class IsNthChildOfExpression : public RestrictionExpression
   {
   private:
     unsigned int n;
-    SearchExpression* expression;
   public:
     IsNthChildOfExpression(unsigned int, SearchExpression*);
-    ~IsNthChildOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

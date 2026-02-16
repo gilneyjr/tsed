@@ -1,17 +1,26 @@
 #include "is-equal-to-expression.hpp"
 
 Transduction::Search::IsEqualToExpression::IsEqualToExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsEqualToExpression::~IsEqualToExpression()
+bool Transduction::Search::IsEqualToExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsEqualToExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr)
+  if (context.matchedIsEndMarker)
     return false;
-  // TODO: Check the correctness of this expression
-  return expression->match(tree, symbolTable);
+  // TODO: think of a way to implement this, as this doesn't yet consider an exact match
+  return expression->match(context);
+}
+
+void Transduction::Search::IsEqualToExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \"=\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

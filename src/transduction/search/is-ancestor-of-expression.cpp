@@ -2,21 +2,16 @@
 #include "is-ancestor-of-expression.hpp"
 
 Transduction::Search::IsAncestorOfExpression::IsAncestorOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsAncestorOfExpression::~IsAncestorOfExpression()
+bool Transduction::Search::IsAncestorOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsAncestorOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getFirstChild() == nullptr)
+  if (context.matchedIsEndMarker || context.matched->getFirstChild() == nullptr)
     return false;
 
   // TODO: should I use tree tranversal strategies here?
   std::queue<SyntaxTree*> queue;
-  for (auto child = tree->getFirstChild(); child != nullptr; child = child->getRightSibling())
+  for (auto child = context.matched->getFirstChild(); child != nullptr; child = child->getRightSibling())
     queue.push(child);
 
   while (!queue.empty())
@@ -24,7 +19,7 @@ bool Transduction::Search::IsAncestorOfExpression::match(SyntaxTree *tree, Symbo
     auto descendant = queue.front();
     queue.pop();
 
-    if (expression->match(descendant, symbolTable))
+    if (expression->match(Contexts::SearchMatchContext(descendant, context.symbolTable)))
       return true;
 
     for (auto child = descendant->getFirstChild(); child != nullptr; child = child->getRightSibling())
@@ -32,4 +27,18 @@ bool Transduction::Search::IsAncestorOfExpression::match(SyntaxTree *tree, Symbo
   }
 
   return false;
+}
+
+void Transduction::Search::IsAncestorOfExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \"<<\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

@@ -1,20 +1,29 @@
 #include "is-descendant-of-expression.hpp"
 
 Transduction::Search::IsDescendantOfExpression::IsDescendantOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsDescendantOfExpression::~IsDescendantOfExpression()
+bool Transduction::Search::IsDescendantOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-
-bool Transduction::Search::IsDescendantOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr)
+  if (context.matchedIsEndMarker)
     return false;
 
-  for (auto ancestor = tree->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
-    if (expression->match(ancestor, symbolTable))
+  for (auto ancestor = context.matched->getParent(); ancestor != nullptr; ancestor = ancestor->getParent())
+    if (expression->match(Contexts::SearchMatchContext(ancestor, context.symbolTable)))
       return true;
   return false;
+}
+
+void Transduction::Search::IsDescendantOfExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \">>\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

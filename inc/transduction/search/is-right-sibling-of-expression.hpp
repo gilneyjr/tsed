@@ -1,18 +1,16 @@
 #ifndef IS_RIGHT_SIBLING_OF_EXPRESSION_HPP
 #define IS_RIGHT_SIBLING_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsRightSiblingOfExpression : public SearchExpression
+  class IsRightSiblingOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsRightSiblingOfExpression(SearchExpression*);
-    ~IsRightSiblingOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

@@ -2,19 +2,21 @@
 #define NODENAME_EXPRESSION_HPP
 
 #include "nodename-info.hpp"
-#include "search-expression.hpp"
+#include "search-match-context.hpp"
+#include "search-validation-context.hpp"
 
 namespace Transduction::Search
 {
-  class NodenameExpression : public SearchExpression
+  class NodenameExpression
   {
-  protected:
+  private:
     Nodename::NodenameInfo *nodenameInfo;
   public:
     NodenameExpression(Nodename::NodenameInfo*);
-    bool match(SyntaxTree*, SymbolTable&);
-    bool isEndMarker();
-    Nodename::NodenameInfo* getNodenameInfo();
+    ~NodenameExpression();
+    bool isEndMarker() const;
+    bool match(Contexts::SearchMatchContext&) const;
+    void validate(Contexts::SearchValidationContext&) const;
   };
 }
 

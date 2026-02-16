@@ -2,10 +2,16 @@
   #include <iostream> // std::cout, std::endl
   #include <sstream> // std::stringstream, std::istringstream
 
-  #include "nodename-machine.hpp"
-  #include "parsing-rules.hpp"
+  #include "and-expression.hpp"
+  #include "not-expression.hpp"
+  #include "or-expression.hpp"
+  #include "parsing-rules.hpp" // TODO: verify if this will be used in the future
+  #include "restriction-expression-factory.hpp"
   #include "search-expression.hpp"
-  #include "syntax-tree.hpp"
+  #include "syntax-tree.hpp" // SyntaxTree::readFromFile
+
+  // TODO: verify if all these includes are being used
+  #include "nodename-machine.hpp"
   #include "transducer.hpp"
   #include "transducer-builder.hpp"
   #include "transduction-rule.hpp"
@@ -31,18 +37,25 @@
 %}
 
 %code requires {
-  #include <string>
+  
   #include "nodename-expression.hpp"
+  #include "operation-expression.hpp"
   #include "replacement-leaf-node.hpp"
   #include "replacement-tree.hpp"
+  #include "restriction-expression.hpp"
   #include "search-expression.hpp"
   #include "transduction-rule.hpp"
+  #include <string>
 }
 
 /* Definition of union used to define terminal and non-terminal types */
 %union {
   std::string *lexem;
   Transduction::Search::SearchExpression *searchExpression;
+  Transduction::Search::OperationExpression *operationExpression;
+  Transduction::Search::RestrictionExpression *restrictionExpression;
+
+
   Transduction::Search::NodenameExpression *nodenameExpression;
   Transduction::Replacement::ReplacementLeafNode *replacementNode;
   Transduction::Replacement::ReplacementTree *replacementTree;
@@ -54,11 +67,11 @@
 
 %type <transductionRule> transduction
 %type <searchExpression> search_expression
-%type <searchExpression> opt_restrictions
-%type <searchExpression> restrictions
-%type <searchExpression> restrictions_and
-%type <searchExpression> restrictions_not
-%type <searchExpression> restriction
+%type <operationExpression> opt_restrictions
+%type <operationExpression> restrictions
+%type <operationExpression> restrictions_and
+%type <operationExpression> restrictions_not
+%type <restrictionExpression> restriction
 %type <searchExpression> search_second
 %type <nodenameExpression> search_primary
 
@@ -99,7 +112,7 @@ search_expression:
   {
     try
     {
-      $$ = Parsing::parseSearchExpression($1, $2);
+      $$ = new Transduction::Search::SearchExpression($1, $2);
     }
     catch (const exception& e)
     {
@@ -132,7 +145,7 @@ restrictions:
   {
     try
     {
-      $$ = Parsing::parseOr($1, $3);
+      $$ = new Transduction::Search::OrExpression($1, $3);
       delete $2;
     }
     catch (const exception& e)
@@ -161,7 +174,7 @@ restrictions_and:
   {
     try
     {
-      $$ = Parsing::parseAnd($1, $3);
+      $$ = new Transduction::Search::AndExpression($1, $3);
       delete $2;
     }
     catch (const exception& e)
@@ -184,7 +197,7 @@ restrictions_and:
     
     try
     {
-      $$ = Parsing::parseAnd($1, $2);
+      $$ = new Transduction::Search::AndExpression($1, $2);
     }
     catch (const exception& e)
     {
@@ -210,7 +223,7 @@ restrictions_not:
   {
     try
     {
-      $$ = Parsing::parseNot($2);
+      $$ = new Transduction::Search::NotExpression($2);
       delete $1;
     }
     catch (const exception& e)
@@ -241,7 +254,7 @@ restriction:
   {
     try
     {
-      $$ = Parsing::parseRestriction(*$1, $2);
+      $$ = Transduction::Search::RestrictionExpressionFactory::create(*$1, $2);
       delete $1;
     }
     catch (const exception& e)
@@ -266,7 +279,7 @@ search_second:
   }
   | search_primary
   {
-    $$ = $1;
+    $$ = new Transduction::Search::SearchExpression($1);
   }
   ;
 

@@ -1,16 +1,13 @@
 #include <regex>
 #include <sstream>
-#include "and-expression.hpp"
 #include "nodename-info.hpp"
 #include "nodename-machine.hpp"
-#include "not-expression.hpp"
-#include "or-expression.hpp"
 #include "parsing-rules.hpp"
 #include "placeholder.hpp"
 #include "replacement-internal-node.hpp"
 #include "replacement-leaf-node.hpp"
 #include "restriction-expression-factory.hpp"
-#include "restricts-to-expression.hpp"
+#include "search-validation-context.hpp"
 
 Transduction::Search::NodenameExpression* Parsing::parseNodename(std::string &lexem)
 {
@@ -36,35 +33,6 @@ Transduction::Search::NodenameExpression* Parsing::parseSubtreeRange(std::string
     placeholderNumber = stoi(lexem.substr(1, colonPos - 1));
 
   return new Transduction::Search::NodenameExpression(Nodename::NodenameInfo::createSubtreeRangeInstance(placeholder, placeholderNumber));
-}
-
-Transduction::Search::SearchExpression* Parsing::parseRestriction(std::string &operation, Transduction::Search::SearchExpression *expression)
-{
-  return Transduction::Search::RestrictionExpressionFactory::create(operation, expression);
-}
-
-Transduction::Search::SearchExpression* Parsing::parseNot(Transduction::Search::SearchExpression *expression)
-{
-  return new Transduction::Search::NotExpression(expression);
-}
-
-Transduction::Search::SearchExpression* Parsing::parseAnd(Transduction::Search::SearchExpression *leftExpression, Transduction::Search::SearchExpression *rightExpression)
-{
-  return new Transduction::Search::AndExpression(leftExpression, rightExpression);
-}
-
-Transduction::Search::SearchExpression* Parsing::parseOr(Transduction::Search::SearchExpression *leftExpression, Transduction::Search::SearchExpression *rightExpression)
-{
-  return new Transduction::Search::OrExpression(leftExpression, rightExpression);
-}
-
-Transduction::Search::SearchExpression* Parsing::parseSearchExpression(
-  Transduction::Search::NodenameExpression *searchPrimary,
-  Transduction::Search::SearchExpression *optRestrictions)
-{
-  if (optRestrictions == nullptr)
-    return searchPrimary;
-  return new Transduction::Search::RestrictsToExpression(searchPrimary, optRestrictions);
 }
 
 Transduction::Replacement::ReplacementLeafNode* Parsing::parseReplacementNode(const std::string &lexem, const Nodename::NodenameInfoSet &searchExpressionDefinitions)
@@ -129,8 +97,24 @@ Transduction::TransductionRule* Parsing::parseTransduction(
   Transduction::Search::SearchExpression *searchExpression,
   Transduction::Replacement::TreeSequence *replacementExpression)
 {
+  if (!searchExpression)
+    // TODO: Correct/Improve this message error
+    // TODO: Create an exception for this
+    throw "Empty search expression.";
+
+  if (!replacementExpression)
+    // TODO: Correct/Improve this message error
+    // TODO: Create an exception for this
+    throw "Empty replacement expression.";
+
+  Transduction::Search::Contexts::SearchValidationContext searchExpressionValidationContext;
+  searchExpression->validate(searchExpressionValidationContext);
+
+  auto &definitions = searchExpressionValidationContext.definitions;
+  auto &references = searchExpressionValidationContext.references;
+
   // Check if all references are defined
-  if (!searchExpression->getReferences().empty())
+  if (!references.empty())
     // TODO: Correct/Improve this message error
     // TODO: Create an exception for this
     throw "There are references that are not defined in search expression.";
@@ -138,8 +122,8 @@ Transduction::TransductionRule* Parsing::parseTransduction(
   // Check if the main placeholder is defined
   Nodename::NodenameInfo nodenameWithPlaceholderNumber0;
   nodenameWithPlaceholderNumber0.placeholderNumber = 0;
-  auto it = searchExpression->getDefinitions().find(&nodenameWithPlaceholderNumber0);
-  if (it == searchExpression->getDefinitions().end() || (*it)->placeholder != Nodename::Placeholder::CUT || (*it)->defOrRef != Nodename::DefOrRef::DEFINITION)
+  auto it = definitions.find(&nodenameWithPlaceholderNumber0);
+  if (it == definitions.end() || (*it)->placeholder != Nodename::Placeholder::CUT || (*it)->defOrRef != Nodename::DefOrRef::DEFINITION)
     // TODO: Correct/Improve this message error
     // TODO: Create an exception for this
     throw "The search expression needs to have a definition to main placeholder.";

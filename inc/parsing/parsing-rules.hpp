@@ -12,11 +12,6 @@ namespace Parsing
   Transduction::Search::NodenameExpression* parseNodename(std::string&);
   Transduction::Search::NodenameExpression* parseEndMarker();
   Transduction::Search::NodenameExpression* parseSubtreeRange(std::string&);
-  Transduction::Search::SearchExpression* parseRestriction(std::string&, Transduction::Search::SearchExpression*);
-  Transduction::Search::SearchExpression* parseNot(Transduction::Search::SearchExpression*);
-  Transduction::Search::SearchExpression* parseAnd(Transduction::Search::SearchExpression*, Transduction::Search::SearchExpression*);
-  Transduction::Search::SearchExpression* parseOr(Transduction::Search::SearchExpression*, Transduction::Search::SearchExpression*);
-  Transduction::Search::SearchExpression* parseSearchExpression(Transduction::Search::NodenameExpression*, Transduction::Search::SearchExpression*);
   Transduction::Replacement::ReplacementLeafNode* parseReplacementNode(const std::string&, const Nodename::NodenameInfoSet&);
   Transduction::Replacement::ReplacementTree* parseReplacementTree(Transduction::Replacement::ReplacementLeafNode*, Transduction::Replacement::TreeSequence*);
   Transduction::Replacement::TreeSequence* parseReplacementTreeSequence(Transduction::Replacement::TreeSequence*, Transduction::Replacement::ReplacementTree*);

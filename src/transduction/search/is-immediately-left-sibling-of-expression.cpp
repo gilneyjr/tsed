@@ -1,16 +1,14 @@
 #include "is-immediately-left-sibling-of-expression.hpp"
 
 Transduction::Search::IsImmediatelyLeftSiblingOfExpression::IsImmediatelyLeftSiblingOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsImmediatelyLeftSiblingOfExpression::~IsImmediatelyLeftSiblingOfExpression()
+bool Transduction::Search::IsImmediatelyLeftSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsImmediatelyLeftSiblingOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getRightSibling() == nullptr)
-    return false;
-  return expression->match(tree->getRightSibling(), symbolTable);
+  bool leftSiblingIsEndMarker = context.matched->getLeftSibling() == nullptr;
+  auto leftSibling = leftSiblingIsEndMarker
+    ? SyntaxTree::createEndMarkerOnLeftOf(context.matched)
+    : context.matched->getLeftSibling(); 
+
+  return expression->match(Contexts::SearchMatchContext(leftSibling, context.symbolTable, leftSiblingIsEndMarker));
 }

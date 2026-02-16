@@ -1,13 +1,59 @@
 #include "and-expression.hpp"
-#include "nodename-info.hpp"
 
-Transduction::Search::AndExpression::AndExpression(SearchExpression *leftExpression, SearchExpression *rightExpression)
-  : SearchExpression(leftExpression->getDefinitions(), leftExpression->getReferences()), leftExpression(leftExpression), rightExpression(rightExpression)
+Transduction::Search::AndExpression::AndExpression(OperationExpression *leftExpression, OperationExpression *rightExpression)
+  : leftExpression(leftExpression), rightExpression(rightExpression) {}
+
+Transduction::Search::AndExpression::~AndExpression()
 {
-  auto &leftDefinitions = leftExpression->getDefinitions();
-  auto &leftReferences = leftExpression->getReferences();
-  auto &rightDefinitions = rightExpression->getDefinitions();
-  auto &rightReferences = rightExpression->getReferences();
+  if (leftExpression)
+    delete leftExpression;
+  if (rightExpression)
+    delete rightExpression;
+}
+
+bool Transduction::Search::AndExpression::match(Transduction::Search::Contexts::SearchMatchContext &context) const
+{
+  context.symbolTable->enterScope();
+
+  bool matched = leftExpression->match(context)
+    && rightExpression->match(context);
+
+  if (matched)
+    return true;
+  
+  context.symbolTable->exitScope();
+  return false;
+}
+
+void Transduction::Search::AndExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  if (!leftExpression || !rightExpression)
+  {
+    if (!leftExpression)
+      context.errors.emplace_back("Malformed search expression: a or operation must have a left restriction.");
+
+    if (!rightExpression)
+      context.errors.emplace_back("Malformed search expression: a or operation must have a right restriction.");
+
+    return;
+  }
+
+  Contexts::SearchValidationContext &leftContext = context;
+  Contexts::SearchValidationContext rightContext;
+  rightContext.leftIsEndMarker = context.leftIsEndMarker;
+
+  leftExpression->validate(leftContext);
+  rightExpression->validate(rightContext);
+  context.errors.insert(context.errors.end(), rightContext.errors.begin(), rightContext.errors.end());
+  context.warnings.insert(context.warnings.end(), rightContext.warnings.begin(), rightContext.warnings.end());
+
+  if (leftContext.errors.size() > 0 || rightContext.errors.size() > 0)
+    return;
+
+  auto &leftDefinitions = leftContext.definitions;
+  auto &leftReferences = leftContext.references;
+  auto &rightDefinitions = rightContext.definitions;
+  auto &rightReferences = rightContext.references;
 
   for (auto *rightDef : rightDefinitions)
   {
@@ -15,15 +61,19 @@ Transduction::Search::AndExpression::AndExpression(SearchExpression *leftExpress
     bool referencedBefore = leftReferences.find(rightDef) == leftReferences.end();
 
     if (definedBefore)
+    {
       // TODO: Correct/Improve this error message
-      // TODO: Create an exception for this
-      throw "The nodename definition is already defined before.";
+      context.errors.emplace_back("The nodename definition is already defined before.");
+      return; // TODO: Verify if it needs to return here
+    }
     else if (referencedBefore)
+    {
       // TODO: Correct/Improve this error message
-      // TODO: Create an exception for this
-      throw "The nodename definition is being referenced before.";
+      context.errors.emplace_back("The nodename definition is being referenced before.");
+      return; // TODO: Verify if it needs to return here
+    }
     else
-      definitions.insert(rightDef);
+      context.definitions.insert(rightDef);
   }
 
   for (auto *rightRef : rightReferences)
@@ -38,34 +88,18 @@ Transduction::Search::AndExpression::AndExpression(SearchExpression *leftExpress
       && (*leftRefIt)->placeholder != rightRef->placeholder;
 
     if (isDefinedBeforeWithDifferentPlaceholder)
+    {
       // TODO: Correct/Improve this error message
-      // TODO: Create an exception for this
-      throw "The nodename reference is defined before, but with a different placeholder type.";
+      context.errors.emplace_back("The nodename reference is defined before, but with a different placeholder type.");
+      return; // TODO: Verify if it needs to return here
+    }
     else if (isReferencedBeforeWithDifferentPlaceholder)
+    {
       // TODO: Correct/Improve this error message
-      // TODO: Create an exception for this
-      throw "The nodename reference is referenced before, but with a different placeholder type.";
+      context.errors.emplace_back("The nodename reference is referenced before, but with a different placeholder type.");
+      return; // TODO: Verify if it needs to return here
+    }
     else if (!isDefinedBefore)
-      references.insert(rightRef);
+      context.references.insert(rightRef);
   }
-}
-
-Transduction::Search::AndExpression::~AndExpression()
-{
-  delete leftExpression;
-  delete rightExpression;
-}
-  
-bool Transduction::Search::AndExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  symbolTable.enterScope();
-
-  bool matched = leftExpression->match(tree, symbolTable)
-    && rightExpression->match(tree, symbolTable);
-
-  if (matched)
-    return true;
-  
-  symbolTable.exitScope();
-  return false;
 }

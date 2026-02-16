@@ -1,16 +1,31 @@
 #include "has-unique-child-as-expression.hpp"
 
 Transduction::Search::HasUniqueChildAsExpression::HasUniqueChildAsExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::HasUniqueChildAsExpression::~HasUniqueChildAsExpression()
+bool Transduction::Search::HasUniqueChildAsExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::HasUniqueChildAsExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getFirstChild() == nullptr || tree->getFirstChild() != tree->getLastChild())
+  if (context.matchedIsEndMarker 
+    || context.matched->getFirstChild() == nullptr
+    || context.matched->getFirstChild() != context.matched->getLastChild()
+  )
+  {
     return false;
-  return expression->match(tree->getParent(), symbolTable);
+  }
+
+  return expression->match(Contexts::SearchMatchContext(context.matched->getFirstChild(), context.symbolTable));
+}
+
+void Transduction::Search::HasUniqueChildAsExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \"<:\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }

@@ -1,18 +1,16 @@
 #ifndef IS_LEFT_SIBLING_OF_EXPRESSION_HPP
 #define IS_LEFT_SIBLING_OF_EXPRESSION_HPP
 
-#include "search-expression.hpp"
+#include "restriction-expression.hpp"
 
 namespace Transduction::Search
 {
-  class IsLeftSiblingOfExpression : public SearchExpression
+  class IsLeftSiblingOfExpression : public RestrictionExpression
   {
-  private:
-    SearchExpression* expression;
   public:
     IsLeftSiblingOfExpression(SearchExpression*);
-    ~IsLeftSiblingOfExpression();
-    bool match(SyntaxTree*, SymbolTable&);
+    virtual bool match(Contexts::SearchMatchContext&) const override;
+    virtual void validate(Contexts::SearchValidationContext&) const override;
   };
 }
 

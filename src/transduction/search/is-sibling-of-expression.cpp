@@ -1,26 +1,35 @@
 #include "is-sibling-of-expression.hpp"
 
 Transduction::Search::IsSiblingOfExpression::IsSiblingOfExpression(SearchExpression *expression)
-  : SearchExpression(expression->getDefinitions(), expression->getReferences()), expression(expression) {}
+  : RestrictionExpression(expression) {}
 
-Transduction::Search::IsSiblingOfExpression::~IsSiblingOfExpression()
+bool Transduction::Search::IsSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  delete expression;
-}
-  
-bool Transduction::Search::IsSiblingOfExpression::match(SyntaxTree *tree, SymbolTable &symbolTable)
-{
-  if (tree == nullptr || tree->getParent() == nullptr)
+  if (context.matched || context.matched->getParent() == nullptr)
     return false;
 
-  for (auto sibling = tree->getParent()->getFirstChild(); sibling != nullptr; sibling = sibling->getRightSibling())
+  for (auto sibling = context.matched->getParent()->getFirstChild(); sibling != nullptr; sibling = sibling->getRightSibling())
   {
-    if (tree == sibling)
+    if (context.matched == sibling)
       continue;
 
-    if (expression->match(sibling, symbolTable))
+    if (expression->match(Contexts::SearchMatchContext(sibling, context.symbolTable)))
       return true;
   }
 
   return false;
+}
+
+void Transduction::Search::IsSiblingOfExpression::validate(Contexts::SearchValidationContext &context) const
+{
+  bool leftIsEndMarker = context.leftIsEndMarker;
+  bool rightIsEndMarker = expression != nullptr && expression->leftIsEndMarker();
+
+  if (leftIsEndMarker || rightIsEndMarker)
+  {
+    context.errors.emplace_back("Error in search expression: operator \"$\" cannot operate on an end marker.");
+    return;
+  }
+
+  RestrictionExpression::validate(context);
 }
