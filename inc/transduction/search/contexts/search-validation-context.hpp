@@ -1,9 +1,9 @@
 #ifndef SEARCH_VALIDATION_CONTEXT_HPP
 #define SEARCH_VALIDATION_CONTEXT_HPP
 
+#include "nodename-info.hpp"
 #include <string>
 #include <vector>
-#include "nodename-info.hpp"
 
 namespace Transduction::Search::Contexts
 {

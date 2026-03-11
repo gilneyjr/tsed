@@ -55,10 +55,10 @@ void Transduction::Search::AndExpression::validate(Contexts::SearchValidationCon
   auto &rightDefinitions = rightContext.definitions;
   auto &rightReferences = rightContext.references;
 
-  for (auto *rightDef : rightDefinitions)
+  for (auto [rightDefKey, rightDef] : rightDefinitions)
   {
-    bool definedBefore = leftDefinitions.find(rightDef) != leftDefinitions.end();
-    bool referencedBefore = leftReferences.find(rightDef) == leftReferences.end();
+    bool definedBefore = leftDefinitions.find(rightDefKey) != leftDefinitions.end();
+    bool referencedBefore = leftReferences.find(rightDefKey) == leftReferences.end();
 
     if (definedBefore)
     {
@@ -69,23 +69,23 @@ void Transduction::Search::AndExpression::validate(Contexts::SearchValidationCon
     else if (referencedBefore)
     {
       // TODO: Correct/Improve this error message
-      context.errors.emplace_back("The nodename definition is being referenced before.");
+      context.errors.emplace_back("The nodename definition is being referenced before its definition.");
       return; // TODO: Verify if it needs to return here
     }
     else
-      context.definitions.insert(rightDef);
+      context.definitions.insert({rightDefKey, rightDef});
   }
 
-  for (auto *rightRef : rightReferences)
+  for (auto [rightRefKey, rightRef] : rightReferences)
   {
-    auto leftDefIt = leftDefinitions.find(rightRef);
-    auto leftRefIt = leftReferences.find(rightRef);
+    auto leftDefIt = leftDefinitions.find(rightRefKey);
+    auto leftRefIt = leftReferences.find(rightRefKey);
     
     bool isDefinedBefore = leftDefIt != leftDefinitions.end();
     bool isDefinedBeforeWithDifferentPlaceholder = isDefinedBefore
-      && (*leftDefIt)->placeholder != rightRef->placeholder;
+      && leftDefIt->second->placeholder != rightRef->placeholder;
     bool isReferencedBeforeWithDifferentPlaceholder = leftRefIt != leftReferences.end()
-      && (*leftRefIt)->placeholder != rightRef->placeholder;
+      && leftRefIt->second->placeholder != rightRef->placeholder;
 
     if (isDefinedBeforeWithDifferentPlaceholder)
     {
@@ -100,6 +100,6 @@ void Transduction::Search::AndExpression::validate(Contexts::SearchValidationCon
       return; // TODO: Verify if it needs to return here
     }
     else if (!isDefinedBefore)
-      context.references.insert(rightRef);
+      context.references.insert({rightRefKey, rightRef});
   }
 }

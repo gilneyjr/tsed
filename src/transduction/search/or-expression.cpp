@@ -52,21 +52,21 @@ void Transduction::Search::OrExpression::validate(Contexts::SearchValidationCont
   auto &rightDefinitions = rightContext.definitions;
   auto &rightReferences = rightContext.references;
 
-  for (auto *leftDef : leftDefinitions)
+  for (auto [leftDefKey, leftDef] : leftDefinitions)
   {
-    auto rightDefIt = rightDefinitions.find(leftDef);
-    auto rightRefIt = rightReferences.find(leftDef);
+    auto rightDefIt = rightDefinitions.find(leftDefKey);
+    auto rightRefIt = rightReferences.find(leftDefKey);
 
     if (rightDefIt != rightDefinitions.end()) // def x def
     {
-      if (leftDef->placeholder != (*rightDefIt)->placeholder)
+      if (leftDef->placeholder != rightDefIt->second->placeholder)
       {
         // TODO: Correct/Improve this error message
         context.errors.emplace_back("The nodename definition must have the same placeholder type in every sides of the OR operator.");
         return; // TODO: Verify if it needs to return here
       }
       else
-        context.definitions.insert(leftDef);
+        context.definitions.insert({leftDefKey, leftDef});
     } 
     else if (rightRefIt != rightReferences.end()) // def x ref
     {
@@ -81,10 +81,10 @@ void Transduction::Search::OrExpression::validate(Contexts::SearchValidationCont
     }
   }
 
-  for (auto *leftRef : leftReferences)
+  for (auto [leftRefKey, leftRef] : leftReferences)
   {
-    auto rightDefIt = rightDefinitions.find(leftRef);
-    auto rightRefIt = rightReferences.find(leftRef);
+    auto rightDefIt = rightDefinitions.find(leftRefKey);
+    auto rightRefIt = rightReferences.find(leftRefKey);
 
     if (rightDefIt != rightDefinitions.end()) // ref x def
     {
@@ -94,14 +94,14 @@ void Transduction::Search::OrExpression::validate(Contexts::SearchValidationCont
     }
     else if (rightRefIt != rightReferences.end()) // ref x ref
     {
-      if (leftRef->placeholder != (*rightRefIt)->placeholder)
+      if (leftRef->placeholder != rightRefIt->second->placeholder)
       {
         // TODO: Correct/Improve this error message  
         context.errors.emplace_back("The nodename reference must have the same placeholder type in every sides of the OR operator.");
         return; // TODO: Verify if it needs to return here
       }
       else
-        context.references.insert(leftRef);
+        context.references.insert({leftRefKey, leftRef});
     }
     else // ref x ---
     {
@@ -111,10 +111,10 @@ void Transduction::Search::OrExpression::validate(Contexts::SearchValidationCont
     }
   }
 
-  for (auto *rightDef : rightDefinitions)
+  for (auto [rightDefKey, rightDef] : rightDefinitions)
   {
-    auto leftDefIt = leftDefinitions.find(rightDef);
-    auto leftRefIt = leftReferences.find(rightDef);
+    auto leftDefIt = leftDefinitions.find(rightDefKey);
+    auto leftRefIt = leftReferences.find(rightDefKey);
 
     if (leftDefIt == leftDefinitions.end() && leftRefIt == leftReferences.end()) // --- x def
     {
@@ -124,10 +124,10 @@ void Transduction::Search::OrExpression::validate(Contexts::SearchValidationCont
     }
   }
 
-  for (auto *rightRef : rightReferences)
+  for (auto [rightRefKey, rightRef] : rightReferences)
   {
-    auto leftDefIt = leftDefinitions.find(rightRef);
-    auto leftRefIt = leftReferences.find(rightRef);
+    auto leftDefIt = leftDefinitions.find(rightRefKey);
+    auto leftRefIt = leftReferences.find(rightRefKey);
 
     if (leftDefIt == leftDefinitions.end() && leftRefIt == leftReferences.end()) // --- x ref
     {

@@ -60,7 +60,7 @@ void Transduction::Search::NodenameExpression::validate(Contexts::SearchValidati
   }
 
   if (nodenameInfo->defOrRef == Nodename::DefOrRef::DEFINITION)
-    context.definitions.insert(nodenameInfo);
+    context.definitions.insert({nodenameInfo->placeholderNumber, nodenameInfo});
   else if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
-    context.references.insert(nodenameInfo);
+    context.references.insert({nodenameInfo->placeholderNumber, nodenameInfo});
 }
