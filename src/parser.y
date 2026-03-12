@@ -32,15 +32,12 @@
   int yywarn(const char *s); // Declaration of the yyerror function defined below
 
   Transduction::TransductionRule *yaccResult;
-
-  NodenameInfoSet searchExpressionDefinitions; // Global variable used in replacement expression
 %}
 
 %code requires {
   
   #include "nodename-expression.hpp"
   #include "operation-expression.hpp"
-  #include "replacement-leaf-node.hpp"
   #include "replacement-tree.hpp"
   #include "restriction-expression.hpp"
   #include "search-expression.hpp"
@@ -57,7 +54,6 @@
 
 
   Transduction::Search::NodenameExpression *nodenameExpression;
-  Transduction::Replacement::ReplacementLeafNode *replacementNode;
   Transduction::Replacement::ReplacementTree *replacementTree;
   Transduction::Replacement::TreeSequence *treeSequence;
   Transduction::TransductionRule *transductionRule;
@@ -78,30 +74,30 @@
 %type <treeSequence> replacement_expression
 %type <treeSequence> tree_seq
 %type <replacementTree> tree
-%type <replacementNode> node
+%type <replacementTree> node
 
 %%
 
 transduction:
-  search_expression turnsto { searchExpressionDefinitions = $1->getDefinitions(); } replacement_expression
+  search_expression turnsto replacement_expression
   {
     try
     {
-      $$ = yaccResult = Parsing::parseTransduction($1, $4);
+      $$ = yaccResult = Parsing::parseTransduction($1, $3);
       delete $2;
     }
     catch (const exception& e)
     {
       delete $1;
       delete $2;
-      delete $4;
+      delete $3;
       yyerror(e.what());
     }
     catch (const char* error)
     {
       delete $1;
       delete $2;
-      delete $4;
+      delete $3;
       yyerror(error);
     }
   }
@@ -373,7 +369,7 @@ node:
   {
     try
     {
-      $$ = Parsing::parseReplacementNode(*$1, searchExpressionDefinitions);
+      $$ = Parsing::parseReplacementNode(*$1);
       delete $1;
     }
     catch (const exception& e)

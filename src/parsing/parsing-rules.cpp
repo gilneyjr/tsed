@@ -4,9 +4,8 @@
 #include "nodename-machine.hpp"
 #include "parsing-rules.hpp"
 #include "placeholder.hpp"
-#include "replacement-internal-node.hpp"
-#include "replacement-leaf-node.hpp"
 #include "restriction-expression-factory.hpp"
+#include "replacement-validation-context.hpp"
 #include "search-validation-context.hpp"
 
 Transduction::Search::NodenameExpression* Parsing::parseNodename(std::string &lexem)
@@ -35,7 +34,7 @@ Transduction::Search::NodenameExpression* Parsing::parseSubtreeRange(std::string
   return new Transduction::Search::NodenameExpression(Nodename::NodenameInfo::createSubtreeRangeInstance(placeholder, placeholderNumber));
 }
 
-Transduction::Replacement::ReplacementLeafNode* Parsing::parseReplacementNode(const std::string &lexem, const Nodename::NodenameInfoSet &searchExpressionDefinitions)
+Transduction::Replacement::ReplacementTree* Parsing::parseReplacementNode(const std::string &lexem)
 {
   istringstream input(lexem);
   auto nodenameInfo = Nodename::NodenameMachine(input).run();
@@ -48,19 +47,6 @@ Transduction::Replacement::ReplacementLeafNode* Parsing::parseReplacementNode(co
     // TODO: Correct/Improve this error message
     // TODO: Create an exception for this
     throw "Nodenames in replacement expression cannot contain ANY, WILDCARD or REGEX.";
-  
-  if (nodenameInfo->placeholder != Nodename::Placeholder::NONE)
-  {
-    auto it = searchExpressionDefinitions.find(nodenameInfo);
-    if (it == searchExpressionDefinitions.end())
-      // TODO: Correct/Improve this error message
-      // TODO: Create an exception for this
-      throw "The placeholder is not defined in the search expression.";
-    if ((*it)->placeholder != nodenameInfo->placeholder)
-      // TODO: Correct/Improve this error message
-      // TODO: Create an exception for this
-      throw "The placeholder has a different type of its definition in the search expression.";
-  }
 
   // TODO: check if this extraction is correct
   std::smatch matches;
@@ -72,17 +58,19 @@ Transduction::Replacement::ReplacementLeafNode* Parsing::parseReplacementNode(co
   auto placeholder = nodenameInfo->placeholder;
   auto placeholderNumber = nodenameInfo->placeholderNumber;
   delete nodenameInfo;
-  return new Transduction::Replacement::ReplacementLeafNode(tag, placeholder, placeholderNumber);
+  return new Transduction::Replacement::ReplacementTree(tag, placeholder, placeholderNumber);
 }
 
-Transduction::Replacement::ReplacementTree* Parsing::parseReplacementTree(Transduction::Replacement::ReplacementLeafNode *root, Transduction::Replacement::TreeSequence *children)
+Transduction::Replacement::ReplacementTree* Parsing::parseReplacementTree(Transduction::Replacement::ReplacementTree *root, Transduction::Replacement::TreeSequence *children)
 {
   if (root->getPlaceholder() != Nodename::Placeholder::NONE)
     // TODO: Correct/Improve this error message
     // TODO: Create an exception for this
     throw "The tree root in replacement expression cannot have a placeholder.";
 
-  return new Transduction::Replacement::ReplacementInternalNode(root->getTag(), children);
+  root->setChildren(children);
+
+  return new Transduction::Replacement::ReplacementTree(root->getTag(), children);
 }
 
 Transduction::Replacement::TreeSequence* Parsing::parseReplacementTreeSequence(
@@ -107,11 +95,11 @@ Transduction::TransductionRule* Parsing::parseTransduction(
     // TODO: Create an exception for this
     throw "Empty replacement expression.";
 
-  Transduction::Search::Contexts::SearchValidationContext searchExpressionValidationContext;
-  searchExpression->validate(searchExpressionValidationContext);
+  Transduction::Search::Contexts::SearchValidationContext searchContext;
+  searchExpression->validate(searchContext);
 
-  auto &definitions = searchExpressionValidationContext.definitions;
-  auto &references = searchExpressionValidationContext.references;
+  auto &definitions = searchContext.definitions;
+  auto &references = searchContext.references;
 
   // Check if all references are defined
   if (!references.empty())
@@ -120,15 +108,22 @@ Transduction::TransductionRule* Parsing::parseTransduction(
     throw "There are references that are not defined in search expression.";
 
   // Check if the main placeholder is defined
-  Nodename::NodenameInfo nodenameWithPlaceholderNumber0;
-  nodenameWithPlaceholderNumber0.placeholderNumber = 0;
-  auto it = definitions.find(&nodenameWithPlaceholderNumber0);
-  if (it == definitions.end() || (*it)->placeholder != Nodename::Placeholder::CUT || (*it)->defOrRef != Nodename::DefOrRef::DEFINITION)
+  auto it = definitions.find(Nodename::NodenameInfo::MAIN_PLACEHOLDER_NUMBER);
+  if (it == definitions.end()
+    || it->second->placeholder != Nodename::Placeholder::CUT
+    || it->second->defOrRef != Nodename::DefOrRef::DEFINITION)
+  {
     // TODO: Correct/Improve this message error
     // TODO: Create an exception for this
     throw "The search expression needs to have a definition to main placeholder.";
+  }
 
-  // TODO: Think if it is necessary to check the replacement expression's references are defined on search expression
+  Transduction::Replacement::Contexts::ReplacementValidationContext replacementContext(searchContext.definitions);
+
+  for (auto replacementTree : *replacementExpression)
+    replacementTree->validate(replacementContext);
+
+  // TODO: if replacement expression is a treesequence then search expression cannot match with syntax tree root
 
   return new Transduction::TransductionRule(searchExpression, replacementExpression);
 }

@@ -25,7 +25,8 @@ void Transduction::Transducer::apply(TransductionRule *rule, SyntaxTree* tree)
   {
     SyntaxTree* current = transversalStrategy->next();
     SymbolTable symbolTable;
-    if (rule->search->match(current, symbolTable))
+    Transduction::Search::Contexts::SearchMatchContext context(current, &symbolTable);
+    if (rule->search->match(context))
     {
       std::cout << *current << std::endl;
       this->transversalStrategy->notifyTransduction();

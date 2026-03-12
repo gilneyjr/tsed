@@ -1,4 +1,5 @@
 #include "nodename-info.hpp"
+#include <cassert>
 
 Nodename::NodenameInfo::NodenameInfo()
   : type(NodenameInfoType::SIMPLE_NODE),
@@ -39,11 +40,4 @@ Nodename::NodenameInfo* Nodename::NodenameInfo::createEndMarkerInstance()
   return info;
 }
 
-bool Nodename::NodenameInfoPointerComparator::operator()(const NodenameInfo* left, const NodenameInfo* right) const
-{
-  if (left == nullptr)
-    return false;
-  if (right == nullptr)
-    return true;
-  return left->placeholderNumber < right->placeholderNumber;
-}
+const unsigned int Nodename::NodenameInfo::MAIN_PLACEHOLDER_NUMBER = 0U;

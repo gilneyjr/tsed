@@ -2,7 +2,7 @@
 #define NODENAME_INFO_HPP
 
 #include <string>
-#include <set>
+#include <map>
 
 #include "def-or-ref.hpp"
 #include "nodename-info-type.hpp"
@@ -29,14 +29,11 @@ namespace Nodename
 
     static NodenameInfo* createSubtreeRangeInstance(Placeholder placeholder, unsigned int placeholderNumber);
     static NodenameInfo* createEndMarkerInstance();
+
+    static const unsigned int MAIN_PLACEHOLDER_NUMBER;
   };
 
-  struct NodenameInfoPointerComparator 
-  {
-    bool operator()(const NodenameInfo* left, const NodenameInfo* right) const;
-  };
-
-  typedef std::set<NodenameInfo*, NodenameInfoPointerComparator> NodenameInfoSet;
+  typedef std::map<unsigned int, NodenameInfo*> NodenameInfoSet;
 }
 
 #endif
