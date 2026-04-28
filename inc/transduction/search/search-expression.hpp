@@ -14,12 +14,18 @@ namespace Transduction::Search
     NodenameExpression* nodenameExpression;
     OperationExpression* operationExpression;
   public:
-    SearchExpression(NodenameExpression*, OperationExpression* = nullptr);
+    SearchExpression(
+      NodenameExpression *nodenameExpression, 
+      OperationExpression *operationExpression = nullptr
+    );
     ~SearchExpression();
     bool leftIsEndMarker() const;
-    bool match(Contexts::SearchMatchContext&&) const;
-    bool match(Contexts::SearchMatchContext&) const;
-    void validate(Contexts::SearchValidationContext&) const;
+    bool match(Contexts::SearchMatchContext &&context) const;
+    bool match(Contexts::SearchMatchContext &context) const;
+    void validate(Contexts::SearchValidationContext &context) const;
+
+    // TODO: remove it later
+    void print(int tab = 0);
   };
 }
 

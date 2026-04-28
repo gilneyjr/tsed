@@ -20,7 +20,8 @@ void Transduction::Transducer::apply(TransductionRule *rule, SyntaxTree* tree)
   if (rule == nullptr || tree == nullptr)
     return;
 
-  transversalStrategy->start(tree);
+  SyntaxTree* initialEndMarker = tree->getParent();
+  transversalStrategy->start(initialEndMarker);
   while (transversalStrategy->hasNext())
   {
     SyntaxTree* current = transversalStrategy->next();

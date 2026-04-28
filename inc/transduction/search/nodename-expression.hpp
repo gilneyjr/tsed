@@ -17,6 +17,7 @@ namespace Transduction::Search
     bool isEndMarker() const;
     bool match(Contexts::SearchMatchContext&) const;
     void validate(Contexts::SearchValidationContext&) const;
+    void print(int tab = 0);
   };
 }
 

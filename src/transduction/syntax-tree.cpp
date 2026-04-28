@@ -7,14 +7,29 @@ Transduction::SyntaxTree::SyntaxTree(
   SyntaxTree *leftSibling, SyntaxTree *rightSibling
 ) : tag(tag), parent(parent)
   , firstChild(firstChild), lastChild(lastChild)
-  , leftSibling(leftSibling), rightSibling(rightSibling) {}
+  , leftSibling(leftSibling), rightSibling(rightSibling)
+{
+  if (parent == nullptr)
+    createEndMarkerAbove(this);
+
+  if (firstChild == nullptr || lastChild == nullptr)
+    createEndMarkerBellow(this);
+  
+  if (leftSibling == nullptr)
+    createEndMarkerOnLeftOf(this);
+
+  if (rightSibling == nullptr)
+    createEndMarkerOnRightOf(this);
+}
 
 Transduction::SyntaxTree::~SyntaxTree()
 {
   auto aux = firstChild;
   while (aux != nullptr)
   {
-    auto next = aux->rightSibling; 
+    auto next = aux->rightSibling;
+    if (aux->leftSibling != nullptr)
+      delete aux->leftSibling;
     delete aux;
     aux = next;
   }
@@ -32,50 +47,125 @@ void Transduction::SyntaxTree::addChild(SyntaxTree *child)
   if (child == nullptr)
     return;
 
+  if (child->parent->isEndMarker())
+    destroyEndMarker(child->parent);
   child->parent = this;
-  child->rightSibling = nullptr;
-  child->leftSibling = lastChild;
 
-  if (lastChild != nullptr)
+  if (child->rightSibling == nullptr || !child->rightSibling->isEndMarker())
+  {
+    child->rightSibling = nullptr;
+    createEndMarkerOnRightOf(child);
+  }
+
+  if (!lastChild->isEndMarker())
+  {
+    if (child->leftSibling->isEndMarker())
+      destroyEndMarker(child->leftSibling);
+
+    if (lastChild->rightSibling->isEndMarker())
+      destroyEndMarker(lastChild->rightSibling);
+
+    child->leftSibling = lastChild;
     lastChild->rightSibling = child;
-  
+  }
+
   lastChild = child;
 
-  if (firstChild == nullptr)
+  if (firstChild->isEndMarker())
+  {
+    destroyEndMarker(firstChild);
     firstChild = child;
+  }
+}
+
+bool Transduction::SyntaxTree::isEndMarker()
+{
+  return _isEndMarker;
 }
 
 Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerOnLeftOf(SyntaxTree *tree)
 {
-  auto result = new SyntaxTree("#");
-  if (tree == nullptr)
+  SyntaxTree* result = new EndMarker();
+  if (tree == nullptr || tree->leftSibling != nullptr)
     return result;
   result->rightSibling = tree;
+  // result->parent = tree->parent; // TODO: Should I keep this code?
+  tree->leftSibling = result;
+  return result;
 }
 
 Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerOnRightOf(SyntaxTree *tree)
 {
-  auto result = new SyntaxTree("#");
-  if (tree == nullptr)
+  SyntaxTree* result = new EndMarker();
+  if (tree == nullptr || tree->rightSibling != nullptr)
     return result;
   result->leftSibling = tree;
+  // result->parent = tree->parent; // TODO: Should I keep this code?
+  tree->rightSibling = result;
+  return result;
 }
 
 Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerAbove(SyntaxTree *tree)
 {
-  auto result = new SyntaxTree("#");
-  if (tree == nullptr)
+  SyntaxTree* result = new EndMarker();
+  if (tree == nullptr || tree->parent != nullptr)
     return result;
   result->firstChild = tree;
   result->lastChild = tree;
+  tree->parent = result;
+  return result;
 }
 
 Transduction::SyntaxTree* Transduction::SyntaxTree::createEndMarkerBellow(SyntaxTree *tree)
 {
-  auto result = new SyntaxTree("#");
+  SyntaxTree* result = new EndMarker();
+  result->_isEndMarker = true;
   if (tree == nullptr)
     return result;
   result->parent = tree;
+  tree->firstChild = result;
+  tree->lastChild = result;
+  return result;
+}
+
+void Transduction::SyntaxTree::destroyEndMarker(SyntaxTree *endMarker)
+{
+  if (!endMarker->_isEndMarker)
+    return;
+
+  SyntaxTree *parent = endMarker->getParent();
+  SyntaxTree *firstChild = endMarker->getFirstChild();
+  SyntaxTree *lastChild = endMarker->getLastChild();
+  SyntaxTree *leftSibling = endMarker->getLeftSibling();
+  SyntaxTree *rightSibling = endMarker->getRightSibling();
+
+  if (parent != nullptr)
+  {
+    if (parent->firstChild == endMarker)
+      parent->firstChild = nullptr;
+    if (parent->lastChild == endMarker)
+      parent->lastChild = nullptr;
+  }
+
+  if (firstChild != nullptr && firstChild->parent == endMarker)
+    firstChild->parent = nullptr;
+
+  if (lastChild != nullptr && lastChild->parent == endMarker)
+    lastChild->parent = nullptr;
+
+  if (leftSibling != nullptr && leftSibling->rightSibling == endMarker)
+    leftSibling->rightSibling = nullptr;
+
+  if (rightSibling != nullptr && rightSibling->leftSibling == endMarker)
+    rightSibling->leftSibling = nullptr;
+
+  endMarker->parent = nullptr;
+  endMarker->firstChild = nullptr;
+  endMarker->lastChild = nullptr;
+  endMarker->leftSibling = nullptr;
+  endMarker->rightSibling = nullptr;
+
+  delete endMarker;
 }
 
 std::vector<Transduction::SyntaxTree*>
@@ -207,18 +297,40 @@ std::ostream& Transduction::operator<<(std::ostream& os, const SyntaxTree& tree)
 {
   if (tree.firstChild == nullptr)
   {
-    os << tree.tag;
+    if (!tree._isEndMarker)
+      os << tree.tag;
+    return os;
+  }
+  else if (tree._isEndMarker)
+  {
+    os << *(tree.firstChild);
     return os;
   }
 
-  os << "(" << tree.tag;
+
+  if (tree.firstChild != tree.lastChild)
+    os << "(";
+  os << tree.tag;
 
   for (auto child = tree.firstChild; child != nullptr; child = child->rightSibling)
   {
-    os << " " << *child;
+    if (!child->_isEndMarker)
+      os << " " << *child;
   }
 
-  os << ")";
+  if (tree.firstChild != tree.lastChild)
+    os << ")";
 
   return os;
+}
+
+Transduction::SyntaxTree::EndMarker::EndMarker() : SyntaxTree() 
+{
+  tag = "#";
+  parent = nullptr;
+  firstChild = nullptr;
+  lastChild = nullptr;
+  leftSibling = nullptr;
+  rightSibling = nullptr;
+  _isEndMarker = true;
 }

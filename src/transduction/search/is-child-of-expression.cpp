@@ -5,10 +5,11 @@ Transduction::Search::IsChildOfExpression::IsChildOfExpression(SearchExpression 
 
 bool Transduction::Search::IsChildOfExpression::match(Contexts::SearchMatchContext &context) const
 {
+  // TODO: refact this
   bool parentIsEndMarker = context.matched->getParent() == nullptr;
   auto parent = parentIsEndMarker
     ? SyntaxTree::createEndMarkerAbove(context.matched)
-    : context.matched->getParent(); 
+    : context.matched->getParent();
 
   return expression->match(Contexts::SearchMatchContext(parent, context.symbolTable, parentIsEndMarker));
 }

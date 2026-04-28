@@ -24,14 +24,18 @@ bool Transduction::Search::SearchExpression::match(Contexts::SearchMatchContext 
 
 bool Transduction::Search::SearchExpression::match(Contexts::SearchMatchContext &context) const
 {
-  if (!nodenameExpression || !nodenameExpression->match(context))
+  if (nodenameExpression == nullptr || context.current == nullptr)
     return false;
 
-  if (!operationExpression)
-    return true;
+  auto nodenameContext = Contexts::SearchMatchContext(context);
 
-  // TODO: set end marker flag in the context here
-  return operationExpression->match(context);
+  if (!nodenameExpression->match(nodenameContext))
+    return false;
+
+  nodenameContext.matchedIsEndMarker = nodenameExpression->isEndMarker();
+  nodenameContext.matched = nodenameContext.current;
+
+  return operationExpression == nullptr || operationExpression->match(nodenameContext);
 }
 
 void Transduction::Search::SearchExpression::validate(Contexts::SearchValidationContext &context) const
@@ -49,4 +53,16 @@ void Transduction::Search::SearchExpression::validate(Contexts::SearchValidation
   if (operationExpression)
     operationExpression->validate(context);
   context.leftIsEndMarker = tmp;
+}
+
+// TODO: Remove it later
+#include <iostream>
+void Transduction::Search::SearchExpression::print(int tab)
+{
+  for (int i = 1; i <= tab; i++)
+    std::cout << "  ";
+  std::cout << ":> " << std::endl;
+  nodenameExpression->print(tab + 1);
+  if (operationExpression != nullptr)
+    operationExpression->print(tab + 1);
 }

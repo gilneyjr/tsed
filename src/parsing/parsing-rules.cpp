@@ -1,3 +1,5 @@
+#include <exception>
+#include <iostream>
 #include <regex>
 #include <sstream>
 #include "nodename-info.hpp"
@@ -50,7 +52,7 @@ Transduction::Replacement::ReplacementTree* Parsing::parseReplacementNode(const 
 
   // TODO: check if this extraction is correct
   std::smatch matches;
-  std::regex extractTagRegex(R"([\[\{]\s*(?:\d+\s*:\s*)?([^\]\}]*)\s*[\]\}])");
+  std::regex extractTagRegex(R"([\[\{]\s*(?:\d+\s*:\s*)?([^\]\}]*)\s*[\]\}])"); // Todo: verify if no placeholder is being considered here
   if (!std::regex_match(lexem, matches, extractTagRegex))
     throw "The given tag is invalid.";
   
@@ -96,7 +98,23 @@ Transduction::TransductionRule* Parsing::parseTransduction(
     throw "Empty replacement expression.";
 
   Transduction::Search::Contexts::SearchValidationContext searchContext;
+  searchExpression->print(); // TODO: remove it later
   searchExpression->validate(searchContext);
+
+  if (!searchContext.warnings.empty())
+  {
+    for (auto w : searchContext.warnings)
+      std::clog << "[WARNING] " << std::endl;
+  }
+  
+  if (!searchContext.errors.empty())
+  {
+    std::ostringstream errors;
+    errors << "Errors occurred in search expression." << std::endl;
+    for (auto e: searchContext.errors)
+      errors << "\t[ERROR] " << e << std::endl;
+    throw std::runtime_error(errors.str());
+  }
 
   auto &definitions = searchContext.definitions;
   auto &references = searchContext.references;

@@ -103,3 +103,14 @@ void Transduction::Search::AndExpression::validate(Contexts::SearchValidationCon
       context.references.insert({rightRefKey, rightRef});
   }
 }
+
+// TODO: Remove it later
+#include <iostream>
+void Transduction::Search::AndExpression::print(int tab)
+{
+  for (int i = 1; i <= tab; i++)
+    std::cout << "  ";
+  std::cout << "AND" << std::endl;
+  leftExpression->print(tab + 1);
+  rightExpression->print(tab + 1);
+}

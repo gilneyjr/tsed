@@ -5,6 +5,7 @@ Transduction::Search::IsImmediatelyLeftSiblingOfExpression::IsImmediatelyLeftSib
 
 bool Transduction::Search::IsImmediatelyLeftSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
+  // TODO: refact this
   bool leftSiblingIsEndMarker = context.matched->getLeftSibling() == nullptr;
   auto leftSibling = leftSiblingIsEndMarker
     ? SyntaxTree::createEndMarkerOnLeftOf(context.matched)

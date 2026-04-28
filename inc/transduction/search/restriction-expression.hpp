@@ -16,6 +16,7 @@ namespace Transduction::Search
     RestrictionExpression(SearchExpression*);
     virtual ~RestrictionExpression();
     virtual void validate(Contexts::SearchValidationContext&) const override;
+    void print(int tab = 0) override;
   };
 }
 

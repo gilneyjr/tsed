@@ -5,15 +5,8 @@ Transduction::Search::IsParentOfExpression::IsParentOfExpression(SearchExpressio
 
 bool Transduction::Search::IsParentOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  if (context.matched->getFirstChild() == nullptr)
-  {
-    // try to match right side of restriction with end marker
-    auto child = SyntaxTree::createEndMarkerBellow(context.matched);
-    return expression->match(Contexts::SearchMatchContext(child, context.symbolTable, true));
-  }
-
-  for (auto child = context.matched->getFirstChild(); child != nullptr; child = child->getRightSibling())
-    if (expression->match(Contexts::SearchMatchContext(child, context.symbolTable)))
+  for (auto child = context.matched->getFirstChild(); child != nullptr && !child->isEndMarker(); child = child->getRightSibling())
+    if (expression->match(Contexts::SearchMatchContext(child, context.symbolTable, context.matchedIsEndMarker, context.matched)))
       return true;
   return false;
 }

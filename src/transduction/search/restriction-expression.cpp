@@ -28,3 +28,13 @@ void Transduction::Search::RestrictionExpression::validate(Contexts::SearchValid
 
   expression->validate(context);
 }
+
+// TODO: Remove it later
+#include <iostream>
+void Transduction::Search::RestrictionExpression::print(int tab)
+{
+  for (int i = 1; i <= tab; i++)
+    std::cout << "  ";
+  std::cout << "OP" << std::endl;
+  expression->print(tab + 1);
+}

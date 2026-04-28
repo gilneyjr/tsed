@@ -18,37 +18,49 @@ bool Transduction::Search::NodenameExpression::isEndMarker() const
 
 bool Transduction::Search::NodenameExpression::match(Contexts::SearchMatchContext &context) const
 {
-  if (!context.matched)
-    return context.matchedIsEndMarker && nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
+  if (context.current == nullptr) 
+    return false; // TODO: check what it needs to be done here
+
+  bool currentIsEndMarker = context.current->isEndMarker();
+  bool nodenameIsEndMarker = nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
+  if (currentIsEndMarker || nodenameIsEndMarker)
+  {
+    if (!currentIsEndMarker || !nodenameIsEndMarker)
+      return false;
+
+    // Check if end marker is operating with another end marker. Ex: # < #
+    if (context.matchedIsEndMarker)
+      return false; // TODO: Should it throw an error? Decide it!
+
+    return true;
+  }
 
   if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
   {
     auto result = context.symbolTable->lookup(nodenameInfo->placeholderNumber);
     if (!result.first)
       return false;
-    return context.matched == result.second.tree;
+    return context.current == result.second.tree;
   }
 
   std::regex pattern("^" + nodenameInfo->regex + "$");
   std::smatch matches;
 
-  if (std::regex_match(context.matched->getTag(), matches, pattern))
-  {
-    if (nodenameInfo->placeholder != Nodename::Placeholder::NONE)
-    {
-      Transduction::NodenameMatch match;
-      match.left = matches[1];
-      match.middle = matches[2];
-      match.right = matches[3];
-      match.tree = context.matched;
-      match.placeholder = nodenameInfo->placeholder;
-      context.symbolTable->insert(nodenameInfo->placeholderNumber, match);
-    }
-    
-    return true;
-  }
+  if (!std::regex_match(context.current->getTag(), matches, pattern))
+    return false;
 
-  return false;
+  if (nodenameInfo->placeholder != Nodename::Placeholder::NONE)
+  {
+    Transduction::NodenameMatch match;
+    match.left = matches[1];
+    match.middle = matches[2];
+    match.right = matches[3];
+    match.tree = context.current;
+    match.placeholder = nodenameInfo->placeholder;
+    context.symbolTable->insert(nodenameInfo->placeholderNumber, match);
+  }
+  
+  return true;
 }
 
 void Transduction::Search::NodenameExpression::validate(Contexts::SearchValidationContext &context) const
@@ -63,4 +75,16 @@ void Transduction::Search::NodenameExpression::validate(Contexts::SearchValidati
     context.definitions.insert({nodenameInfo->placeholderNumber, nodenameInfo});
   else if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
     context.references.insert({nodenameInfo->placeholderNumber, nodenameInfo});
+}
+
+// TODO: Remove it later
+#include <iostream>
+void Transduction::Search::NodenameExpression::print(int tab)
+{
+  for (int i = 1; i <= tab; i++)
+    std::cout << "  ";
+  if (nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER)
+    std::cout << "#" << std::endl;
+  else
+    std::cout << "\"" << nodenameInfo->regex << "\"" << std::endl;
 }

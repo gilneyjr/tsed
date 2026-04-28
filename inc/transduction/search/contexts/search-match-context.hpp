@@ -8,12 +8,18 @@ namespace Transduction::Search::Contexts
 {
   struct SearchMatchContext
   {
-    SyntaxTree *matched;
+    SyntaxTree *current;
     SymbolTable *symbolTable;
     bool matchedIsEndMarker;
+    SyntaxTree *matched;
 
     SearchMatchContext() = default;
-    SearchMatchContext(SyntaxTree*, SymbolTable*, bool = false);
+    SearchMatchContext(const SearchMatchContext &other) = default;
+    // TODO: Move matched to second parameter
+    SearchMatchContext(
+      SyntaxTree *current, SymbolTable *symbolTable,
+      bool matchedIsEndMarker = false, SyntaxTree *matched = nullptr
+    );
   };
 }
 

@@ -5,6 +5,7 @@ Transduction::Search::IsImmediatelyRightSiblingOfExpression::IsImmediatelyRightS
 
 bool Transduction::Search::IsImmediatelyRightSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
+  // TODO: refact this
   bool rightSiblingIsEndMarker = context.matched->getRightSibling() == nullptr;
   auto rightSibling = rightSiblingIsEndMarker
     ? SyntaxTree::createEndMarkerOnRightOf(context.matched)

@@ -17,6 +17,7 @@ namespace Transduction::Search
     ~AndExpression();
     bool match(Contexts::SearchMatchContext&) const override;
     void validate(Contexts::SearchValidationContext&) const override;
+    void print(int tab = 0) override;
   };
 }
 

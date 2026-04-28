@@ -24,14 +24,16 @@ namespace Transduction
     SyntaxTree* lastChild;
     SyntaxTree* leftSibling;
     SyntaxTree* rightSibling;
+    bool _isEndMarker = false;
 
+    SyntaxTree() = default;
   public:
     SyntaxTree(
-      const std::string, SyntaxTree* = nullptr,
-      SyntaxTree* = nullptr, SyntaxTree* = nullptr,
-      SyntaxTree* = nullptr, SyntaxTree* = nullptr
+      const std::string tag, SyntaxTree *parent = nullptr,
+      SyntaxTree *firstChild = nullptr, SyntaxTree *lastChild = nullptr,
+      SyntaxTree *leftSibling = nullptr, SyntaxTree *rightSibling = nullptr
     );
-    ~SyntaxTree();
+    virtual ~SyntaxTree();
     
     const std::string& getTag() const;
     SyntaxTree* getParent() const;
@@ -39,18 +41,26 @@ namespace Transduction
     SyntaxTree* getLastChild() const;
     SyntaxTree* getLeftSibling() const;
     SyntaxTree* getRightSibling() const;
-    void addChild(SyntaxTree*);
+    void addChild(SyntaxTree *child);
+    bool isEndMarker();
 
-    static SyntaxTree* createEndMarkerOnLeftOf(SyntaxTree*);
-    static SyntaxTree* createEndMarkerOnRightOf(SyntaxTree*);
-    static SyntaxTree* createEndMarkerAbove(SyntaxTree*);
-    static SyntaxTree* createEndMarkerBellow(SyntaxTree*);
+    static SyntaxTree* createEndMarkerOnLeftOf(SyntaxTree *tree);
+    static SyntaxTree* createEndMarkerOnRightOf(SyntaxTree *tree);
+    static SyntaxTree* createEndMarkerAbove(SyntaxTree *tree);
+    static SyntaxTree* createEndMarkerBellow(SyntaxTree *tree);
+    static void destroyEndMarker(SyntaxTree *endMarker);
 
-    static std::vector<SyntaxTree*> readFromFile(std::string&);
-    friend std::ostream& operator<<(std::ostream&, const SyntaxTree&);
+    static std::vector<SyntaxTree*> readFromFile(std::string &filename);
+    friend std::ostream& operator<<(std::ostream &os, const SyntaxTree &tree);
+    class EndMarker;
   };
 
-  std::ostream& operator<<(std::ostream&, const SyntaxTree&);
+  std::ostream& operator<<(std::ostream &os, const SyntaxTree &tree);
+  class SyntaxTree::EndMarker : public SyntaxTree
+  {
+  public:
+    EndMarker();
+  };
 }
 
 #endif

@@ -12,6 +12,7 @@ namespace Transduction::Search
     virtual ~OperationExpression();
     virtual bool match(Contexts::SearchMatchContext&) const = 0;
     virtual void validate(Contexts::SearchValidationContext&) const = 0;
+    virtual void print(int tab) = 0;
   };
 }
 

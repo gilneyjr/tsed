@@ -137,3 +137,14 @@ void Transduction::Search::OrExpression::validate(Contexts::SearchValidationCont
     }
   }
 }
+
+// TODO: Remove it later
+#include <iostream>
+void Transduction::Search::OrExpression::print(int tab)
+{
+  for (int i = 1; i <= tab; i++)
+    std::cout << "  ";
+  std::cout << "OR" << std::endl;
+  leftExpression->print(tab + 1);
+  rightExpression->print(tab + 1);
+}

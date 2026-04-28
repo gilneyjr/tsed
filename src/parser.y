@@ -1,6 +1,7 @@
 %{
   #include <iostream> // std::cout, std::endl
   #include <sstream> // std::stringstream, std::istringstream
+  #include <stdexcept> // std::exception
 
   #include "and-expression.hpp"
   #include "not-expression.hpp"

@@ -27,3 +27,13 @@ void Transduction::Search::NotExpression::validate(Contexts::SearchValidationCon
 
   operationExpression->validate(context);
 }
+
+// TODO: Remove it later
+#include <iostream>
+void Transduction::Search::NotExpression::print(int tab)
+{
+  for (int i = 1; i <= tab; i++)
+    std::cout << "  ";
+  std::cout << "NOT" << std::endl;
+  operationExpression->print(tab + 1);
+}

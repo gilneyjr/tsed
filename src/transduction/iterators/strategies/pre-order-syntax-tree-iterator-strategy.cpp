@@ -13,11 +13,22 @@ Transduction::PreOrderSyntaxTreeIteratorStrategy::next(SyntaxTree* current)
     return current;
 
   if (current->getFirstChild() != nullptr)
-    current = current->getFirstChild();
+  {
+    if (current->getFirstChild()->getLeftSibling() != nullptr
+      && current->getFirstChild()->getLeftSibling()->isEndMarker())
+    {
+      current = current->getFirstChild()->getLeftSibling();
+    }
+    else
+      current = current->getFirstChild();
+  }
   else if (current->getRightSibling() != nullptr)
     current = current->getRightSibling();
   else
   {
+    if (current->isEndMarker() && current->getLeftSibling() != nullptr)
+      current = current->getLeftSibling();
+
     auto aux = current->getParent();
     while (aux != nullptr)
     {
