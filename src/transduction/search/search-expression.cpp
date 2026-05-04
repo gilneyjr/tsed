@@ -56,7 +56,14 @@ void Transduction::Search::SearchExpression::validate(Contexts::SearchValidation
   auto tmp = context.leftIsEndMarker;
   context.leftIsEndMarker = leftIsEndMarker();
   if (operationExpression)
+  {
+    if (nodenameExpression->isSubtreeRange())
+    {
+      context.errors.emplace_back("Malformed search expression: subtree range captures cannot appear on the left-hand side of a restriction.");
+      return;
+    }
     operationExpression->validate(context);
+  }
   context.leftIsEndMarker = tmp;
 }
 
