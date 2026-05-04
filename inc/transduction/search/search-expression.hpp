@@ -20,6 +20,7 @@ namespace Transduction::Search
     );
     ~SearchExpression();
     bool leftIsEndMarker() const;
+    bool leftIsSubtreeRange() const;
     bool match(Contexts::SearchMatchContext &&context) const;
     bool match(Contexts::SearchMatchContext &context) const;
     void validate(Contexts::SearchValidationContext &context) const;

@@ -5,11 +5,21 @@ Transduction::Search::IsImmediatelyRightSiblingOfExpression::IsImmediatelyRightS
 
 bool Transduction::Search::IsImmediatelyRightSiblingOfExpression::match(Contexts::SearchMatchContext &context) const
 {
-  // TODO: refact this
-  bool rightSiblingIsEndMarker = context.matched->getRightSibling() == nullptr;
-  auto rightSibling = rightSiblingIsEndMarker
-    ? SyntaxTree::createEndMarkerOnRightOf(context.matched)
-    : context.matched->getRightSibling(); 
+  if (expression->leftIsSubtreeRange())
+  {
+    return expression->match(Contexts::SearchMatchContext(
+      context.matched,
+      context.symbolTable,
+      context.matchedIsEndMarker,
+      context.matched,
+      Contexts::SubtreeRangeDirection::RIGHT_SIBLINGS
+    ));
+  }
 
-  return expression->match(Contexts::SearchMatchContext(rightSibling, context.symbolTable, rightSiblingIsEndMarker));
+  return expression->match(Contexts::SearchMatchContext(
+    context.matched->getRightSibling(),
+    context.symbolTable,
+    context.matchedIsEndMarker,
+    context.matched
+  ));
 }

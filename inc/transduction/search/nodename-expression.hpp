@@ -4,6 +4,7 @@
 #include "nodename-info.hpp"
 #include "search-match-context.hpp"
 #include "search-validation-context.hpp"
+#include "subtree-range-direction.hpp"
 
 namespace Transduction::Search
 {
@@ -11,12 +12,15 @@ namespace Transduction::Search
   {
   private:
     Nodename::NodenameInfo *nodenameInfo;
+    bool matchEndMarker(Contexts::SearchMatchContext &context) const;
+    bool matchSubtreeRange(Contexts::SearchMatchContext &context) const;
   public:
-    NodenameExpression(Nodename::NodenameInfo*);
+    NodenameExpression(Nodename::NodenameInfo *nodenameInfo);
     ~NodenameExpression();
     bool isEndMarker() const;
-    bool match(Contexts::SearchMatchContext&) const;
-    void validate(Contexts::SearchValidationContext&) const;
+    bool isSubtreeRange() const;
+    bool match(Contexts::SearchMatchContext &context) const;
+    void validate(Contexts::SearchValidationContext &context) const;
     void print(int tab = 0);
   };
 }

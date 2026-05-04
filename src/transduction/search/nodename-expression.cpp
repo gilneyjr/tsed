@@ -1,6 +1,7 @@
 #include <regex>
 #include "nodename-expression.hpp"
 #include "nodename-match.hpp"
+#include "subtree-range-direction.hpp"
 
 Transduction::Search::NodenameExpression::NodenameExpression(Nodename::NodenameInfo *nodenameInfo)
   : nodenameInfo(nodenameInfo) {}
@@ -16,31 +17,72 @@ bool Transduction::Search::NodenameExpression::isEndMarker() const
   return nodenameInfo != nullptr && nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
 }
 
+bool Transduction::Search::NodenameExpression::isSubtreeRange() const
+{
+  return nodenameInfo != nullptr && nodenameInfo->type == Nodename::NodenameInfoType::SUBTREE_RANGE_PLACEHOLDER;
+}
+
+bool Transduction::Search::NodenameExpression::matchEndMarker(Contexts::SearchMatchContext &context) const
+{
+  bool currentIsEndMarker = context.current->isEndMarker();
+  bool nodenameIsEndMarker = nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
+
+  if (!currentIsEndMarker || !nodenameIsEndMarker)
+    return false;
+
+  // Check if end marker is operating with another end marker. Ex: # < #
+  if (context.matchedIsEndMarker)
+    return false; // TODO: Should it throw an error? Decide it!
+
+  return true;
+}
+
+bool Transduction::Search::NodenameExpression::matchSubtreeRange(Contexts::SearchMatchContext &context) const
+{
+  if (context.subtreeRangeDirection == Contexts::SubtreeRangeDirection::NONE)
+    return false;
+
+  Transduction::NodenameMatch match;
+
+  // Initialize firstTree according subtree range direction
+  SyntaxTree* firstTree = nullptr;
+  if (context.subtreeRangeDirection == Contexts::SubtreeRangeDirection::LEFT_SIBLINGS)
+  {
+    if (context.current->getParent() != nullptr)
+      firstTree = context.current->getParent()->getFirstChild();
+  }
+  else if (context.subtreeRangeDirection == Contexts::SubtreeRangeDirection::RIGHT_SIBLINGS)
+    firstTree = context.current->getRightSibling();
+  else if (context.subtreeRangeDirection == Contexts::SubtreeRangeDirection::CHILDREN)
+    firstTree = context.current->getFirstChild();
+
+  // Insert trees in match
+  for (auto tree = firstTree; tree != nullptr && !tree->isEndMarker() && tree != context.current; tree = tree->getRightSibling())
+    match.trees.push_back(tree);
+
+  match.placeholder = nodenameInfo->placeholder;
+  match.isRange = true;
+  context.symbolTable->insert(nodenameInfo->placeholderNumber, match);
+  return true;
+}
+
 bool Transduction::Search::NodenameExpression::match(Contexts::SearchMatchContext &context) const
 {
   if (context.current == nullptr) 
     return false; // TODO: check what it needs to be done here
 
-  bool currentIsEndMarker = context.current->isEndMarker();
-  bool nodenameIsEndMarker = nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER;
-  if (currentIsEndMarker || nodenameIsEndMarker)
-  {
-    if (!currentIsEndMarker || !nodenameIsEndMarker)
-      return false;
+  if (nodenameInfo->type == Nodename::NodenameInfoType::END_MARKER)
+    return matchEndMarker(context);
 
-    // Check if end marker is operating with another end marker. Ex: # < #
-    if (context.matchedIsEndMarker)
-      return false; // TODO: Should it throw an error? Decide it!
-
-    return true;
-  }
-
+  if (nodenameInfo->type == Nodename::NodenameInfoType::SUBTREE_RANGE_PLACEHOLDER)
+    return matchSubtreeRange(context);
+  
   if (nodenameInfo->defOrRef == Nodename::DefOrRef::REFERENCE)
   {
     auto result = context.symbolTable->lookup(nodenameInfo->placeholderNumber);
-    if (!result.first)
+    if (!result.first || result.second.isRange)
       return false;
-    return context.current == result.second.tree;
+    return context.current == result.second.trees.front();
   }
 
   std::regex pattern("^" + nodenameInfo->regex + "$");
@@ -55,8 +97,9 @@ bool Transduction::Search::NodenameExpression::match(Contexts::SearchMatchContex
     match.left = matches[1];
     match.middle = matches[2];
     match.right = matches[3];
-    match.tree = context.current;
+    match.trees.push_back(context.current);
     match.placeholder = nodenameInfo->placeholder;
+    match.isRange = false;
     context.symbolTable->insert(nodenameInfo->placeholderNumber, match);
   }
   

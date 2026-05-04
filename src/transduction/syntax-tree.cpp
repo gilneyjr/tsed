@@ -308,7 +308,7 @@ std::ostream& Transduction::operator<<(std::ostream& os, const SyntaxTree& tree)
   }
 
 
-  if (tree.firstChild != tree.lastChild)
+  if (!tree.firstChild->isEndMarker())
     os << "(";
   os << tree.tag;
 
@@ -318,7 +318,7 @@ std::ostream& Transduction::operator<<(std::ostream& os, const SyntaxTree& tree)
       os << " " << *child;
   }
 
-  if (tree.firstChild != tree.lastChild)
+  if (!tree.firstChild->isEndMarker())
     os << ")";
 
   return os;

@@ -17,6 +17,11 @@ bool Transduction::Search::SearchExpression::leftIsEndMarker() const
   return nodenameExpression != nullptr && nodenameExpression->isEndMarker();
 }
 
+bool Transduction::Search::SearchExpression::leftIsSubtreeRange() const
+{
+  return nodenameExpression != nullptr && nodenameExpression->isSubtreeRange();
+}
+
 bool Transduction::Search::SearchExpression::match(Contexts::SearchMatchContext &&context) const
 {
   return match(context);
