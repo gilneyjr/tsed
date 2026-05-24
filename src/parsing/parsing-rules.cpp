@@ -63,7 +63,9 @@ Transduction::Replacement::ReplacementTree* Parsing::parseReplacementNode(const 
   return new Transduction::Replacement::ReplacementTree(tag, placeholder, placeholderNumber);
 }
 
-Transduction::Replacement::ReplacementTree* Parsing::parseReplacementTree(Transduction::Replacement::ReplacementTree *root, Transduction::Replacement::TreeSequence *children)
+Transduction::Replacement::ReplacementTree* Parsing::parseReplacementTree(
+  Transduction::Replacement::ReplacementTree *root,
+  Transduction::Replacement::ReplacementTreeSequence *children)
 {
   if (root->getPlaceholder() != Nodename::Placeholder::NONE)
     // TODO: Correct/Improve this error message
@@ -75,17 +77,18 @@ Transduction::Replacement::ReplacementTree* Parsing::parseReplacementTree(Transd
   return new Transduction::Replacement::ReplacementTree(root->getTag(), children);
 }
 
-Transduction::Replacement::TreeSequence* Parsing::parseReplacementTreeSequence(
-  Transduction::Replacement::TreeSequence *treeSequence,
+Transduction::Replacement::ReplacementTreeSequence*
+Parsing::parseReplacementTreeSequence(
+  Transduction::Replacement::ReplacementTreeSequence *treeSequence,
   Transduction::Replacement::ReplacementTree *tree)
 {
-  treeSequence->push_back(tree);
+  treeSequence->addTree(tree);
   return treeSequence;
 }
 
 Transduction::TransductionRule* Parsing::parseTransduction(
   Transduction::Search::SearchExpression *searchExpression,
-  Transduction::Replacement::TreeSequence *replacementExpression)
+  Transduction::Replacement::ReplacementExpression *replacementExpression)
 {
   if (!searchExpression)
     // TODO: Correct/Improve this message error
@@ -137,9 +140,7 @@ Transduction::TransductionRule* Parsing::parseTransduction(
   }
 
   Transduction::Replacement::Contexts::ReplacementValidationContext replacementContext(searchContext.definitions);
-
-  for (auto replacementTree : *replacementExpression)
-    replacementTree->validate(replacementContext);
+  replacementExpression->validate(replacementContext);
 
   // TODO: if replacement expression is a treesequence then search expression cannot match with syntax tree root
 

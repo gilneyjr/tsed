@@ -58,7 +58,7 @@ void Transduction::Search::AndExpression::validate(Contexts::SearchValidationCon
   for (auto [rightDefKey, rightDef] : rightDefinitions)
   {
     bool definedBefore = leftDefinitions.find(rightDefKey) != leftDefinitions.end();
-    bool referencedBefore = leftReferences.find(rightDefKey) == leftReferences.end();
+    bool referencedBefore = leftReferences.find(rightDefKey) != leftReferences.end();
 
     if (definedBefore)
     {

@@ -36,11 +36,12 @@
 %}
 
 %code requires {
-  
   #include "nodename-expression.hpp"
   #include "operation-expression.hpp"
   #include "replacement-tree.hpp"
+  #include "replacement-tree-sequence.hpp"
   #include "restriction-expression.hpp"
+  #include "replacement-expression.hpp"
   #include "search-expression.hpp"
   #include "transduction-rule.hpp"
   #include <string>
@@ -52,11 +53,10 @@
   Transduction::Search::SearchExpression *searchExpression;
   Transduction::Search::OperationExpression *operationExpression;
   Transduction::Search::RestrictionExpression *restrictionExpression;
-
-
   Transduction::Search::NodenameExpression *nodenameExpression;
   Transduction::Replacement::ReplacementTree *replacementTree;
-  Transduction::Replacement::TreeSequence *treeSequence;
+  Transduction::Replacement::ReplacementTreeSequence *treeSequence;
+  Transduction::Replacement::ReplacementExpression *replacementExpression;
   Transduction::TransductionRule *transductionRule;
 };
 
@@ -72,7 +72,7 @@
 %type <searchExpression> search_second
 %type <nodenameExpression> search_primary
 
-%type <treeSequence> replacement_expression
+%type <replacementExpression> replacement_expression
 %type <treeSequence> tree_seq
 %type <replacementTree> tree
 %type <replacementTree> node
@@ -314,11 +314,13 @@ search_primary:
 replacement_expression: 
   tree_seq
   {
-    $$ = $1;
+    $$ = new Transduction::Replacement::ReplacementExpression($1);
   }
   | /* empty */
   {
-    $$ = new Transduction::Replacement::TreeSequence;
+    $$ = new Transduction::Replacement::ReplacementExpression(
+      new Transduction::Replacement::ReplacementTreeSequence
+    );
   }
   ;
 
@@ -329,7 +331,7 @@ tree_seq:
   }
   | tree
   {
-    $$ = new Transduction::Replacement::TreeSequence({ $1 });
+    $$ = new Transduction::Replacement::ReplacementTreeSequence({ $1 });
   }
   ;
 
@@ -443,7 +445,7 @@ int main(int argc, char *argv[])
       auto trees = SyntaxTree::readFromFile(filename);
 
       for (auto *tree : trees)
-        transducer->apply(yaccResult, tree);
+        transducer->transduce(yaccResult, tree);
     }
 
     delete transducer;

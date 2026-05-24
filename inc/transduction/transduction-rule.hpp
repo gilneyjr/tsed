@@ -2,17 +2,24 @@
 #define TRANSDUCTION_RULE_HPP
 
 #include "search-expression.hpp"
-#include "replacement-tree.hpp"
+#include "replacement-expression.hpp"
 
 namespace Transduction
 {
   class TransductionRule
   {
+  private:
+    Search::SearchExpression *searchExpression;
+    Replacement::ReplacementExpression *replacementExpression;
+  
   public:
-    Transduction::Search::SearchExpression *search;
-    Transduction::Replacement::TreeSequence *replacement;
-    TransductionRule(Transduction::Search::SearchExpression*, Transduction::Replacement::TreeSequence*);
+    TransductionRule(
+      Search::SearchExpression *searchExpression,
+      Replacement::ReplacementExpression *replacementExpression
+    );
     ~TransductionRule();
+    Search::SearchExpression* getSearchExpression() const;
+    Replacement::ReplacementExpression* getReplacementExpression() const;
   };
 }
 

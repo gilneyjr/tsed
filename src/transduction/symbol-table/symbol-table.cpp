@@ -24,7 +24,7 @@ void Transduction::SymbolTable::insert(const unsigned int key, const NodenameMat
 
 std::pair<bool, Transduction::NodenameMatch> Transduction::SymbolTable::lookup(const unsigned int key) const
 {
-  for (auto it = scopes.begin(); it != scopes.end(); it++)
+  for (auto it = scopes.begin(); it != scopes.end(); ++it)
   {
     auto matchIt = it->find(key); 
     if (matchIt != it->end())
@@ -32,4 +32,12 @@ std::pair<bool, Transduction::NodenameMatch> Transduction::SymbolTable::lookup(c
   }
 
   return { false, {} };
+}
+
+std::map<unsigned int, Transduction::NodenameMatch> Transduction::SymbolTable::getAllMatches() const
+{
+  std::map<unsigned int, Transduction::NodenameMatch> matches;
+  for (const auto &scope : scopes)
+    matches.insert(scope.begin(), scope.end());
+  return matches;
 }

@@ -1,4 +1,5 @@
 #include "replacement-tree.hpp"
+#include "replacement-tree-sequence.hpp"
 
 Transduction::Replacement::ReplacementTree::ReplacementTree(
   const std::string &tag,
@@ -6,12 +7,12 @@ Transduction::Replacement::ReplacementTree::ReplacementTree(
   unsigned int placeholderNumber
 ) : tag(tag), placeholder(placeholder), placeholderNumber(placeholderNumber)
 {
-  children = new TreeSequence;
+  children = new ReplacementTreeSequence;
 }
 
 Transduction::Replacement::ReplacementTree::ReplacementTree(
   const std::string &tag,
-  TreeSequence *children
+  ReplacementTreeSequence *children
 ) : tag(tag), children(children)
 {
   placeholder = Nodename::Placeholder::NONE;
@@ -38,11 +39,11 @@ unsigned int Transduction::Replacement::ReplacementTree::getPlaceholderNumber() 
   return placeholderNumber;
 }
 
-const Transduction::Replacement::TreeSequence* Transduction::Replacement::ReplacementTree::getChildren() const
+const Transduction::Replacement::ReplacementTreeSequence*
+Transduction::Replacement::ReplacementTree::getChildren() const
 {
   return children;
 }
-
 
 void Transduction::Replacement::ReplacementTree::validate(Contexts::ReplacementValidationContext &context) const
 {
@@ -72,7 +73,45 @@ void Transduction::Replacement::ReplacementTree::validate(Contexts::ReplacementV
     child->validate(context);
 }
 
-void Transduction::Replacement::ReplacementTree::setChildren(Transduction::Replacement::TreeSequence *children)
+std::vector<Transduction::SyntaxTree*>
+Transduction::Replacement::ReplacementTree::generateSyntaxTrees(
+  const std::map<unsigned int, Transduction::NodenameMatch> &matches) const
+{
+  if (placeholder != Nodename::Placeholder::NONE)
+  {
+    const Transduction::NodenameMatch &match = matches.at(placeholderNumber);
+
+    if (match.isRange)
+    {
+      // TODO: Add validation for if match is range, it cannot have a tag
+      std::vector<Transduction::SyntaxTree*> generatedTrees;
+      for (SyntaxTree* tree : match.trees)
+        generatedTrees.push_back(tree->clone());
+      return generatedTrees;
+    }
+    else
+    {
+      std::string newTag = match.left + tag + match.right;
+      SyntaxTree* generatedTree = match.trees.front()->clone();
+      generatedTree->setTag(newTag);
+      return std::vector<SyntaxTree*>({ generatedTree });
+    }
+  }
+
+  SyntaxTree *tree = new SyntaxTree(tag);
+
+  if (children != nullptr)
+  {
+    auto generatedChildren = children->generateSyntaxTrees(matches);
+    for (SyntaxTree* child : generatedChildren)
+      tree->addChild(child);
+  }
+
+  return std::vector<SyntaxTree*>({ tree });
+}
+
+void Transduction::Replacement::ReplacementTree::setChildren(
+  Transduction::Replacement::ReplacementTreeSequence *children)
 {
   if (this->children != nullptr)
     delete this->children;

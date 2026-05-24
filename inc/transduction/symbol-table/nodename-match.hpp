@@ -16,6 +16,9 @@ namespace Transduction
     std::string right;
     Nodename::Placeholder placeholder;
     std::vector<SyntaxTree*> trees;
+
+    NodenameMatch clone() const;
+    bool matchedIsRoot();
   };
 }
 

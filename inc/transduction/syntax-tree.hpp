@@ -28,38 +28,52 @@ namespace Transduction
 
     SyntaxTree() = default;
   public:
+    class EndMarker;
+    class ReplacementPoint;
+
     SyntaxTree(
       const std::string tag, SyntaxTree *parent = nullptr,
       SyntaxTree *firstChild = nullptr, SyntaxTree *lastChild = nullptr,
       SyntaxTree *leftSibling = nullptr, SyntaxTree *rightSibling = nullptr
     );
     virtual ~SyntaxTree();
-    
     const std::string& getTag() const;
+    void setTag(const std::string &tag);
     SyntaxTree* getParent() const;
     SyntaxTree* getFirstChild() const;
     SyntaxTree* getLastChild() const;
     SyntaxTree* getLeftSibling() const;
     SyntaxTree* getRightSibling() const;
     void addChild(SyntaxTree *child);
+    void addLeftSibling(SyntaxTree *newLeftSibling);
+    void addRightSibling(SyntaxTree *newRightSibling);
     bool isEndMarker();
+    SyntaxTree* clone() const;
+    void detachSubtree();
 
     static SyntaxTree* createEndMarkerOnLeftOf(SyntaxTree *tree);
     static SyntaxTree* createEndMarkerOnRightOf(SyntaxTree *tree);
     static SyntaxTree* createEndMarkerAbove(SyntaxTree *tree);
     static SyntaxTree* createEndMarkerBellow(SyntaxTree *tree);
     static void destroyEndMarker(SyntaxTree *endMarker);
+    static SyntaxTree* deleteSubtrees(std::vector<SyntaxTree*> &subtrees);
 
     static std::vector<SyntaxTree*> readFromFile(std::string &filename);
     friend std::ostream& operator<<(std::ostream &os, const SyntaxTree &tree);
-    class EndMarker;
   };
 
   std::ostream& operator<<(std::ostream &os, const SyntaxTree &tree);
+
   class SyntaxTree::EndMarker : public SyntaxTree
   {
   public:
     EndMarker();
+  };
+
+  class SyntaxTree::ReplacementPoint : public SyntaxTree
+  {
+  public:
+    ReplacementPoint();
   };
 }
 

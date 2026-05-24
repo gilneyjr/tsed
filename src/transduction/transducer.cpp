@@ -15,7 +15,7 @@ Transduction::Transducer::~Transducer()
     delete this->transversalStrategy;
 }
 
-void Transduction::Transducer::apply(TransductionRule *rule, SyntaxTree* tree)
+void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tree)
 {
   if (rule == nullptr || tree == nullptr)
     return;
@@ -26,31 +26,33 @@ void Transduction::Transducer::apply(TransductionRule *rule, SyntaxTree* tree)
   {
     SyntaxTree* current = transversalStrategy->next();
     SymbolTable symbolTable;
-    Transduction::Search::Contexts::SearchMatchContext context(current, &symbolTable);
-    if (rule->search->match(context))
+    Transduction::Search::Contexts::SearchMatchContext searchContext(current, &symbolTable);
+    if (rule->getSearchExpression()->match(searchContext))
     {
       // TODO: remove these cout's later
       std::cout << "MATCHED!" << std::endl;
 
-      std::cout << "SEARCH PRIMARY:" << std::endl;
-      std::cout << "\t" << *current << std::endl;
+      // std::cout << "SEARCH PRIMARY:" << std::endl;
+      // std::cout << "\t" << *current << std::endl;
 
-      std::cout << "MATCHES:" << std::endl;
-      for (unsigned int i = 0u; i < 100; i++)
-      {
-        auto result = symbolTable.lookup(i);
-        if (result.first)
-        {
-          std::cout << "Match " << i << ":" << std::endl;
-          if (result.second.trees.empty())
-            std::cout << "\t[EMPTY]" << std::endl;
-          else
-            for (auto tree : result.second.trees)
-              std::cout << "\t" << *tree << std::endl;
-        }
-      }
       this->transversalStrategy->notifyTransduction();
+      
       // TODO: apply replacement expression here
+      // auto generatedTrees = rule->getReplacementExpression()->generateTrees(symbolTable);
+
+      rule->getReplacementExpression()->replace(tree, symbolTable);
+
+      // auto mainMatch = symbolTable
+      //   .lookup(Nodename::NodenameInfo::MAIN_PLACEHOLDER_NUMBER)
+      //   .second;
+
+      // if (generatedTrees.size() > 1 && mainMatch.matchedIsRoot())
+      // {
+      //   // TODO: Correct/Improve this error message
+      //   throw "Error in replacement: the root main placeholder cannot be replaced with a tree range.";
+      // }
+
+      // replaceMainMatch(mainMatch, generatedTrees);
     }
   }
 }

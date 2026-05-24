@@ -16,8 +16,9 @@ namespace Transduction
     SymbolTable();
     void enterScope();
     void exitScope();
-    void insert(const unsigned int, const NodenameMatch&);
-    std::pair<bool, NodenameMatch> lookup(const unsigned int) const;
+    void insert(const unsigned int key, const NodenameMatch &match);
+    std::pair<bool, NodenameMatch> lookup(const unsigned int key) const;
+    std::map<unsigned int, NodenameMatch> getAllMatches() const;
   };
 }
 
