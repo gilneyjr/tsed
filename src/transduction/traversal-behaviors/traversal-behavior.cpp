@@ -1,27 +1,27 @@
-#include "transversal-strategy.hpp"
+#include "traversal-behavior.hpp"
 
-Transduction::TransversalStrategy::TransversalStrategy(
+Transduction::TraversalBehavior::TraversalBehavior(
   Transduction::SyntaxTreeIteratorStrategy* iteratorStrategy
 ): iteratorStrategy(iteratorStrategy) {}
 
-Transduction::TransversalStrategy::~TransversalStrategy()
+Transduction::TraversalBehavior::~TraversalBehavior()
 {
   if (this->iteratorStrategy)
     delete this->iteratorStrategy;
 }
 
-void Transduction::TransversalStrategy::start(Transduction::SyntaxTree *tree)
+void Transduction::TraversalBehavior::start(Transduction::SyntaxTree *tree)
 {
   this->current = this->createIterator(tree);
 }
 
-bool Transduction::TransversalStrategy::hasNext()
+bool Transduction::TraversalBehavior::hasNext()
 {
   return this->current != this->createIterator(nullptr);
 }
 
 Transduction::SyntaxTreeIterator
-Transduction::TransversalStrategy::createIterator(Transduction::SyntaxTree *tree)
+Transduction::TraversalBehavior::createIterator(Transduction::SyntaxTree *tree)
 {
   return SyntaxTreeIterator(tree, this->iteratorStrategy);
 }

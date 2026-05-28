@@ -6,13 +6,13 @@
 #include <string>
 #include "transducer.hpp"
 
-Transduction::Transducer::Transducer(TransversalStrategy* transversalStrategy)
-  : transversalStrategy(transversalStrategy) {}
+Transduction::Transducer::Transducer(TraversalBehavior* traversalBehavior)
+  : traversalBehavior(traversalBehavior) {}
 
 Transduction::Transducer::~Transducer()
 {
-  if (this->transversalStrategy)
-    delete this->transversalStrategy;
+  if (this->traversalBehavior)
+    delete this->traversalBehavior;
 }
 
 void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tree)
@@ -21,10 +21,10 @@ void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tre
     return;
 
   SyntaxTree* initialEndMarker = tree->getParent();
-  transversalStrategy->start(initialEndMarker);
-  while (transversalStrategy->hasNext())
+  traversalBehavior->start(initialEndMarker);
+  while (traversalBehavior->hasNext())
   {
-    SyntaxTree* current = transversalStrategy->next();
+    SyntaxTree* current = traversalBehavior->next();
     SymbolTable symbolTable;
     Transduction::Search::Contexts::SearchMatchContext searchContext(current, &symbolTable);
     if (rule->getSearchExpression()->match(searchContext))
@@ -35,7 +35,7 @@ void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tre
       // std::cout << "SEARCH PRIMARY:" << std::endl;
       // std::cout << "\t" << *current << std::endl;
 
-      this->transversalStrategy->notifyTransduction();
+      this->traversalBehavior->notifyTransduction();
       
       // TODO: apply replacement expression here
       // auto generatedTrees = rule->getReplacementExpression()->generateTrees(symbolTable);

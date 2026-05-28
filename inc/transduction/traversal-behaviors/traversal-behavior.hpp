@@ -1,5 +1,5 @@
-#ifndef TRANSVERSAL_STRATEGY_HPP
-#define TRANSVERSAL_STRATEGY_HPP
+#ifndef TRAVERSAL_BEHAVIOR_HPP
+#define TRAVERSAL_BEHAVIOR_HPP
 
 #include "syntax-tree.hpp"
 #include "syntax-tree-iterator.hpp"
@@ -7,19 +7,19 @@
 
 namespace Transduction
 {
-  class TransversalStrategy
+  class TraversalBehavior
   {
   protected:
     SyntaxTreeIteratorStrategy* iteratorStrategy;
     SyntaxTreeIterator current;
     SyntaxTreeIterator createIterator(SyntaxTree*);
   public:
-    TransversalStrategy(SyntaxTreeIteratorStrategy*);
-    virtual ~TransversalStrategy();
+    TraversalBehavior(SyntaxTreeIteratorStrategy*);
+    virtual ~TraversalBehavior();
     virtual void start(SyntaxTree*);
     bool hasNext();
     virtual SyntaxTree* next() = 0;
-    virtual void notifyTransduction() = 0; // TODO: review parameters when implement other transversals
+    virtual void notifyTransduction() = 0; // TODO: review parameters when implement other traversals
   };
 }
 

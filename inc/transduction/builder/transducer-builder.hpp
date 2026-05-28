@@ -3,7 +3,7 @@
 
 #include "syntax-tree-iterator-strategy-type.hpp"
 #include "transducer.hpp"
-#include "transversal-strategy-type.hpp"
+#include "traversal-behavior-type.hpp"
 
 namespace Transduction
 {
@@ -11,11 +11,11 @@ namespace Transduction
   {
   protected:
     SyntaxTreeIteratorStrategyType iteratorType;
-    TransversalStrategyType transversalType;
+    TraversalBehaviorType traversalType;
   public:
     TransducerBuilder();
     TransducerBuilder& setIteratorStrategyType(SyntaxTreeIteratorStrategyType);
-    TransducerBuilder& setTransversalStrategyType(TransversalStrategyType);
+    TransducerBuilder& setTraversalBehaviorType(TraversalBehaviorType);
     Transducer* build();
   };
 }

@@ -4,20 +4,20 @@
 #include "search-match-context.hpp"
 #include "syntax-tree.hpp"
 #include "transduction-rule.hpp"
-#include "transversal-strategy.hpp"
+#include "traversal-behavior.hpp"
 
 namespace Transduction
 {
   class Transducer
   {
   protected:
-    TransversalStrategy* transversalStrategy;
+    TraversalBehavior* traversalBehavior;
     // void replaceMainMatch(Transduction::NodenameMatch &nodenameMatch, );
 
     // void replace(SymbolTable)
 
   public:
-    Transducer(TransversalStrategy *transversalStrategy);
+    Transducer(TraversalBehavior *traversalBehavior);
     ~Transducer();
     void transduce(TransductionRule*, SyntaxTree*);
   };

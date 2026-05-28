@@ -1,14 +1,14 @@
 #include <stdexcept>
 #include "post-order-syntax-tree-iterator-strategy.hpp"
 #include "pre-order-syntax-tree-iterator-strategy.hpp"
-#include "restart-from-root-transversal-strategy.hpp"
-#include "stop-transversal-strategy.hpp"
+#include "root-restart-traversal-behavior.hpp"
+#include "single-match-traversal-behavior.hpp"
 #include "transducer-builder.hpp"
 
 Transduction::TransducerBuilder::TransducerBuilder()
 {
   this->iteratorType = SyntaxTreeIteratorStrategyType::PRE_ORDER;
-  this->transversalType = TransversalStrategyType::STOP; // TODO: change this later
+  this->traversalType = TraversalBehaviorType::SINGLE_MATCH; // TODO: change this later
 }
 
 Transduction::TransducerBuilder& 
@@ -19,9 +19,9 @@ Transduction::TransducerBuilder::setIteratorStrategyType(SyntaxTreeIteratorStrat
 }
 
 Transduction::TransducerBuilder& 
-Transduction::TransducerBuilder::setTransversalStrategyType(TransversalStrategyType type)
+Transduction::TransducerBuilder::setTraversalBehaviorType(TraversalBehaviorType type)
 {
-  this->transversalType = type;
+  this->traversalType = type;
   return *this;
 }
 
@@ -39,16 +39,16 @@ Transduction::TransducerBuilder::build()
       break;
   }
 
-  TransversalStrategy* transversalStrategy = nullptr;
-  switch (transversalType)
+  TraversalBehavior* traversalBehavior = nullptr;
+  switch (traversalType)
   {
-    case TransversalStrategyType::RESTART_FROM_ROOT:
-      transversalStrategy = new RestartFromRootTransversalStrategy(iteratorStrategy);
+    case TraversalBehaviorType::ROOT_RESTART:
+      traversalBehavior = new RootRestartTraversalBehavior(iteratorStrategy);
       break;
-    case TransversalStrategyType::STOP:
-      transversalStrategy = new StopTransversalStrategy(iteratorStrategy);
+    case TraversalBehaviorType::SINGLE_MATCH:
+      traversalBehavior = new SingleMatchTraversalBehavior(iteratorStrategy);
       break;
   }
 
-  return new Transducer(transversalStrategy);
+  return new Transducer(traversalBehavior);
 }
