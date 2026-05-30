@@ -14,7 +14,8 @@ Transduction::Replacement::ReplacementExpression::~ReplacementExpression()
   delete treeSequence;
 }
 
-void Transduction::Replacement::ReplacementExpression::replace(
+std::vector<Transduction::SyntaxTree*>
+Transduction::Replacement::ReplacementExpression::replace(
   Transduction::SyntaxTree *tree,
   Transduction::SymbolTable &symbolTable)
 {
@@ -40,6 +41,8 @@ void Transduction::Replacement::ReplacementExpression::replace(
   delete replacementPoint;
   // TODO: verify if I need to delete this here
   // delete clonedMatches;
+
+  return generatedTreesForReplacement;
 }
 
 std::map<unsigned int, Transduction::NodenameMatch>

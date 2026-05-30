@@ -10,9 +10,9 @@ namespace Transduction
   protected:
     SyntaxTree* root;
   public:
-    SingleMatchTraversalBehavior(SyntaxTreeIteratorStrategy*);
-    SyntaxTree* next() override;
-    void notifyTransduction() override;
+    SingleMatchTraversalBehavior(SyntaxTreeIteratorStrategy *iteratorStrategy);
+    void notifyMatch(const Transduction::SymbolTable &symbolTable) override;
+    void notifyReplacement(const std::vector<SyntaxTree*> &replacedTrees) override;
   };
 }
 

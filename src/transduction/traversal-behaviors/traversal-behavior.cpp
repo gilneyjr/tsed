@@ -12,12 +12,20 @@ Transduction::TraversalBehavior::~TraversalBehavior()
 
 void Transduction::TraversalBehavior::start(Transduction::SyntaxTree *tree)
 {
-  this->current = this->createIterator(tree);
+  this->_next = this->createIterator(tree);
 }
 
 bool Transduction::TraversalBehavior::hasNext()
 {
-  return this->current != this->createIterator(nullptr);
+  return this->_next != this->createIterator(nullptr);
+}
+
+Transduction::SyntaxTree* 
+Transduction::TraversalBehavior::next()
+{
+  SyntaxTree& result = *_next;
+  ++_next;
+  return &result;
 }
 
 Transduction::SyntaxTreeIterator

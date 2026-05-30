@@ -44,3 +44,8 @@ Transduction::PreOrderSyntaxTreeIteratorStrategy::next(SyntaxTree* current)
 
   return current;
 }
+
+Transduction::IteratorDirection Transduction::PreOrderSyntaxTreeIteratorStrategy::direction()
+{
+  return IteratorDirection::FORWARD;
+}

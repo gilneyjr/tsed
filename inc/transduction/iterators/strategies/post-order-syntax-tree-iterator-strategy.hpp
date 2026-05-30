@@ -10,6 +10,7 @@ namespace Transduction
   public:
     SyntaxTree* start(SyntaxTree*) override;
     SyntaxTree* next(SyntaxTree*) override;
+    IteratorDirection direction() override;
   }; 
 }
 

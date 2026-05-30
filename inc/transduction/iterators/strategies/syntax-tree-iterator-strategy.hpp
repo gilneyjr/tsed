@@ -1,6 +1,7 @@
 #ifndef SYNTAX_TREE_ITERATOR_STRATEGY_HPP
 #define SYNTAX_TREE_ITERATOR_STRATEGY_HPP
 
+#include "iterator-direction.hpp"
 #include "syntax-tree.hpp"
 
 namespace Transduction
@@ -11,6 +12,7 @@ namespace Transduction
     virtual ~SyntaxTreeIteratorStrategy() = default;
     virtual SyntaxTree* start(SyntaxTree*) = 0;
     virtual SyntaxTree* next(SyntaxTree*) = 0;
+    virtual IteratorDirection direction() = 0;
   }; 
 }
 

@@ -28,3 +28,8 @@ Transduction::PostOrderSyntaxTreeIteratorStrategy::next(SyntaxTree* current)
   
   return current;
 }
+
+Transduction::IteratorDirection Transduction::PostOrderSyntaxTreeIteratorStrategy::direction()
+{
+  return IteratorDirection::FORWARD;
+}

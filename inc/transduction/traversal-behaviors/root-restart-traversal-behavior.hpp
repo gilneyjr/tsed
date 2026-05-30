@@ -10,10 +10,10 @@ namespace Transduction
   protected:
     SyntaxTree* root;
   public:
-    RootRestartTraversalBehavior(SyntaxTreeIteratorStrategy*);
-    void start(SyntaxTree*) override;
-    SyntaxTree* next() override;
-    void notifyTransduction() override;
+    RootRestartTraversalBehavior(SyntaxTreeIteratorStrategy *iteratorStrategy);
+    void start(SyntaxTree *tree) override;
+    void notifyMatch(const Transduction::SymbolTable &symbolTable) override;
+    void notifyReplacement(const std::vector<SyntaxTree*> &replacedTrees) override;
   };
 }
 

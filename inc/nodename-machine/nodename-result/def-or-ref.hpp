@@ -3,7 +3,8 @@
 
 namespace Nodename
 {
-  enum class DefOrRef {
+  enum class DefOrRef
+  {
     NONE = 0,
     DEFINITION = 1,
     REFERENCE = 2

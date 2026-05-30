@@ -5,15 +5,12 @@ Transduction::SingleMatchTraversalBehavior::SingleMatchTraversalBehavior(
   Transduction::SyntaxTreeIteratorStrategy* iteratorFactory
 ) : Transduction::TraversalBehavior(iteratorFactory) {}
 
-Transduction::SyntaxTree* 
-Transduction::SingleMatchTraversalBehavior::next()
+void Transduction::SingleMatchTraversalBehavior::notifyMatch(const Transduction::SymbolTable&)
 {
-  SyntaxTree& result = *current;
-  ++current;
-  return &result;
+  _next = this->createIterator(nullptr);
 }
 
-void Transduction::SingleMatchTraversalBehavior::notifyTransduction()
+void Transduction::SingleMatchTraversalBehavior::notifyReplacement(const std::vector<SyntaxTree*>&)
 {
-  current = this->createIterator(nullptr);
+  // No action required here
 }

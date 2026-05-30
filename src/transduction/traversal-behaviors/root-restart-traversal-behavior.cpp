@@ -10,15 +10,12 @@ void Transduction::RootRestartTraversalBehavior::start(SyntaxTree* tree)
   TraversalBehavior::start(tree);
 }
 
-Transduction::SyntaxTree* 
-Transduction::RootRestartTraversalBehavior::next()
+void Transduction::RootRestartTraversalBehavior::notifyMatch(const Transduction::SymbolTable&)
 {
-  SyntaxTree& result = *current;
-  ++current;
-  return &result;
+  _next = this->createIterator(this->root);
 }
 
-void Transduction::RootRestartTraversalBehavior::notifyTransduction()
+void Transduction::RootRestartTraversalBehavior::notifyReplacement(const std::vector<SyntaxTree*>&)
 {
-  current = this->createIterator(this->root);
+  // No action required for this
 }

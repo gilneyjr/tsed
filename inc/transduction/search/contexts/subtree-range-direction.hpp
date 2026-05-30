@@ -3,7 +3,8 @@
 
 namespace Transduction::Search::Contexts
 {
-  enum class SubtreeRangeDirection {
+  enum class SubtreeRangeDirection
+  {
     NONE = 0,
     LEFT_SIBLINGS = 1,
     RIGHT_SIBLINGS = 2,

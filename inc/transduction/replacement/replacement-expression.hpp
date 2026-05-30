@@ -29,7 +29,7 @@ namespace Transduction::Replacement
   public:
     ReplacementExpression(ReplacementTreeSequence *treeSequence);
     ~ReplacementExpression();
-    void replace(SyntaxTree *tree, SymbolTable &symbolTable);
+    std::vector<SyntaxTree*> replace(SyntaxTree *tree, SymbolTable &symbolTable);
     void validate(Contexts::ReplacementValidationContext &context) const;
   };    
 }

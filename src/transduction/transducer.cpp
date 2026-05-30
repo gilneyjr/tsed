@@ -35,12 +35,16 @@ void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tre
       // std::cout << "SEARCH PRIMARY:" << std::endl;
       // std::cout << "\t" << *current << std::endl;
 
-      this->traversalBehavior->notifyTransduction();
+      this->traversalBehavior->notifyMatch(symbolTable);
       
       // TODO: apply replacement expression here
       // auto generatedTrees = rule->getReplacementExpression()->generateTrees(symbolTable);
 
-      rule->getReplacementExpression()->replace(tree, symbolTable);
+      auto replacedTrees = rule->getReplacementExpression()->replace(tree, symbolTable);
+
+      this->traversalBehavior->notifyReplacement(replacedTrees);
+
+
 
       // auto mainMatch = symbolTable
       //   .lookup(Nodename::NodenameInfo::MAIN_PLACEHOLDER_NUMBER)
