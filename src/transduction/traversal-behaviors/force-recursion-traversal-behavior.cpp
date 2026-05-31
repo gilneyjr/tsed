@@ -73,10 +73,7 @@ void Transduction::ForceRecursionTraversalBehavior::notifyMatch(const SymbolTabl
     ) != mainPlaceholder.trees.end();
 
     if (topmostIsInMainPlaceholder)
-    {
       nextIsMainPlaceholder = true;
-      break;
-    }
 
     advanceNextPastSubtree(topmostCutSubtreeInAncestry);
   }
@@ -85,8 +82,7 @@ void Transduction::ForceRecursionTraversalBehavior::notifyMatch(const SymbolTabl
 void Transduction::ForceRecursionTraversalBehavior::notifyReplacement(
   const std::vector<SyntaxTree*> &replacedTrees)
 {
-  // TODO: think what do if replacedTrees is empty
-  if (nextIsMainPlaceholder)
+  if (nextIsMainPlaceholder && !replacedTrees.empty())
   {
     if (iteratorStrategy->direction() == IteratorDirection::FORWARD)
       _next = createIterator(replacedTrees.front());
