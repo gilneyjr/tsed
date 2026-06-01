@@ -5,9 +5,11 @@ namespace Transduction
 {
   enum class TraversalBehaviorType
   {
-    ROOT_RESTART = 1,
-    SINGLE_MATCH = 2
-    // TODO: add the others transveral strategies here later
+    FOLLOW_MAIN = 1,
+    SKIP_MODIFIED = 2,
+    FORCE_RECURSION = 3,
+    SINGLE_MATCH = 4,
+    ROOT_RESTART = 5
   };
 }
 

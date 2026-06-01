@@ -6,13 +6,13 @@ Transduction::RootRestartTraversalBehavior::RootRestartTraversalBehavior(
 
 void Transduction::RootRestartTraversalBehavior::start(SyntaxTree* tree)
 {
-  this->root = tree;
+  root = tree;
   TraversalBehavior::start(tree);
 }
 
 void Transduction::RootRestartTraversalBehavior::notifyMatch(const Transduction::SymbolTable&)
 {
-  _next = this->createIterator(this->root);
+  _next = createIterator(root);
 }
 
 void Transduction::RootRestartTraversalBehavior::notifyReplacement(const std::vector<SyntaxTree*>&)

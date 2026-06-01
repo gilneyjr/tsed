@@ -5,6 +5,7 @@
 #include "syntax-tree.hpp"
 #include "syntax-tree-iterator.hpp"
 #include "syntax-tree-iterator-strategy.hpp"
+#include <set>
 
 namespace Transduction
 {
@@ -14,6 +15,9 @@ namespace Transduction
     SyntaxTreeIteratorStrategy* iteratorStrategy;
     SyntaxTreeIterator _next;
     SyntaxTreeIterator createIterator(SyntaxTree *tree);
+    static std::set<SyntaxTree*> getCutMatchedSubtrees(const SymbolTable &symbolTable);
+    SyntaxTree* getTopmostCutSubtreeInAncestry(const std::set<SyntaxTree*> &cutMatchedSubtrees);
+    void advanceNextPastSubtree(SyntaxTree *subtree);
   public:
     TraversalBehavior(SyntaxTreeIteratorStrategy *iteratorStrategy);
     virtual ~TraversalBehavior();

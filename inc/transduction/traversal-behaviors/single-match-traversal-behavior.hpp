@@ -7,8 +7,6 @@ namespace Transduction
 {
   class SingleMatchTraversalBehavior : public TraversalBehavior
   {
-  protected:
-    SyntaxTree* root;
   public:
     SingleMatchTraversalBehavior(SyntaxTreeIteratorStrategy *iteratorStrategy);
     void notifyMatch(const Transduction::SymbolTable &symbolTable) override;
