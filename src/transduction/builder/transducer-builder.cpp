@@ -1,8 +1,11 @@
 #include <stdexcept>
+#include "follow-replacement-traversal-behavior.hpp"
+#include "force-recursion-traversal-behavior.hpp"
 #include "post-order-syntax-tree-iterator-strategy.hpp"
 #include "pre-order-syntax-tree-iterator-strategy.hpp"
 #include "root-restart-traversal-behavior.hpp"
 #include "single-match-traversal-behavior.hpp"
+#include "skip-modified-traversal-behavior.hpp"
 #include "transducer-builder.hpp"
 
 Transduction::TransducerBuilder::TransducerBuilder()
@@ -42,11 +45,20 @@ Transduction::TransducerBuilder::build()
   TraversalBehavior* traversalBehavior = nullptr;
   switch (traversalType)
   {
-    case TraversalBehaviorType::ROOT_RESTART:
-      traversalBehavior = new RootRestartTraversalBehavior(iteratorStrategy);
+    case TraversalBehaviorType::FOLLOW_REPLACEMENT:
+      traversalBehavior = new FollowReplacementTraversalBehavior(iteratorStrategy);
+      break;
+    case TraversalBehaviorType::SKIP_MODIFIED:
+      traversalBehavior = new SkipModifiedTraversalBehavior(iteratorStrategy);
+      break;
+    case TraversalBehaviorType::FORCE_RECURSION:
+      traversalBehavior = new ForceRecursionTraversalBehavior(iteratorStrategy);
       break;
     case TraversalBehaviorType::SINGLE_MATCH:
       traversalBehavior = new SingleMatchTraversalBehavior(iteratorStrategy);
+      break;
+    case TraversalBehaviorType::ROOT_RESTART:
+      traversalBehavior = new RootRestartTraversalBehavior(iteratorStrategy);
       break;
   }
 

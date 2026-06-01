@@ -5,7 +5,7 @@ namespace Transduction
 {
   enum class TraversalBehaviorType
   {
-    FOLLOW_MAIN = 1,
+    FOLLOW_REPLACEMENT = 1,
     SKIP_MODIFIED = 2,
     FORCE_RECURSION = 3,
     SINGLE_MATCH = 4,
