@@ -17,7 +17,8 @@ namespace Transduction::Replacement
       const std::map<unsigned int, NodenameMatch> &matches);
 
     static void deleteCutPlaceholdersFromTree(
-      Transduction::SyntaxTree *tree,
+      SyntaxTree *tree,
+      SyntaxTree *&replacementPoint,
       const std::map<unsigned int, NodenameMatch> &matches);
 
     std::vector<SyntaxTree*> generateTreesForReplacement(

@@ -27,7 +27,7 @@ Transduction::Replacement::ReplacementExpression::replace(
   auto replacementPoint = markReplacementPoint(symbolTable);  
 
   // 3. Delete subtrees matched with cut placeholders from original tree
-  deleteCutPlaceholdersFromTree(tree, matches);
+  deleteCutPlaceholdersFromTree(tree, replacementPoint, matches);
 
   // 4. Generate trees from replacement expression
   auto generatedTreesForReplacement = generateTreesForReplacement(clonedMatches);
@@ -35,10 +35,13 @@ Transduction::Replacement::ReplacementExpression::replace(
   // 5. Replace replacement point with generated trees
   injectGeneratedTrees(replacementPoint, generatedTreesForReplacement);
 
+  // 6. Delete Replacement Point
+  if (replacementPoint != nullptr)
+    delete replacementPoint;
+
   std::cout << "\tFinal tree:\n";
   std::cout << "\t" << *tree << std::endl;
 
-  delete replacementPoint;
   // TODO: verify if I need to delete this here
   // delete clonedMatches;
 
@@ -57,8 +60,9 @@ Transduction::Replacement::ReplacementExpression::cloneMatches(
 }
 
 void Transduction::Replacement::ReplacementExpression::deleteCutPlaceholdersFromTree(
-  Transduction::SyntaxTree* tree,
-  const std::map<unsigned int, Transduction::NodenameMatch> &matches)
+  SyntaxTree *tree,
+  SyntaxTree *&replacementPoint,
+  const std::map<unsigned int, NodenameMatch> &matches)
 {
   std::cout << "> DELETING CUT PLACEHOLDERS' SUBTREES\n";
   std::cout << "Original tree:\n" << *tree << std::endl;
@@ -97,6 +101,21 @@ void Transduction::Replacement::ReplacementExpression::deleteCutPlaceholdersFrom
     {
       std::cout << "\tDeleting subtree: " << *subtree << std::endl;
       subtree->detachSubtree();
+
+      if (replacementPoint != nullptr)
+      {
+        for (auto replacementPointAncestor = replacementPoint->getParent();
+          replacementPointAncestor != nullptr;
+          replacementPointAncestor = replacementPointAncestor->getParent())
+        {
+          if (replacementPointAncestor == subtree)
+          {
+            replacementPoint = nullptr;
+            break;
+          }
+        }
+      }
+
       delete subtree;
     }
   }
@@ -136,6 +155,12 @@ Transduction::Replacement::ReplacementExpression::markReplacementPoint(
 void Transduction::Replacement::ReplacementExpression::injectGeneratedTrees(
   SyntaxTree *replacementPoint, std::vector<SyntaxTree*> &generatedTrees)
 {
+  if (replacementPoint == nullptr)
+  {
+    generatedTrees.clear();
+    return;
+  }
+
   std::cout << "> INJECTING GENERATED TREES INTO THE REPLACEMENT POINT\n";
   for (auto tree : generatedTrees)
     replacementPoint->addLeftSibling(tree);
