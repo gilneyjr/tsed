@@ -12,12 +12,12 @@ bool Transduction::Search::IsImmediatelyLeftSiblingOfExpression::match(Contexts:
       context.symbolTable,
       context.matchedIsEndMarker,
       context.matched,
-      Contexts::SubtreeRangeDirection::LEFT_SIBLINGS
+      Contexts::SubtreeRangeDirection::RIGHT_SIBLINGS
     ));
   }
 
   return expression->match(Contexts::SearchMatchContext(
-    context.matched->getLeftSibling(),
+    context.matched->getRightSibling(),
     context.symbolTable,
     context.matchedIsEndMarker,
     context.matched
