@@ -93,7 +93,8 @@ Transduction::Replacement::ReplacementTree::generateSyntaxTrees(
     {
       std::string newTag = match.left + tag + match.right;
       SyntaxTree* generatedTree = match.trees.front()->clone();
-      generatedTree->setTag(newTag);
+      if (!tag.empty())
+        generatedTree->setTag(newTag);
       return std::vector<SyntaxTree*>({ generatedTree });
     }
   }
