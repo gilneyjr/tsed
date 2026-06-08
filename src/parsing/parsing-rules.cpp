@@ -50,13 +50,18 @@ Transduction::Replacement::ReplacementTree* Parsing::parseReplacementNode(const 
     // TODO: Create an exception for this
     throw "Nodenames in replacement expression cannot contain ANY, WILDCARD or REGEX.";
 
-  // TODO: check if this extraction is correct
-  std::smatch matches;
-  std::regex extractTagRegex(R"([\[\{]\s*(?:\d+\s*:\s*)?([^\]\}]*)\s*[\]\}])"); // Todo: verify if no placeholder is being considered here
-  if (!std::regex_match(lexem, matches, extractTagRegex))
-    throw "The given tag is invalid.";
-  
-  auto tag = matches[1].str();
+  std::string tag;
+  if (nodenameInfo->defOrRef == Nodename::DefOrRef::NONE)
+    tag = lexem;
+  else
+  {
+    std::smatch matches;
+    std::regex extractTagRegex(R"([\[\{](?:\d+:)?([^\]\}\s]*)[\]\}])");
+    if (!std::regex_match(lexem, matches, extractTagRegex))
+      throw "The given tag is invalid.";
+    tag = matches[1].str();
+  }
+
   auto placeholder = nodenameInfo->placeholder;
   auto placeholderNumber = nodenameInfo->placeholderNumber;
   delete nodenameInfo;
