@@ -130,6 +130,28 @@ bool Transduction::SyntaxTree::isEndMarker()
   return _isEndMarker;
 }
 
+bool Transduction::SyntaxTree::isInSubtree(SyntaxTree *subtree)
+{
+  auto node = this;
+  if (node->_isEndMarker)
+  {
+    if (node->parent != nullptr)
+      node = node->parent;
+    else if (node->leftSibling != nullptr)
+      node = node->leftSibling;
+    else if (node->rightSibling != nullptr)
+      node = node->rightSibling;
+  }
+
+  while (node != nullptr)
+  {
+    if (node == subtree)
+      return true;
+    node = node->parent;
+  }
+  return false;
+}
+
 Transduction::SyntaxTree* Transduction::SyntaxTree::clone() const
 {
   if (_isEndMarker)

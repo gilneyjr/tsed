@@ -26,31 +26,34 @@ Transduction::TraversalBehavior::getTopmostCutSubtreeInAncestry(
   const std::set<SyntaxTree*> &cutPlaceholderSubtrees)
 {
   SyntaxTree *topmostCutSubtreeInAncestry = nullptr;
-  for (auto subtree = &*_next; subtree != nullptr && !subtree->isEndMarker(); subtree = subtree->getParent())
+
+  auto subtree = &*_next;
+  if (subtree->isEndMarker())
+  {
+    if (subtree->getParent() != nullptr)
+      subtree = subtree->getParent();
+    else if (subtree->getLeftSibling() != nullptr)
+      subtree = subtree->getLeftSibling();
+    else if (subtree->getRightSibling() != nullptr)
+      subtree = subtree->getRightSibling();
+  }
+
+  while (subtree != nullptr && !subtree->isEndMarker())
   {
     if (cutPlaceholderSubtrees.find(subtree) != cutPlaceholderSubtrees.end())
       topmostCutSubtreeInAncestry = subtree;
+    subtree = subtree->getParent();
   }
+
   return topmostCutSubtreeInAncestry;
 }
 
 void Transduction::TraversalBehavior::advanceNextPastSubtree(SyntaxTree *subtree)
 {
   _next = createIterator(subtree);
-
   while (hasNext())
   {
-    bool isInsideSubtree = false;
-    for (SyntaxTree* node = &*_next; node != nullptr; node = node->getParent())
-    {
-      if (node == subtree)
-      {
-        isInsideSubtree = true;
-        break;
-      }
-    }
-
-    if (!isInsideSubtree)
+    if (!(&*_next)->isInSubtree(subtree))
       break;
     ++_next;
   }

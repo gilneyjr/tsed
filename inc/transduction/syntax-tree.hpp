@@ -48,6 +48,7 @@ namespace Transduction
     void addLeftSibling(SyntaxTree *newLeftSibling);
     void addRightSibling(SyntaxTree *newRightSibling);
     bool isEndMarker();
+    bool isInSubtree(SyntaxTree *subtree);
     SyntaxTree* clone() const;
     void detachSubtree();
 

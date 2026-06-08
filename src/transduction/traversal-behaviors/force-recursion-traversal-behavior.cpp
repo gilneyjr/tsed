@@ -12,6 +12,7 @@ void Transduction::ForceRecursionTraversalBehavior::notifyMatch(const SymbolTabl
   nextIsMainPlaceholder = false;
 
   const auto cutMatchedSubtrees = getCutMatchedSubtrees(symbolTable);
+  const NodenameMatch &mainPlaceholder = symbolTable.lookup(Nodename::NodenameInfo::MAIN_PLACEHOLDER_NUMBER).second;
   while (hasNext())
   {
     SyntaxTree* topmostCutSubtreeInAncestry = getTopmostCutSubtreeInAncestry(cutMatchedSubtrees);
@@ -19,7 +20,6 @@ void Transduction::ForceRecursionTraversalBehavior::notifyMatch(const SymbolTabl
     if (willNextBeKept)
       break;
 
-    const NodenameMatch &mainPlaceholder = symbolTable.lookup(Nodename::NodenameInfo::MAIN_PLACEHOLDER_NUMBER).second;
     bool topmostIsInMainPlaceholder = std::find(
       mainPlaceholder.trees.begin(),
       mainPlaceholder.trees.end(),
