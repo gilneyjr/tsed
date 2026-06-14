@@ -27,5 +27,6 @@ void Transduction::FollowReplacementTraversalBehavior::notifyReplacement(
       _next = createIterator(replacedTrees.front());
     else
       _next = createIterator(replacedTrees.back());
+    ++_next;
   }
 }

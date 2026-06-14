@@ -42,6 +42,7 @@ void Transduction::ForceRecursionTraversalBehavior::notifyReplacement(
       _next = createIterator(replacedTrees.front());
     else
       _next = createIterator(replacedTrees.back());
+    ++_next;
   }
   nextIsMainPlaceholder = false;
 }
