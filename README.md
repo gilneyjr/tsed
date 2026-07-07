@@ -18,7 +18,7 @@ bison --version
 make --version
 ```
 
-If any command fails or isn’t recognized, install the corresponding program.
+If any command fails or isn’t recognized, install the corresponding program as decribed bellow.
 
 ### Installation of Required Software
 #### Windows (via MSYS2)
@@ -33,16 +33,22 @@ If any command fails or isn’t recognized, install the corresponding program.
    pacman -S mingw-w64-x86_64-gcc make flex bison
    ```
 5. Make sure the environment variables are set for all these tools.
+6. Check the [Required Software for Compilation](#required-software-for-compilation) section to ensure the tools were successfuly installed.
+
 #### Linux (Debian-based)
-```bash
-sudo apt update
-sudo apt install build-essential flex bison
-```
+1. Run these comands to install the required tools:
+   ```bash
+   sudo apt update
+   sudo apt install build-essential flex bison
+   ```
+2. Check the [Required Software for Compilation](#required-software-for-compilation) section to ensure the tools were successfuly installed.
 
 #### MacOS (via Homebrew)
-```sh
-brew install flex bison make
-```
+1. Run this command to install the required tools:
+   ```sh
+   brew install flex bison make
+   ```
+2. Check the [Required Software for Compilation](#required-software-for-compilation) section to ensure the tools were successfuly installed.
 
 ### Compilation & Usage
 
@@ -58,14 +64,14 @@ brew install flex bison make
    ```sh
    make
    ```
-4. Run TSED:
+4. Run the following command to see usage:
    ```sh
-   ./build/tsed [TRANSDUCTION] [FILE]...
+   ./build/release/tsed --help
    ```
 
-## 📌 Authors
+## 📌 Author
 
-- **Gilney Junior** - [LinkedIn](https://www.linkedin.com/in/gilneyjr) | [GitHub](https://github.com/gilneyjr)
+**Gilney Junior** - [LinkedIn](https://www.linkedin.com/in/gilneyjr) | [GitHub](https://github.com/gilneyjr)
 
 ## 📜 License
 
