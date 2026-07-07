@@ -2,7 +2,11 @@
 
 Transduction::TraversalBehavior::TraversalBehavior(
   Transduction::SyntaxTreeIteratorStrategy* iteratorStrategy
-): iteratorStrategy(iteratorStrategy) {}
+): iteratorStrategy(iteratorStrategy)
+{
+  _current = createIterator(nullptr);
+  _next = createIterator(nullptr);
+}
 
 Transduction::TraversalBehavior::~TraversalBehavior()
 {
@@ -62,6 +66,7 @@ void Transduction::TraversalBehavior::advanceNextPastSubtree(SyntaxTree *subtree
 void Transduction::TraversalBehavior::start(Transduction::SyntaxTree *tree)
 {
   this->_next = this->createIterator(tree);
+  this->_current = this->createIterator(nullptr);
 }
 
 bool Transduction::TraversalBehavior::hasNext()
@@ -72,9 +77,10 @@ bool Transduction::TraversalBehavior::hasNext()
 Transduction::SyntaxTree* 
 Transduction::TraversalBehavior::next()
 {
-  SyntaxTree& result = *_next;
+  SyntaxTree *result = &*_next;
+  _current = createIterator(result);
   ++_next;
-  return &result;
+  return result;
 }
 
 Transduction::SyntaxTreeIterator

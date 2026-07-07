@@ -9,8 +9,13 @@ namespace Transduction
   {
   private:
     bool nextIsMainPlaceholder;
+    bool advanceReplacementRoot;
+    bool currentIsInMainPlaceholder;
   public:
-    ForceRecursionTraversalBehavior(SyntaxTreeIteratorStrategy *iteratorStrategy);
+    ForceRecursionTraversalBehavior(
+      SyntaxTreeIteratorStrategy *iteratorStrategy,
+      bool advanceReplacementRoot = false
+    );
     void notifyMatch(const SymbolTable &symbolTable) override;
     void notifyReplacement(const std::vector<SyntaxTree*> &replacedTrees) override;
   };

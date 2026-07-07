@@ -25,6 +25,24 @@ void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tre
   while (traversalBehavior->hasNext())
   {
     SyntaxTree* current = traversalBehavior->next();
+
+    std::cout << "CURRENT: ";
+    if (current->isEndMarker())
+    {
+      std::cout << "#";
+      if (current->getFirstChild() != nullptr)
+        std::cout << " above " << current->getFirstChild()->getTag();
+      else if (current->getParent() != nullptr)
+        std::cout << " bellow " << current->getParent()->getTag();
+      else if (current->getLeftSibling() != nullptr)
+        std::cout << " right of " << current->getLeftSibling()->getTag();
+      else if (current->getRightSibling() != nullptr)
+        std::cout << " left of " << current->getRightSibling()->getTag();
+    }
+    else
+      std::cout << *current;
+    std::cout << "\n\n";
+
     SymbolTable symbolTable;
     Transduction::Search::Contexts::SearchMatchContext searchContext(current, &symbolTable);
     if (rule->getSearchExpression()->match(searchContext))
@@ -34,6 +52,16 @@ void Transduction::Transducer::transduce(TransductionRule *rule, SyntaxTree* tre
 
       // std::cout << "SEARCH PRIMARY:" << std::endl;
       // std::cout << "\t" << *current << std::endl;
+
+
+      std::cout << "MATCHES:\n";
+      for (auto &&[key, match] : searchContext.symbolTable->getAllMatches())
+      {
+        std::cout << "[" << key << "]:";
+        for (auto tree : match.trees)
+          std::cout << " " << *tree;
+        std::cout << std::endl;
+      }
 
       this->traversalBehavior->notifyMatch(symbolTable);
       

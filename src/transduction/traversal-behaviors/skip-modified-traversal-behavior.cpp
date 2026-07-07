@@ -26,6 +26,7 @@ void Transduction::SkipModifiedTraversalBehavior::notifyMatch(const SymbolTable 
 void Transduction::SkipModifiedTraversalBehavior::notifyReplacement(
   const std::vector<SyntaxTree*> &replacedTrees)
 {
+  // TODO: verify if I need to insert replaced trees' descendents
   modified.insert(replacedTrees.begin(), replacedTrees.end());
   while (hasNext() && modified.find(&*_next) != modified.end())
     ++_next;

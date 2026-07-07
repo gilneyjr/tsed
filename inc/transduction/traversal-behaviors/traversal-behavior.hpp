@@ -14,6 +14,7 @@ namespace Transduction
   protected:
     SyntaxTreeIteratorStrategy* iteratorStrategy;
     SyntaxTreeIterator _next;
+    SyntaxTreeIterator _current;
     SyntaxTreeIterator createIterator(SyntaxTree *tree);
     static std::set<SyntaxTree*> getCutMatchedSubtrees(const SymbolTable &symbolTable);
     SyntaxTree* getTopmostCutSubtreeInAncestry(const std::set<SyntaxTree*> &cutMatchedSubtrees);

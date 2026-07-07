@@ -435,7 +435,7 @@ int main(int argc, char *argv[])
   {
     Transducer* transducer = TransducerBuilder()
       .setIteratorStrategyType(SyntaxTreeIteratorStrategyType::PRE_ORDER)
-      .setTraversalBehaviorType(TraversalBehaviorType::SINGLE_MATCH)
+      .setTraversalBehaviorType(TraversalBehaviorType::FOLLOW_REPLACEMENT)
       .build();
 
     for (int i = 2; i < argc; i++)
