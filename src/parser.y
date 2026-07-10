@@ -45,6 +45,8 @@
   #include "search-expression.hpp"
   #include "transduction-rule.hpp"
   #include <string>
+
+  Transduction::TransductionRule* parseTransductionRule(const std::string &rule);
 }
 
 /* Definition of union used to define terminal and non-terminal types */
@@ -390,70 +392,6 @@ node:
 
 %%
 
-void printUsage()
-{
-  cout << "Usage: tsed [TRANSDUCTION] [FILE]..." << endl;
-}
-
-void printHelp()
-{
-  printUsage();
-  cout << "Applies a transduction rule to the treebanks present in each [FILE]." << endl;
-  cout << "The trees in each [FILE] must be written in the Penn Treebank format." << endl;
-  cout << "Example: tsed '[NP] ==> NNP' input.txt" << endl;
-  cout << endl;
-  cout << "Exit status 0 if any tree is modified, 1 if no tree is modified, and -1 in case of an error." << endl;
-  // TODO: Improve this manual
-}
-
-// TODO: Move this to a main file and adjust Makefile
-int main(int argc, char *argv[]) 
-{
-  for (int i = 0; i < argc; i++)
-  {
-    string argument(argv[i]);
-    if (argument.compare("--help") == 0)
-    {
-      printHelp();
-      return 1;
-    }
-  }
-
-  if (argc < 3)
-  {
-    printUsage();
-    cout << "Try 'tsed --help' for more information." << endl;
-    return -1;
-  }
-
-  // cout << "Transduction rule to be processed: " << argv[1] << endl;
-  yy_scan_string(argv[1]);
-
-  // TODO: use %parser-param to pass params here
-  // https://www.gnu.org/software/bison/manual/bison.html#index-_0025parse_002dparam:~:text=parse%2Dparam%3A-,Directive%3A%20%25parse%2Dparam%20%7Bargument%2Ddeclaration%7D,-%E2%80%A6%20%C2%B6
-  if (yyparse() == 0)
-  {
-    Transducer* transducer = TransducerBuilder()
-      .setIteratorStrategyType(SyntaxTreeIteratorStrategyType::PRE_ORDER)
-      .setTraversalBehaviorType(TraversalBehaviorType::FOLLOW_REPLACEMENT)
-      .build();
-
-    for (int i = 2; i < argc; i++)
-    {
-      string filename(argv[i]);
-      // cout << "Processing file: " << filename << endl;
-      auto trees = SyntaxTree::readFromFile(filename);
-
-      for (auto *tree : trees)
-        transducer->transduce(yaccResult, tree);
-    }
-
-    delete transducer;
-  }
-
-  return 0;
-}
-
 int yyerror(const char *s)
 {
   fprintf(stderr, "ERROR: %s in line %d, column %d, near token %s\n", s, yylineno, yycolumn, yytext);
@@ -464,4 +402,16 @@ int yywarn(const char *s)
 {
   fprintf(stderr, "WARNING: %s in line %d, column %d, near token %s\n", s, yylineno, yycolumn, yytext);
   return 0;
+}
+
+Transduction::TransductionRule* parseTransductionRule(const std::string &rule)
+{
+  yy_scan_string(rule.c_str());
+
+  // TODO: use %parser-param to pass params here
+  // https://www.gnu.org/software/bison/manual/bison.html#index-_0025parse_002dparam:~:text=parse%2Dparam%3A-,Directive%3A%20%25parse%2Dparam%20%7Bargument%2Ddeclaration%7D,-%E2%80%A6%20%C2%B6
+  if (yyparse() != 0)
+    throw std::runtime_error("An unknown error occurred while parsing the transduction rule.");
+
+  return yaccResult;
 }

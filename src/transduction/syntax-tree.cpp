@@ -343,7 +343,7 @@ Transduction::SyntaxTree* Transduction::SyntaxTree::deleteSubtrees(
 }
 
 std::vector<Transduction::SyntaxTree*>
-Transduction::SyntaxTree::readFromFile(std::string& filename)
+Transduction::SyntaxTree::readFromFile(const std::string& filename)
 {
   // <trees>     ::= <tree> <trees_opt>
   // <trees_opt> ::= <trees> | EPS

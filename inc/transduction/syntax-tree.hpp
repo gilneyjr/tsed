@@ -59,7 +59,7 @@ namespace Transduction
     static void destroyEndMarker(SyntaxTree *endMarker);
     static SyntaxTree* deleteSubtrees(std::vector<SyntaxTree*> &subtrees);
 
-    static std::vector<SyntaxTree*> readFromFile(std::string &filename);
+    static std::vector<SyntaxTree*> readFromFile(const std::string &filename);
     friend std::ostream& operator<<(std::ostream &os, const SyntaxTree &tree);
   };
 
