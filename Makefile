@@ -25,27 +25,22 @@ BUILD_PATH = ./build
 
 RELEASE_PATH = $(BUILD_PATH)/release
 DEBUG_PATH = $(BUILD_PATH)/debug
+TEST_BUILD_PATH = $(BUILD_PATH)/tests
 
 RELEASE_OBJ_PATH = $(RELEASE_PATH)/obj
 DEBUG_OBJ_PATH = $(DEBUG_PATH)/obj
+TEST_OBJ_PATH = $(TEST_BUILD_PATH)/obj
 
 INC_PATH = ./inc
 SRC_PATH = ./src
+TEST_PATH = ./test
+DOCTEST_PATH = ./third-party/doctest
 
 INC_SUBPATHS = $(INC_PATH)/ $(call find_subdirs,$(INC_PATH))
 
-# ============================================================================
-# Compiler
-# ============================================================================
-
-CXX = g++
-
-COMMON_FLAGS = -Wall -Wextra -std=c++17
-
-RELEASE_FLAGS = $(COMMON_FLAGS)
-DEBUG_FLAGS = $(COMMON_FLAGS) -g -O0
-
-INC_FLAGS := $(addprefix -I,$(INC_SUBPATHS))
+TEST_INC_SUBPATHS = \
+	$(DOCTEST_PATH)/ \
+	$(call find_subdirs,$(TEST_PATH))
 
 # ============================================================================
 # Flex / Bison
@@ -65,6 +60,25 @@ BISON_OUTPUT_H = $(LEX_YACC_OUTPUT)/parser.tab.h
 FLEX_OUTPUT = $(LEX_YACC_OUTPUT)/lex.yy.c
 
 # ============================================================================
+# Compiler
+# ============================================================================
+
+CXX = g++
+
+COMMON_FLAGS = -Wall -Wextra -std=c++17
+
+RELEASE_FLAGS = $(COMMON_FLAGS)
+DEBUG_FLAGS = $(COMMON_FLAGS) -g -O0
+
+INC_FLAGS := \
+	$(addprefix -I,$(INC_SUBPATHS)) \
+	-I $(LEX_YACC_OUTPUT)
+
+TEST_INC_FLAGS := \
+	$(addprefix -I,$(INC_SUBPATHS)) \
+	$(addprefix -I,$(TEST_INC_SUBPATHS))
+
+# ============================================================================
 # Source files
 # ============================================================================
 
@@ -72,11 +86,19 @@ MAIN_FILE := $(SRC_PATH)/main.cpp
 
 SRC_FILES := $(call find_files_in_subdirs,$(SRC_PATH),cpp,$(MAIN_FILE))
 
+TEST_MAIN = $(TEST_PATH)/main.cpp
+
+TEST_FILES := \
+$(call find_files_in_subdirs,$(TEST_PATH),cpp,$(TEST_MAIN))
+
 RELEASE_OBJ_FILES := \
 $(patsubst $(SRC_PATH)/%.cpp,$(RELEASE_OBJ_PATH)/%.o,$(SRC_FILES))
 
 DEBUG_OBJ_FILES := \
 $(patsubst $(SRC_PATH)/%.cpp,$(DEBUG_OBJ_PATH)/%.o,$(SRC_FILES))
+
+TEST_OBJ_FILES := \
+$(patsubst $(TEST_PATH)/%.cpp,$(TEST_OBJ_PATH)/%.o,$(TEST_FILES))
 
 # ============================================================================
 # Targets
@@ -84,6 +106,7 @@ $(patsubst $(SRC_PATH)/%.cpp,$(DEBUG_OBJ_PATH)/%.o,$(SRC_FILES))
 
 RELEASE_TARGET = $(RELEASE_PATH)/tsed
 DEBUG_TARGET = $(DEBUG_PATH)/tsed
+TEST_TARGET = $(TEST_BUILD_PATH)/tests
 
 # ============================================================================
 # Main rules
@@ -95,17 +118,24 @@ release: $(RELEASE_TARGET)
 
 debug: $(DEBUG_TARGET)
 
+test: $(BISON_OUTPUT_C) $(FLEX_OUTPUT) $(RELEASE_OBJ_FILES) $(TEST_TARGET)
+	$(TEST_TARGET)
+
 # ============================================================================
 # Link rules
 # ============================================================================
 
-$(RELEASE_TARGET): $(BISON_OUTPUT_C) $(FLEX_OUTPUT) $(RELEASE_OBJ_FILES)
+$(RELEASE_TARGET): $(BISON_OUTPUT_C) $(FLEX_OUTPUT) $(RELEASE_OBJ_FILES) $(MAIN_FILE)
 	@mkdir -p $(dir $@)
 	$(CXX) $(RELEASE_FLAGS) $(INC_FLAGS) $^ -o $@
 
-$(DEBUG_TARGET): $(BISON_OUTPUT_C) $(FLEX_OUTPUT) $(DEBUG_OBJ_FILES)
+$(DEBUG_TARGET): $(BISON_OUTPUT_C) $(FLEX_OUTPUT) $(DEBUG_OBJ_FILES) $(MAIN_FILE)
 	@mkdir -p $(dir $@)
 	$(CXX) $(DEBUG_FLAGS) $(INC_FLAGS) $^ -o $@
+
+$(TEST_TARGET): $(BISON_OUTPUT_C) $(FLEX_OUTPUT) $(RELEASE_OBJ_FILES) $(TEST_OBJ_FILES) $(TEST_MAIN)
+	@mkdir -p $(dir $@)
+	$(CXX) $(RELEASE_FLAGS) $(TEST_INC_FLAGS) $^ -o $@
 
 # ============================================================================
 # Bison rules
@@ -135,6 +165,10 @@ $(DEBUG_OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp $(INC_PATH)/%.hpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(DEBUG_FLAGS) $(INC_FLAGS) -c $< -o $@
 
+$(TEST_OBJ_PATH)/%.o: $(TEST_PATH)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(RELEASE_FLAGS) $(TEST_INC_FLAGS) -c $< -o $@
+
 # ============================================================================
 # Clean rules
 # ============================================================================
@@ -148,8 +182,19 @@ clean-release:
 clean-debug:
 	rm -rf $(DEBUG_PATH)
 
+clean-test:
+	rm -rf $(TEST_BUILD_PATH)
+
 # ============================================================================
 # Phony targets
 # ============================================================================
 
-.PHONY: all release debug clean clean-release clean-debug
+.PHONY: \
+	all \
+	release \
+	debug \
+	test \
+	clean \
+	clean-release \
+	clean-debug \
+	clean-test
